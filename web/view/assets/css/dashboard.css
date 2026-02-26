@@ -1,0 +1,355 @@
+/**
+ * Dashboard - Single Source of Truth for Styles
+ * Built with vanilla CSS
+ */
+/**
+ * Dashboard CSS - Layout (Bootstrap grid + flex)
+ */
+.dashboard-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.dashboard-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #fff;
+  border-right: 1px solid #dee2e6;
+  overflow-y: auto;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+.dashboard-main {
+  flex: 1;
+  min-width: 0;
+  margin-left: 250px;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  transition: margin-left 0.3s ease;
+}
+
+.dashboard-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background-color: #fff;
+  border-bottom: 1px solid #dee2e6;
+  padding: 1rem 1.5rem;
+  z-index: 999;
+}
+
+.dashboard-content {
+  width: 100%;
+  max-width: 100%;
+  padding: 1.5rem;
+  min-height: calc(100vh - 80px);
+  box-sizing: border-box;
+}
+.dashboard-content .container-fluid {
+  max-width: 100%;
+}
+
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 1.125rem;
+  color: #212529;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+
+/**
+ * Dashboard CSS - Sidebar (menu, logo, dropdown)
+ */
+.sidebar-header {
+  padding: 1.5rem 1rem;
+  border-bottom: 1px solid #dee2e6;
+  text-align: center;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s ease;
+}
+.sidebar-logo:hover {
+  opacity: 0.9;
+}
+.sidebar-logo img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.sidebar-logo-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #4E80EE;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+.sidebar-logo-text em {
+  font-style: normal;
+  color: #3D6FDD;
+  font-weight: 600;
+}
+
+.sidebar-menu {
+  padding: 1rem 0;
+}
+
+.sidebar-section {
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #6c757d;
+  padding: 0.5rem 1rem;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  margin: 0.125rem 0.5rem;
+  color: #212529;
+  text-decoration: none;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+.sidebar-item i {
+  width: 1.5rem;
+  margin-right: 0.75rem;
+  text-align: center;
+}
+.sidebar-item:hover {
+  background-color: #E8F0FE;
+  color: #4E80EE;
+}
+.sidebar-item.active {
+  background-color: #E8F0FE;
+  color: #4E80EE;
+  font-weight: 600;
+}
+
+.sidebar-dropdown {
+  position: relative;
+}
+
+.sidebar-dropdown-toggle {
+  cursor: pointer;
+}
+
+.sidebar-dropdown-menu {
+  display: none;
+  padding-left: 2.5rem;
+}
+
+.sidebar-dropdown.open .sidebar-dropdown-menu {
+  display: block;
+}
+
+.sidebar-dropdown-item {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: #6c757d;
+  text-decoration: none;
+  font-size: 0.875rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+.sidebar-dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #4E80EE;
+}
+
+.sidebar-item-logout {
+  color: #dc3545 !important;
+}
+.sidebar-item-logout:hover {
+  background-color: #fee !important;
+  color: rgb(210.9493670886, 36.5506329114, 53.2594936709) !important;
+}
+
+#sideMenu,
+#sideMenu *:not(.fa):not(.fas):not(.far):not(.fab):not([class^="fa-"]):not([class*=" fa-"]) {
+  font-family: 'DejaVu Sans', 'Segoe UI', Arial, 'Helvetica Neue', sans-serif !important;
+}
+/* Giữ Font Awesome trong sidebar - tránh icon bị mất */
+#sideMenu .fa, #sideMenu .fas, #sideMenu .far, #sideMenu .fab,
+#sideMenu [class^="fa-"], #sideMenu [class*=" fa-"] {
+  font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
+}
+#sideMenu .sidebar-section-title,
+#sideMenu .sidebar-item span,
+#sideMenu .sidebar-dropdown-item {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/**
+ * Dashboard CSS - Components (stat-card, utilities)
+ * Bổ sung cho Bootstrap (btn, card, table...)
+ */
+.stat-card {
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  color: #fff;
+}
+.stat-card.bg-primary {
+  background: linear-gradient(135deg, #4E80EE 0%, #3D6FDD 100%);
+}
+.stat-card.success {
+  background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+}
+.stat-card.info {
+  background: linear-gradient(135deg, #0dcaf0 0%, #087990 100%);
+}
+.stat-card.warning {
+  background: linear-gradient(135deg, #ffc107 0%, #cc9a06 100%);
+}
+.stat-card.bg-success {
+  background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+}
+.stat-card.bg-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+}
+.stat-card.bg-info {
+  background: linear-gradient(135deg, #0dcaf0 0%, #087990 100%);
+}
+.stat-card.bg-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #cc9a06 100%);
+}
+
+.dashboard-card {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.dashboard-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 1rem;
+}
+
+.dashboard-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #212529;
+  margin: 0;
+}
+
+.btn-dashboard {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+.btn-dashboard.btn-dashboard-primary {
+  background-color: #4E80EE;
+  color: #fff;
+}
+.btn-dashboard.btn-dashboard-primary:hover {
+  background-color: #3D6FDD;
+  color: #fff;
+}
+.btn-dashboard.btn-dashboard-secondary {
+  background-color: #f8f9fa;
+  color: #212529;
+  border: 1px solid #dee2e6;
+}
+.btn-dashboard.btn-dashboard-secondary:hover {
+  background-color: #dee2e6;
+  color: #212529;
+}
+
+.badge-dashboard {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.badge-dashboard.badge-primary {
+  background-color: #E8F0FE;
+  color: #4E80EE;
+}
+
+
+/**
+ * Dashboard CSS - Responsive (Bootstrap breakpoints)
+ */
+@media (max-width: 992px) {
+  .sidebar-toggle {
+    display: flex !important;
+  }
+  .dashboard-sidebar {
+    transform: translateX(-100%);
+  }
+  .dashboard-sidebar.show {
+    transform: translateX(0);
+  }
+  .dashboard-main {
+    margin-left: 0;
+  }
+}
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 1rem;
+  }
+}
+@media (max-width: 576px) {
+  .dashboard-header {
+    padding: 0.75rem 1rem;
+  }
+  .dashboard-content {
+    padding: 0.75rem;
+  }
+}

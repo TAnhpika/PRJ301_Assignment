@@ -1,0 +1,112 @@
+/**
+ * Doctor dashboard - Reusable CSS
+ * Dùng chung cho các trang doctor: Cài đặt, Trang cá nhân, ...
+ * Include sau dashboard-common.css và dashboard.css
+ */
+
+/* ========== Page header (blue gradient) ========== */
+.doctor-page-header {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 50%, #0c4a6e 100%);
+    color: white;
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--border-radius-lg, 12px);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+.doctor-page-header h1,
+.doctor-page-header .h4 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.doctor-page-header p {
+    margin: 0.25rem 0 0;
+    opacity: 0.95;
+    font-size: 0.9rem;
+}
+
+/* ========== Doctor Cài đặt - form card ========== */
+.doctor-caidat {
+    background: var(--background-white, #fff);
+    border: 2px solid #0ea5e9;
+    border-radius: var(--border-radius-lg, 12px);
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.15);
+    overflow: hidden;
+}
+.doctor-caidat .doctor-info {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 50%, #0c4a6e 100%);
+    color: white;
+    padding: 1rem 1.25rem;
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+.doctor-caidat .form-group {
+    margin-bottom: 1rem;
+    padding: 0 1.25rem 1.25rem;
+}
+.doctor-caidat .form-group:first-of-type {
+    padding-top: 1.25rem;
+}
+.doctor-caidat label {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--text-secondary, #555);
+    font-weight: 500;
+}
+.doctor-caidat input[type="text"],
+.doctor-caidat input[type="date"],
+.doctor-caidat input[type="file"],
+.doctor-caidat select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color, #dee2e6);
+    border-radius: var(--border-radius-sm, 6px);
+    background-color: #f9f9f9;
+    color: var(--text-primary, #333);
+}
+.doctor-caidat input[readonly] {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+.doctor-caidat input[type="submit"],
+.doctor-caidat .btn-primary {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius-sm, 6px);
+    cursor: pointer;
+    font-weight: 500;
+}
+.doctor-caidat input[type="submit"]:hover,
+.doctor-caidat .btn-primary:hover {
+    opacity: 0.95;
+    color: white;
+}
+.doctor-caidat .avatar-img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: var(--border-radius, 8px);
+    margin-bottom: 0.75rem;
+    object-fit: cover;
+}
+.doctor-caidat .error-message {
+    color: var(--danger-color, #dc3545);
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 0 1.25rem;
+}
+.doctor-caidat .extra {
+    text-align: center;
+    margin-top: 1rem;
+    padding: 0 1.25rem 1.25rem;
+}
+.doctor-caidat .extra a {
+    color: #0369a1;
+    text-decoration: none;
+    font-weight: 500;
+}
+.doctor-caidat .extra a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,50 @@
+/* Staff Dashboard Styles */
+
+/* From staff_dangkilich.jsp */
+.time-slot-card {
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.time-slot-card:hover {
+    border-color: #4361ee;
+    background: #f0f9ff;
+}
+.time-slot-card.selected {
+    border-color: #4361ee;
+    background: #e3f2fd;
+}
+.calendar-day {
+    min-height: 80px;
+    border: 1px solid #e5e7eb;
+    padding: 8px;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.calendar-day:hover {
+    background: #e3f2fd;
+    border-color: #4361ee;
+}
+.calendar-day.today {
+    background: #fff3e0;
+    border-color: #ff9800;
+}
+.calendar-day.has-schedule {
+    background: #e8f5e9;
+    border-color: #4caf50;
+}
+.day-number {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.schedule-badge {
+    background: #4caf50;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
