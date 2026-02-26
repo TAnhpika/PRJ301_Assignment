@@ -23,7 +23,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <%@ include file="/includes/dashboard_head.jsp" %>
+    <%@ include file="/view/layout/dashboard_head.jsp" %>
     <title>Quản lý Nhân viên - Manager</title>
     <style>
         .staff-avatar {
@@ -243,7 +243,7 @@
         </div>
     </div>
     
-    <%@ include file="/includes/dashboard_scripts.jsp" %>
+    <%@ include file="/view/layout/dashboard_scripts.jsp" %>
     
     <script>
         function filterTable() {

@@ -4,7 +4,7 @@
     Reusable notification bell dropdown
     
     Usage:
-    <jsp:include page="/includes/components/header_notification.jsp">
+    <jsp:include page="/view/layout/components/header_notification.jsp">
         <jsp:param name="count" value="5"/>
         <jsp:param name="viewAllUrl" value="/notifications"/>
     </jsp:include>

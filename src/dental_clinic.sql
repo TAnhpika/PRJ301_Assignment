@@ -23,7 +23,7 @@ values ( /* password_hash */ N'12345' ,/* email */ N'manager@gmail.com' ,/* role
 ( /* password_hash */ N'12345' ,/* email */ N'staff1@gmail.com' ,/* role */ N'STAFF' ,/* created_at */ '2025-05-27 17:22:05.533' ,/* avatar */ null ,/* updated_at */ null  ), 
 ( /* password_hash */ N'12345' ,/* email */ N'staff2@gmail.com' ,/* role */ N'STAFF' ,/* created_at */ '2025-05-27 17:22:37.053' ,/* avatar */ null ,/* updated_at */ null  ), 
 ( /* password_hash */ N'12345' ,/* email */ N'doctor@gmail.com' ,/* role */ N'DOCTOR' ,/* created_at */ '2025-05-27 17:23:29.700' ,/* avatar */ null ,/* updated_at */ null  ), 
-( /* password_hash */ N'12345' ,/* email */ N'hashed_password_123' ,/* role */ N'PATIENT' ,/* created_at */ '2025-05-27 17:25:44.323' ,/* avatar */ null ,/* updated_at */ null  ), 
+( /* password_hash */ N'12345' ,/* email */ N'abc@gmail.com' ,/* role */ N'PATIENT' ,/* created_at */ '2025-05-27 17:25:44.323' ,/* avatar */ null ,/* updated_at */ null  ), 
 ( /* password_hash */ N'12345' ,/* email */ N'userr@gmail.com' ,/* role */ N'PATIENT' ,/* created_at */ '2025-05-28 12:37:52.760' ,/* avatar */ null ,/* updated_at */ null  ), 
 ( /* password_hash */ N'12345' ,/* email */ N'phuocthde180577@fpt.edu.vn' ,/* role */ N'PATIENT' ,/* created_at */ '2025-05-28 19:21:52.967' ,/* avatar */ null ,/* updated_at */ '2025-06-18 06:32:22.337'  ), 
 ( /* password_hash */ N'12345' ,/* email */ N'doctor1@gmail.com' ,/* role */ N'DOCTOR' ,/* created_at */ '2025-06-02 06:22:04.120' ,/* avatar */ null ,/* updated_at */ null  ), 

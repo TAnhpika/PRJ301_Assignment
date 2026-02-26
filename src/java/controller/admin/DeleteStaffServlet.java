@@ -79,6 +79,6 @@ public class DeleteStaffServlet extends HttpServlet {
         }
 
         // Forward về trang danh sách
-        request.getRequestDispatcher("/view/view/jsp/admin/manager_danhsach.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/jsp/admin/manager_danhsach.jsp").forward(request, response);
     }
 }

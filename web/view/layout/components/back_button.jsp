@@ -4,14 +4,14 @@
     Reusable back navigation button
     
     Usage:
-    <jsp:include page="/includes/components/back_button.jsp">
+    <jsp:include page="/view/layout/components/back_button.jsp">
         <jsp:param name="url" value="/home"/>
         <jsp:param name="text" value="Quay lại"/>
         <jsp:param name="variant" value="secondary"/>
     </jsp:include>
     
     Or use JavaScript back:
-    <jsp:include page="/includes/components/back_button.jsp">
+    <jsp:include page="/view/layout/components/back_button.jsp">
         <jsp:param name="useHistory" value="true"/>
     </jsp:include>
 --%>

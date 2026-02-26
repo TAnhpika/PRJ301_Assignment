@@ -4,7 +4,7 @@
     Reusable Bootstrap modal template
     
     Usage:
-    <jsp:include page="/includes/components/modal_base.jsp">
+    <jsp:include page="/view/layout/components/modal_base.jsp">
         <jsp:param name="modalId" value="myModal"/>
         <jsp:param name="title" value="Tiêu đề Modal"/>
         <jsp:param name="size" value="lg"/>

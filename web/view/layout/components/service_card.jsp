@@ -4,7 +4,7 @@
     Reusable service display card
     
     Usage:
-    <jsp:include page="/includes/components/service_card.jsp">
+    <jsp:include page="/view/layout/components/service_card.jsp">
         <jsp:param name="serviceName" value="Trám răng"/>
         <jsp:param name="description" value="Trám răng sâu, răng bị mẻ"/>
         <jsp:param name="price" value="500,000"/>

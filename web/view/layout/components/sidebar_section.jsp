@@ -4,7 +4,7 @@
     Reusable sidebar section with title
     
     Usage:
-    <jsp:include page="/includes/components/sidebar_section.jsp">
+    <jsp:include page="/view/layout/components/sidebar_section.jsp">
         <jsp:param name="title" value="Quản lý"/>
     </jsp:include>
     

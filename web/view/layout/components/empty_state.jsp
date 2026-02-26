@@ -4,7 +4,7 @@
     Reusable empty state display when no data available
     
     Usage:
-    <jsp:include page="/includes/components/empty_state.jsp">
+    <jsp:include page="/view/layout/components/empty_state.jsp">
         <jsp:param name="icon" value="fa-inbox"/>
         <jsp:param name="title" value="Không có dữ liệu"/>
         <jsp:param name="message" value="Chưa có dữ liệu để hiển thị"/>

@@ -101,7 +101,7 @@ public class StaffPaymentServlet extends HttpServlet {
             // Kiểm tra response đã committed chưa trước khi forward
             if (!response.isCommitted()) {
                 request.setAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
-                request.getRequestDispatcher("/view/view/jsp/admin/staff_thanhtoan.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/jsp/admin/staff_thanhtoan.jsp").forward(request, response);
             } else {
                 System.err.println("❌ Cannot forward - response already committed. Error: " + e.getMessage());
             }
@@ -420,7 +420,7 @@ public class StaffPaymentServlet extends HttpServlet {
             System.out.println("🚀 Forwarding to payment JSP with " + allBills.size() + " bills");
 
             // Forward đến trang quản lý thanh toán
-            request.getRequestDispatcher("/view/view/jsp/admin/staff_thanhtoan.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/admin/staff_thanhtoan.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -436,7 +436,7 @@ public class StaffPaymentServlet extends HttpServlet {
                 request.setAttribute("partialAmount", 0.0);
                 request.setAttribute("totalBills", 0);
 
-                request.getRequestDispatcher("/view/view/jsp/admin/staff_thanhtoan.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/jsp/admin/staff_thanhtoan.jsp").forward(request, response);
             } else {
                 System.err.println("❌ Cannot forward from handlePaymentManagement - response already committed. Error: " + e.getMessage());
             }
@@ -599,7 +599,7 @@ public class StaffPaymentServlet extends HttpServlet {
                     " VNĐ, Paid: " + totalPaid + " VNĐ, Remaining: " + remainingAmount + " VNĐ");
             
             // Forward to invoice detail page or back to payment management with detail view
-            request.getRequestDispatcher("/view/view/jsp/admin/staff_thanhtoan.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/admin/staff_thanhtoan.jsp").forward(request, response);
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -799,12 +799,12 @@ public class StaffPaymentServlet extends HttpServlet {
             }
 
             request.setAttribute("installmentBills", installmentBills);
-            request.getRequestDispatcher("/view/view/jsp/admin/staff_tragop.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/admin/staff_tragop.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi tải dữ liệu trả góp: " + e.getMessage());
-            request.getRequestDispatcher("/view/view/jsp/admin/staff_tragop.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/admin/staff_tragop.jsp").forward(request, response);
         }
     }
 
@@ -839,7 +839,7 @@ public class StaffPaymentServlet extends HttpServlet {
             request.setAttribute("billId", billId);
 
             // Forward đến trang chi tiết trả góp
-            request.getRequestDispatcher("/view/view/jsp/admin/staff_tragop_chitiet.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/admin/staff_tragop_chitiet.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -866,14 +866,14 @@ public class StaffPaymentServlet extends HttpServlet {
             request.setAttribute("reminders", reminders);
 
             // Forward đến trang nhắc nợ
-            request.getRequestDispatcher("/view/view/jsp/admin/staff_nhacno.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/admin/staff_nhacno.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
             if (!response.isCommitted()) {
                 request.setAttribute("error", "Có lỗi khi tải dữ liệu nhắc nợ: " + e.getMessage());
                 request.setAttribute("reminders", new ArrayList<PaymentInstallment>());
-                request.getRequestDispatcher("/view/view/jsp/admin/staff_nhacno.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/jsp/admin/staff_nhacno.jsp").forward(request, response);
             } else {
                 System.err.println("❌ Cannot forward from handleReminders - response already committed. Error: " + e.getMessage());
             }

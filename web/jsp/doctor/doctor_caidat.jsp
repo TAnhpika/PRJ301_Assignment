@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <%@ include file="/includes/dashboard_head.jsp" %>
+    <%@ include file="/view/layout/dashboard_head.jsp" %>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/doctor.css">
     <title>${pageTitle}</title>
 </head>
@@ -107,6 +107,6 @@
             </div>
         </main>
     </div>
-    <%@ include file="/includes/dashboard_scripts.jsp" %>
+    <%@ include file="/view/layout/dashboard_scripts.jsp" %>
 </body>
 </html>

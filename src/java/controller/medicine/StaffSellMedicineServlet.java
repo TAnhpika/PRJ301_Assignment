@@ -55,7 +55,7 @@ public class StaffSellMedicineServlet extends HttpServlet {
             request.setAttribute("medicines", medicines);
             
             // Forward tới JSP
-            String jspPath = "/view/view/jsp/admin/staff_toathuoc.jsp";
+            String jspPath = "/view/jsp/admin/staff_toathuoc.jsp";
             request.getRequestDispatcher(jspPath).forward(request, response);
             
         }catch (Exception e) {

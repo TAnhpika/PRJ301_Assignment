@@ -4,7 +4,7 @@
     Reusable activity/timeline item
     
     Usage:
-    <jsp:include page="/includes/components/activity_item.jsp">
+    <jsp:include page="/view/layout/components/activity_item.jsp">
         <jsp:param name="time" value="10:30 AM"/>
         <jsp:param name="description" value="Bác sĩ Nguyễn Văn A đã cập nhật hồ sơ"/>
         <jsp:param name="status" value="completed"/>

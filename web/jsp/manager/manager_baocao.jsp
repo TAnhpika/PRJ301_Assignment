@@ -13,7 +13,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <%@ include file="/includes/dashboard_head.jsp" %>
+    <%@ include file="/view/layout/dashboard_head.jsp" %>
     <title>Báo cáo Hệ thống - Manager</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -224,7 +224,7 @@
         </main>
     </div>
     
-    <%@ include file="/includes/dashboard_scripts.jsp" %>
+    <%@ include file="/view/layout/dashboard_scripts.jsp" %>
     
     <script>
         // Toggle custom date inputs

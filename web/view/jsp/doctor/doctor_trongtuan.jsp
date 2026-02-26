@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html lang="vi">
     <head>
-        <%@ include file="/includes/dashboard_head.jsp" %>
+        <%@ include file="/view/layout/dashboard_head.jsp" %>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Lịch làm việc - Doctor</title>
@@ -195,6 +195,6 @@
             </main>
         </div>
 
-        <%@ include file="/includes/dashboard_scripts.jsp" %>
+        <%@ include file="/view/layout/dashboard_scripts.jsp" %>
     </body>
 </html>

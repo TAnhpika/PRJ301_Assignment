@@ -10,7 +10,7 @@
                     <html lang="vi">
 
                     <head>
-                        <%@ include file="/includes/dashboard_head.jsp" %>
+                        <%@ include file="/view/layout/dashboard_head.jsp" %>
                             <title>Đăng ký lịch làm việc - Staff</title>
 
                     </head>
@@ -255,7 +255,7 @@
                                 </main>
                         </div>
 
-                        <%@ include file="/includes/dashboard_scripts.jsp" %>
+                        <%@ include file="/view/layout/dashboard_scripts.jsp" %>
 
                             <script>
                                 function selectTimeSlot(slotId, element) {

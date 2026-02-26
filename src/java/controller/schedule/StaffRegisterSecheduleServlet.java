@@ -61,7 +61,7 @@ public class StaffRegisterSecheduleServlet extends HttpServlet {
             return;
         }
         
-        String jspPath = "/view/view/jsp/admin/staff_dangkilich.jsp"; // Default JSP path
+        String jspPath = "/view/jsp/admin/staff_dangkilich.jsp"; // Default JSP path
         
         try {
             Staff staff = staffDAO.getStaffByUserId(user.getId());
@@ -85,7 +85,7 @@ public class StaffRegisterSecheduleServlet extends HttpServlet {
             // Forward to appropriate page based on employment type
             if ("fulltime".equals(staff.getEmploymentType())) {
                 ColoredLogger.logInfo("StaffRegisterSecheduleServlet", "Setting up data for full-time staff");
-                jspPath = "/view/view/jsp/admin/staff_xinnghi.jsp";
+                jspPath = "/view/jsp/admin/staff_xinnghi.jsp";
                 
                 // Tính số ngày nghỉ đã sử dụng trong tháng
                 int usedDays = scheduleDAO.getApprovedLeaveDaysInMonth((int) staff.getStaffId(), currentMonth, currentYear);

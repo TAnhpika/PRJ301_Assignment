@@ -4,7 +4,7 @@
     Reusable notification list item
     
     Usage:
-    <jsp:include page="/includes/components/notification_item.jsp">
+    <jsp:include page="/view/layout/components/notification_item.jsp">
         <jsp:param name="icon" value="fa-user"/>
         <jsp:param name="iconBg" value="primary"/>
         <jsp:param name="message" value="3 nhân viên yêu cầu đổi ca"/>

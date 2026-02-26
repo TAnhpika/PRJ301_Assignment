@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <%@ include file="/includes/dashboard_head.jsp" %>
+    <%@ include file="/view/layout/dashboard_head.jsp" %>
     <title>Bán thuốc thành công</title>
 </head>
 <body style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh;">
@@ -57,6 +57,6 @@
         </div>
     </div>
     
-    <%@ include file="/includes/dashboard_scripts.jsp" %>
+    <%@ include file="/view/layout/dashboard_scripts.jsp" %>
 </body>
 </html>

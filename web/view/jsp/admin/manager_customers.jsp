@@ -13,7 +13,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <%@ include file="/includes/dashboard_head.jsp" %>
+    <%@ include file="/view/layout/dashboard_head.jsp" %>
     <title>Quản lý khách hàng - Manager</title>
 </head>
 <body>
@@ -174,7 +174,7 @@
         </main>
     </div>
     
-    <%@ include file="/includes/dashboard_scripts.jsp" %>
+    <%@ include file="/view/layout/dashboard_scripts.jsp" %>
     
     <script>
         function filterTable() {

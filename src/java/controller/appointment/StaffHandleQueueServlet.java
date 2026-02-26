@@ -39,7 +39,7 @@ public class StaffHandleQueueServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
-            request.getRequestDispatcher("/view/view/jsp/admin/staff_quanlyhangdoibenhnhan.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/admin/staff_quanlyhangdoibenhnhan.jsp").forward(request, response);
         }
     }
 
@@ -197,12 +197,12 @@ public class StaffHandleQueueServlet extends HttpServlet {
             System.out.println("✅ Forwarding to JSP with " + appointmentsToUse.size() + " appointments");
 
             // Forward đến trang quản lý hàng đợi
-            request.getRequestDispatcher("/view/view/jsp/admin/staff_quanlyhangdoibenhnhan.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/admin/staff_quanlyhangdoibenhnhan.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Có lỗi khi tải dữ liệu hàng đợi: " + e.getMessage());
-            request.getRequestDispatcher("/view/view/jsp/admin/staff_quanlyhangdoibenhnhan.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/admin/staff_quanlyhangdoibenhnhan.jsp").forward(request, response);
         }
     }
 

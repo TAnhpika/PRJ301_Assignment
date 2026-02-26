@@ -4,14 +4,14 @@
     Reusable loading spinner/overlay
     
     Usage (inline spinner):
-    <jsp:include page="/includes/components/loading_spinner.jsp">
+    <jsp:include page="/view/layout/components/loading_spinner.jsp">
         <jsp:param name="type" value="inline"/>
         <jsp:param name="size" value="sm"/>
         <jsp:param name="text" value="Đang tải..."/>
     </jsp:include>
     
     Usage (overlay spinner):
-    <jsp:include page="/includes/components/loading_spinner.jsp">
+    <jsp:include page="/view/layout/components/loading_spinner.jsp">
         <jsp:param name="type" value="overlay"/>
         <jsp:param name="id" value="loadingOverlay"/>
     </jsp:include>

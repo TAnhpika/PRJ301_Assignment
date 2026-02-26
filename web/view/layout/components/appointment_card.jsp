@@ -4,7 +4,7 @@
     Reusable appointment display card
     
     Usage:
-    <jsp:include page="/includes/components/appointment_card.jsp">
+    <jsp:include page="/view/layout/components/appointment_card.jsp">
         <jsp:param name="patientName" value="Nguyễn Văn A"/>
         <jsp:param name="date" value="01/01/2024"/>
         <jsp:param name="time" value="09:00"/>

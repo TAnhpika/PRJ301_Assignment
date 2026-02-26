@@ -4,7 +4,7 @@
     Reusable progress bar
     
     Usage:
-    <jsp:include page="/includes/components/progress_bar.jsp">
+    <jsp:include page="/view/layout/components/progress_bar.jsp">
         <jsp:param name="value" value="75"/>
         <jsp:param name="label" value="Hoàn thành"/>
         <jsp:param name="variant" value="success"/>

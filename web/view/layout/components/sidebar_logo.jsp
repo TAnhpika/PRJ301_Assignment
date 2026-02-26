@@ -4,7 +4,7 @@
     Reusable sidebar header with logo
     
     Usage:
-    <jsp:include page="/includes/components/sidebar_logo.jsp">
+    <jsp:include page="/view/layout/components/sidebar_logo.jsp">
         <jsp:param name="logoUrl" value="/img/logo.png"/>
         <jsp:param name="title" value="HAPPY SMILE"/>
         <jsp:param name="subtitle" value="Dental Clinic"/>

@@ -15,7 +15,7 @@ import dao.UserDAO;
 @WebServlet(name = "StaffProfileServlet", urlPatterns = {"/StaffProfileServlet"})
 public class StaffProfileServlet extends HttpServlet {
 
-    private static final String RETURN_URL = "/view/view/jsp/admin/staff_taikhoan.jsp";
+    private static final String RETURN_URL = "/view/jsp/admin/staff_taikhoan.jsp";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

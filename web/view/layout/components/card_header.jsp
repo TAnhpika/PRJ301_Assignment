@@ -4,7 +4,7 @@
     Reusable dashboard card header with title and optional actions
     
     Usage:
-    <jsp:include page="/includes/components/card_header.jsp">
+    <jsp:include page="/view/layout/components/card_header.jsp">
         <jsp:param name="title" value="Danh sách"/>
         <jsp:param name="icon" value="fa-list"/>
         <jsp:param name="iconColor" value="primary"/>

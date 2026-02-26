@@ -4,7 +4,7 @@
     Reusable sidebar dropdown menu
     
     Usage:
-    <jsp:include page="/includes/components/sidebar_dropdown.jsp">
+    <jsp:include page="/view/layout/components/sidebar_dropdown.jsp">
         <jsp:param name="icon" value="fa-users"/>
         <jsp:param name="text" value="Quản lý người dùng"/>
         <jsp:param name="items" value="Danh sách|/list,Thêm mới|/add,Phân quyền|/roles"/>

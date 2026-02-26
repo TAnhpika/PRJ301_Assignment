@@ -4,7 +4,7 @@
     Reusable action button group (view, edit, delete)
     
     Usage:
-    <jsp:include page="/includes/components/action_buttons.jsp">
+    <jsp:include page="/view/layout/components/action_buttons.jsp">
         <jsp:param name="viewUrl" value="/detail?id=1"/>
         <jsp:param name="editUrl" value="/edit?id=1"/>
         <jsp:param name="deleteUrl" value="/delete?id=1"/>

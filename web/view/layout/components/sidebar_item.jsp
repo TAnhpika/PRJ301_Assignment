@@ -4,7 +4,7 @@
     Reusable single sidebar menu item
     
     Usage:
-    <jsp:include page="/includes/components/sidebar_item.jsp">
+    <jsp:include page="/view/layout/components/sidebar_item.jsp">
         <jsp:param name="url" value="/home"/>
         <jsp:param name="icon" value="fa-home"/>
         <jsp:param name="text" value="Trang chủ"/>

@@ -23,7 +23,7 @@
                             <html lang="vi">
 
                             <head>
-                                <%@ include file="/includes/dashboard_head.jsp" %>
+                                <%@ include file="/view/layout/dashboard_head.jsp" %>
                                     <title>Kết quả khám - Doctor</title>
                                     <link rel="stylesheet"
                                         href="${pageContext.request.contextPath}/view/assets/css/dashboard-common.css">
@@ -247,7 +247,7 @@
                                         </main>
                                 </div>
 
-                                <%@ include file="/includes/dashboard_scripts.jsp" %>
+                                <%@ include file="/view/layout/dashboard_scripts.jsp" %>
 
                                     <script>
                                         function searchCompletedAppointments() {

@@ -4,7 +4,7 @@
     Reusable status badge with icon
     
     Usage:
-    <jsp:include page="/includes/components/badge_status.jsp">
+    <jsp:include page="/view/layout/components/badge_status.jsp">
         <jsp:param name="status" value="completed"/>
         <jsp:param name="text" value="Hoàn thành"/>
         <jsp:param name="showIcon" value="true"/>

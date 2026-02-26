@@ -4,7 +4,7 @@
     Reusable avatar image with fallback
     
     Usage:
-    <jsp:include page="/includes/components/avatar.jsp">
+    <jsp:include page="/view/layout/components/avatar.jsp">
         <jsp:param name="src" value="/img/user.jpg"/>
         <jsp:param name="alt" value="User Name"/>
         <jsp:param name="size" value="md"/>

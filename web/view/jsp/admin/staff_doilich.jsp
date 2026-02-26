@@ -15,7 +15,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <%@ include file="/includes/dashboard_head.jsp" %>
+    <%@ include file="/view/layout/dashboard_head.jsp" %>
     <title>Đổi lịch hẹn - Staff</title>
     <style>
         .time-slot {
@@ -121,7 +121,7 @@
         </main>
     </div>
     
-    <%@ include file="/includes/dashboard_scripts.jsp" %>
+    <%@ include file="/view/layout/dashboard_scripts.jsp" %>
     
     <%-- Build JS map: appointmentId -> doctorId --%>
     <% 

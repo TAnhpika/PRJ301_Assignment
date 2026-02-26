@@ -4,7 +4,7 @@
     Reusable confirmation dialog modal
     
     Usage:
-    <jsp:include page="/includes/components/confirm_modal.jsp">
+    <jsp:include page="/view/layout/components/confirm_modal.jsp">
         <jsp:param name="modalId" value="deleteConfirmModal"/>
         <jsp:param name="title" value="Xác nhận xóa"/>
         <jsp:param name="message" value="Bạn có chắc chắn muốn xóa?"/>

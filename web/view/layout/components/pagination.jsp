@@ -9,10 +9,10 @@
         request.setAttribute("totalPages", 10);
         request.setAttribute("baseUrl", "list.jsp?page=");
     %>
-    <jsp:include page="/includes/components/pagination.jsp"/>
+    <jsp:include page="/view/layout/components/pagination.jsp"/>
     
     Or with params:
-    <jsp:include page="/includes/components/pagination.jsp">
+    <jsp:include page="/view/layout/components/pagination.jsp">
         <jsp:param name="currentPage" value="1"/>
         <jsp:param name="totalPages" value="10"/>
         <jsp:param name="baseUrl" value="list.jsp?page="/>

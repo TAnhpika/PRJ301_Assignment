@@ -4,7 +4,7 @@
     Reusable page header with title, subtitle and date badge
     
     Usage:
-    <jsp:include page="/includes/components/page_title.jsp">
+    <jsp:include page="/view/layout/components/page_title.jsp">
         <jsp:param name="title" value="Tiêu đề trang"/>
         <jsp:param name="subtitle" value="Mô tả ngắn"/>
         <jsp:param name="showDate" value="true"/>

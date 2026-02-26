@@ -4,7 +4,7 @@
     Reusable navigation breadcrumb
     
     Usage:
-    <jsp:include page="/includes/components/breadcrumb.jsp">
+    <jsp:include page="/view/layout/components/breadcrumb.jsp">
         <jsp:param name="items" value="Trang chủ|/home,Quản lý|/manage,Chi tiết"/>
     </jsp:include>
     

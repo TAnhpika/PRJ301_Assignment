@@ -11,7 +11,7 @@
     }
     String staffName = staff != null ? staff.getFullName() : (user != null ? user.getUsername() : "Nhân viên");
     String staffAvatar = user != null && user.getAvatar() != null
-            ? user.getAvatar()
+            ? request.getContextPath() + user.getAvatar()
             : request.getContextPath() + "/view/assets/img/default-avatar.png";
 %>
 

@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <%@ include file="/includes/dashboard_head.jsp" %>
+    <%@ include file="/view/layout/dashboard_head.jsp" %>
     <title>Thông tin cá nhân - Happy Smile</title>
     <style>
         .profile-avatar {
@@ -317,7 +317,7 @@
         </main>
     </div>
     
-    <%@ include file="/includes/dashboard_scripts.jsp" %>
+    <%@ include file="/view/layout/dashboard_scripts.jsp" %>
     
     <script>
         function toggleEdit(field) {

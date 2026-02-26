@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <%@ include file="/includes/dashboard_head.jsp" %>
+    <%@ include file="/view/layout/dashboard_head.jsp" %>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Báo Cáo Y Tế</title>
     <style>
@@ -367,6 +367,6 @@
             </div>
         </main>
     </div>
-    <%@ include file="/includes/dashboard_scripts.jsp" %>
+    <%@ include file="/view/layout/dashboard_scripts.jsp" %>
 </body>
 </html>

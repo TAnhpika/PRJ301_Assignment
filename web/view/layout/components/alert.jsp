@@ -4,7 +4,7 @@
     Reusable alert/notification box
     
     Usage:
-    <jsp:include page="/includes/components/alert.jsp">
+    <jsp:include page="/view/layout/components/alert.jsp">
         <jsp:param name="type" value="success"/>
         <jsp:param name="message" value="Thao tác thành công!"/>
         <jsp:param name="dismissible" value="true"/>

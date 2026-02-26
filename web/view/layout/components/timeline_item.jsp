@@ -4,7 +4,7 @@
     Reusable timeline/history item
     
     Usage:
-    <jsp:include page="/includes/components/timeline_item.jsp">
+    <jsp:include page="/view/layout/components/timeline_item.jsp">
         <jsp:param name="icon" value="fa-check"/>
         <jsp:param name="iconBg" value="success"/>
         <jsp:param name="title" value="Đặt lịch thành công"/>

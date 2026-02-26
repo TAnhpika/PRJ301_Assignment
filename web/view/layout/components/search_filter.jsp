@@ -4,7 +4,7 @@
     Reusable search input with optional filter dropdowns
     
     Usage:
-    <jsp:include page="/includes/components/search_filter.jsp">
+    <jsp:include page="/view/layout/components/search_filter.jsp">
         <jsp:param name="placeholder" value="Tìm kiếm..."/>
         <jsp:param name="searchId" value="searchInput"/>
         <jsp:param name="showFilter" value="true"/>

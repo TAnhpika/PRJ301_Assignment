@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <%@ include file="/includes/dashboard_head.jsp" %>
+    <%@ include file="/view/layout/dashboard_head.jsp" %>
     <meta name="context-path" content="${pageContext.request.contextPath}">
     <title>Đặt lịch khám bệnh</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -270,7 +270,7 @@
         </main>
     </div>
 
-    <%@ include file="/includes/dashboard_scripts.jsp" %>
+    <%@ include file="/view/layout/dashboard_scripts.jsp" %>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="${pageContext.request.contextPath}/view/assets/js/booking_calendar.js"></script>
     <script>

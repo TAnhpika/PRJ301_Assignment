@@ -4,7 +4,7 @@
     Reusable quick action buttons card
     
     Usage:
-    <jsp:include page="/includes/components/quick_actions.jsp">
+    <jsp:include page="/view/layout/components/quick_actions.jsp">
         <jsp:param name="title" value="Thao tác nhanh"/>
         <jsp:param name="actions" value="Thêm mới|fa-plus|/add|primary,Xuất báo cáo|fa-download|/export|secondary"/>
     </jsp:include>

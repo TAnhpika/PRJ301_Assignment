@@ -4,7 +4,7 @@
     Reusable form field with label
     
     Usage:
-    <jsp:include page="/includes/components/form_group.jsp">
+    <jsp:include page="/view/layout/components/form_group.jsp">
         <jsp:param name="type" value="text"/>
         <jsp:param name="name" value="username"/>
         <jsp:param name="label" value="Tên đăng nhập"/>

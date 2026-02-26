@@ -51,7 +51,7 @@ public class StaffBookingServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
-            request.getRequestDispatcher("/view/view/jsp/admin/staff_datlich.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/admin/staff_datlich.jsp").forward(request, response);
         }
     }
 
@@ -153,13 +153,13 @@ public class StaffBookingServlet extends HttpServlet {
             request.setAttribute("todayAppointments", todayAppointments);
 
             // Forward to JSP
-            request.getRequestDispatcher("/view/view/jsp/admin/staff_datlich.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/admin/staff_datlich.jsp").forward(request, response);
 
         } catch (Exception e) {
             System.err.println("CRITICAL ERROR in loadInitialData: " + e.getMessage());
             e.printStackTrace();
             request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
-            request.getRequestDispatcher("/view/view/jsp/admin/staff_datlich.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/admin/staff_datlich.jsp").forward(request, response);
         }
     }
 

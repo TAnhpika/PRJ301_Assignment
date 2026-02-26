@@ -104,7 +104,7 @@ public class StaffPayOSServlet extends HttpServlet {
                 request.setAttribute("quantity", quantity);
                 request.setAttribute("price", price);
                 request.setAttribute("total", total);
-                request.getRequestDispatcher("/view/view/jsp/admin/bill_qr.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/jsp/admin/bill_qr.jsp").forward(request, response);
                 return;
             } catch (Exception e) {
                 e.printStackTrace();

@@ -4,7 +4,7 @@
     Reusable user profile dropdown in header
     
     Usage:
-    <jsp:include page="/includes/components/header_user.jsp">
+    <jsp:include page="/view/layout/components/header_user.jsp">
         <jsp:param name="userName" value="Nguyễn Văn A"/>
         <jsp:param name="userRole" value="Bác sĩ"/>
         <jsp:param name="userAvatar" value="/img/avatar.jpg"/>

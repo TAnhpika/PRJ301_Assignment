@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <%@ include file="/includes/dashboard_head.jsp" %>
+    <%@ include file="/view/layout/dashboard_head.jsp" %>
     <title>Lịch khám của tôi - Happy Smile</title>
     <style>
         .dashboard {
@@ -420,6 +420,6 @@
         </main>
     </div>
     
-    <%@ include file="/includes/dashboard_scripts.jsp" %>
+    <%@ include file="/view/layout/dashboard_scripts.jsp" %>
 </body>
 </html>

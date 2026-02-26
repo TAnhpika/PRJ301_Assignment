@@ -5,7 +5,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="/includes/header.jsp" %>
+<%@ include file="/view/layout/header.jsp" %>
 <%-- menu.jsp không tồn tại; dùng doctor_menu nếu cần sidebar --%>
 <!DOCTYPE html>
 <html>

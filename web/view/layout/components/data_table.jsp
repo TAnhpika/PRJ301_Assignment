@@ -4,7 +4,7 @@
     Reusable table wrapper with responsive container
     
     Usage:
-    <jsp:include page="/includes/components/data_table.jsp">
+    <jsp:include page="/view/layout/components/data_table.jsp">
         <jsp:param name="tableId" value="dataTable"/>
         <jsp:param name="striped" value="true"/>
         <jsp:param name="hover" value="true"/>

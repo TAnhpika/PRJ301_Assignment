@@ -4,7 +4,7 @@
     Reusable Bootstrap tabs navigation
     
     Usage:
-    <jsp:include page="/includes/components/tab_nav.jsp">
+    <jsp:include page="/view/layout/components/tab_nav.jsp">
         <jsp:param name="tabId" value="myTabs"/>
         <jsp:param name="tabs" value="all|Tất cả|fa-list,pending|Chờ xử lý|fa-clock,completed|Hoàn thành|fa-check"/>
         <jsp:param name="activeTab" value="all"/>

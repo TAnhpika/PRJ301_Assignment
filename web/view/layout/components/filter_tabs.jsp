@@ -4,7 +4,7 @@
     Reusable filter button group
     
     Usage:
-    <jsp:include page="/includes/components/filter_tabs.jsp">
+    <jsp:include page="/view/layout/components/filter_tabs.jsp">
         <jsp:param name="filterId" value="statusFilter"/>
         <jsp:param name="filters" value="all|Tất cả,pending|Chờ xử lý,completed|Hoàn thành,cancelled|Đã hủy"/>
         <jsp:param name="activeFilter" value="all"/>

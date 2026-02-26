@@ -7,7 +7,7 @@
                 <% User currentUser=(User) session.getAttribute("user"); Staff currentStaff=(Staff)
                     session.getAttribute("staff"); String userName=currentStaff !=null ? currentStaff.getFullName() :
                     (currentUser !=null ? currentUser.getUsername() : "Nhân viên" ); String userAvatar=currentUser
-                    !=null && currentUser.getAvatar() !=null ? currentUser.getAvatar() : request.getContextPath()
+                    !=null && currentUser.getAvatar() !=null ? request.getContextPath() + currentUser.getAvatar() : request.getContextPath()
                     + "/view/assets/img/default-avatar.png" ; %>
 
                     <!-- Sidebar Toggle Button (Mobile) -->

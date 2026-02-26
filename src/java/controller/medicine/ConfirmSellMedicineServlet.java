@@ -26,6 +26,6 @@ public class ConfirmSellMedicineServlet extends HttpServlet {
         request.setAttribute("quantity", quantity);
         request.setAttribute("price", price);
         request.setAttribute("payment_method", paymentMethod);
-        request.getRequestDispatcher("/view/view/jsp/admin/confirm_sell_medicine.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/jsp/admin/confirm_sell_medicine.jsp").forward(request, response);
     }
 } 

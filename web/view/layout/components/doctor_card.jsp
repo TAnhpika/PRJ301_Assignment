@@ -4,7 +4,7 @@
     Reusable doctor profile card
     
     Usage:
-    <jsp:include page="/includes/components/doctor_card.jsp">
+    <jsp:include page="/view/layout/components/doctor_card.jsp">
         <jsp:param name="doctorName" value="BS. Nguyễn Văn A"/>
         <jsp:param name="specialty" value="Nha khoa tổng quát"/>
         <jsp:param name="experience" value="10 năm"/>

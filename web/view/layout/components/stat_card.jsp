@@ -4,7 +4,7 @@
     Reusable statistics card with icon, value and label
     
     Usage:
-    <jsp:include page="/includes/components/stat_card.jsp">
+    <jsp:include page="/view/layout/components/stat_card.jsp">
         <jsp:param name="icon" value="fa-users"/>
         <jsp:param name="value" value="150"/>
         <jsp:param name="label" value="Tổng số bệnh nhân"/>

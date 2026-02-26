@@ -4,7 +4,7 @@
     Reusable date range input fields
     
     Usage:
-    <jsp:include page="/includes/components/date_range_picker.jsp">
+    <jsp:include page="/view/layout/components/date_range_picker.jsp">
         <jsp:param name="startId" value="startDate"/>
         <jsp:param name="endId" value="endDate"/>
         <jsp:param name="startLabel" value="Từ ngày"/>

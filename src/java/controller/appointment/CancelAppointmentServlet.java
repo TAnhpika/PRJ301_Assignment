@@ -102,7 +102,7 @@ public class CancelAppointmentServlet extends HttpServlet {
         }
         
         // Forward sang JSP
-        request.getRequestDispatcher("/view/view/jsp/admin/staff_quanlylichhen.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/jsp/admin/staff_quanlylichhen.jsp").forward(request, response);
     } 
 
     /**

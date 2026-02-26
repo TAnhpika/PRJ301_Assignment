@@ -4,7 +4,7 @@
     Reusable header search bar
     
     Usage:
-    <jsp:include page="/includes/components/header_search.jsp">
+    <jsp:include page="/view/layout/components/header_search.jsp">
         <jsp:param name="placeholder" value="Tìm kiếm..."/>
         <jsp:param name="action" value="/search"/>
         <jsp:param name="name" value="q"/>

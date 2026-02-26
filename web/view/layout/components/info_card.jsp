@@ -4,7 +4,7 @@
     Reusable information display card with icon
     
     Usage:
-    <jsp:include page="/includes/components/info_card.jsp">
+    <jsp:include page="/view/layout/components/info_card.jsp">
         <jsp:param name="icon" value="fa-user"/>
         <jsp:param name="iconBg" value="primary"/>
         <jsp:param name="title" value="Thông tin bệnh nhân"/>

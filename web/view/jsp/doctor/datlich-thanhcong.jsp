@@ -6,7 +6,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="/view/layout/header.jsp" %>
-<%@ include file="/includes/sidebars.jsp" %>
+<%@ include file="/view/layout/sidebars.jsp" %>
 
 <!DOCTYPE html>
 <html lang="vi">
