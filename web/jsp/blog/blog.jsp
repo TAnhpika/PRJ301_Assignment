@@ -569,7 +569,7 @@
     <body>
         <div class="logo-home">
                                  <a href="<%= homeUrl %>" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
-    <img src="<%= request.getContextPath()%>/img/logo.png" alt="Logo" style="height: 50px;">
+    <img src="<%= request.getContextPath() %>/view/assets/img/logo.png" alt="Logo" style="height: 50px;">
     <span style="font-size: 1.6rem; font-weight: bold; color: #287bff;">Trang Chủ</span>
 </a>
         </div>
@@ -606,7 +606,7 @@
             <h2 class="section-title">Bài Viết Mới Nhất</h2>
             <div class="featured-post">
                 <div class="featured-post-img">
-                    <img src="<%= request.getContextPath() + "/" + featuredPost.imageUrl%>" alt="<%= featuredPost.title%>" onerror="this.onerror=null;this.src='<%= request.getContextPath()%>/img/default-avatar.png';">
+                    <img src="<%= request.getContextPath() + "/" + featuredPost.imageUrl%>" alt="<%= featuredPost.title%>">
                 </div>
                 <div class="featured-post-content">
                     <h2>
@@ -639,7 +639,7 @@
                 <% for (BlogPost p : otherPosts) {%>
                 <div class="blog-card">
                     <% if (p.imageUrl != null && !p.imageUrl.isEmpty()) {%>
-                    <img src="<%= request.getContextPath() + "/" + p.imageUrl%>" alt="<%= p.title%>" onerror="this.onerror=null;this.src='<%= request.getContextPath()%>/img/default-avatar.png';">
+                    <img src="<%= request.getContextPath() + "/" + p.imageUrl%>" alt="<%= p.title%>">
                     <% }%>
                     <div class="blog-content">
                         <h3>

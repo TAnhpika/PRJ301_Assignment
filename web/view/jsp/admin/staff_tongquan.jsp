@@ -95,8 +95,7 @@
                                 <div class="text-center mb-4">
                                     <img src="<%= staffAvatar%>" alt="Avatar"
                                          class="rounded-circle mb-3"
-                                         style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);"
-                                         onerror="this.src='${pageContext.request.contextPath}/view/assets/img/default-avatar.png'">
+                                         style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);">
                                     <h5 class="mb-1"><%= staffName%></h5>
                                     <span class="badge-dashboard badge-primary">Nhân viên lễ tân</span>
                                 </div>

@@ -45,9 +45,8 @@
 
                             <!-- User Profile -->
                             <% if (currentUser !=null) { %>
-                                <div class="header-user">
-                                    <img src="<%= userAvatar %>" alt="Avatar"
-                                        onerror="this.src='${pageContext.request.contextPath}/view/assets/img/default-avatar.png'">
+                                <div class="header-user" onclick="toggleUserDropdown(event)">
+                                    <img src="<%= userAvatar %>" alt="Avatar">
                                     <div class="header-user-info">
                                         <span class="header-user-name">
                                             <%= userName %>

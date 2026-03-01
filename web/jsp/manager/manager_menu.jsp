@@ -6,7 +6,7 @@
             <!-- Sidebar Header / Logo -->
             <div class="sidebar-header">
                 <a href="${pageContext.request.contextPath}/jsp/manager/manager_tongquan.jsp" class="sidebar-logo" title="Về trang chủ">
-                    <img src="${pageContext.request.contextPath}/img/logo.png" alt="Logo Happy Smile">
+                    <img src="${pageContext.request.contextPath}/view/assets/img/logo.png" alt="Logo Happy Smile">
                     <span class="sidebar-logo-text">HAPPY <em>Smile</em></span>
                 </a>
             </div>

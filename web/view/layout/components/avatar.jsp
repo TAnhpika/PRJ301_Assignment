@@ -63,7 +63,7 @@
         case "away": statusColor = "bg-warning"; break;
     }
     
-    String defaultAvatar = request.getContextPath() + "/img/default-avatar.png";
+    String defaultAvatar = request.getContextPath() + "/view/assets/img/default-avatar.png";
     String imgSrc = (src != null && !src.isEmpty()) ? src : defaultAvatar;
 %>
 
@@ -71,8 +71,7 @@
     <img src="<%= imgSrc %>" 
          alt="<%= alt %>"
          class="<%= roundedClass %> object-fit-cover <%= "true".equals(border) ? "border border-2 border-white shadow-sm" : "" %>"
-         style="<%= sizeStyle %>"
-         onerror="this.src='<%= defaultAvatar %>'">
+         style="<%= sizeStyle %>">
     <% if ("true".equals(showStatus)) { %>
     <span class="position-absolute bottom-0 end-0 translate-middle p-1 <%= statusColor %> border border-2 border-white rounded-circle">
         <span class="visually-hidden"><%= status %></span>

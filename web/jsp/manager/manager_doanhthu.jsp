@@ -111,7 +111,7 @@
                                     <td><span class="badge bg-primary">#<%= bill.getBillId() %></span></td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img src="${pageContext.request.contextPath}/img/default-avatar.png" class="rounded-circle me-2" style="width: 32px; height: 32px;">
+                                            <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="rounded-circle me-2" style="width: 32px; height: 32px;">
                                             <span>BN#<%= bill.getPatientId() %></span>
                                         </div>
                                     </td>

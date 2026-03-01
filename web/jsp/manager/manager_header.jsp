@@ -5,7 +5,7 @@
 
             <% User currentUser=(User) session.getAttribute("user"); String userName=currentUser !=null ?
                 currentUser.getUsername() : "Manager" ; String userAvatar=currentUser !=null && currentUser.getAvatar()
-                !=null ? currentUser.getAvatar() : request.getContextPath() + "/img/default-avatar.png" ; %>
+                !=null ? currentUser.getAvatar() : request.getContextPath() + "/view/assets/img/default-avatar.png" ; %>
 
                 <!-- Sidebar Toggle Button (Mobile) -->
                 <button class="sidebar-toggle" onclick="toggleSidebar()">
@@ -50,9 +50,8 @@
                         </ul>
 
                         <!-- User Profile -->
-                        <div class="header-user">
-                            <img src="<%= userAvatar %>" alt="Avatar"
-                                onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                        <div class="header-user" onclick="toggleUserDropdown(event)">
+                            <img src="<%= userAvatar %>" alt="Avatar">
                             <div class="header-user-info">
                                 <span class="header-user-name">
                                     <%= userName %>
@@ -65,6 +64,10 @@
                                 </a>
                                 <a href="${pageContext.request.contextPath}/jsp/manager/manager_caidat.jsp">
                                     <i class="fas fa-cog"></i> Cài đặt
+                                </a>
+                                <hr class="m-0 opacity-10">
+                                <a href="${pageContext.request.contextPath}/LogoutServlet" class="text-danger">
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
                                 </a>
                             </div>
                         </div>

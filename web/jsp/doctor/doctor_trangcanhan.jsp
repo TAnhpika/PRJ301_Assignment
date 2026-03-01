@@ -60,8 +60,7 @@
                         <div class="dashboard-card text-center">
                             <% if (doc.getAvatar() != null && !doc.getAvatar().isEmpty()) { %>
                             <img src="<%= doc.getAvatar() %>" alt="Avatar" class="rounded-circle mb-3"
-                                 style="width: 150px; height: 150px; object-fit: cover; border: 4px solid var(--primary-color);"
-                                 onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                                 style="width: 150px; height: 150px; object-fit: cover; border: 4px solid var(--primary-color);">
                             <% } else { %>
                             <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
                                  style="width: 150px; height: 150px; background: #f0f9ff; border: 4px solid var(--primary-color);">

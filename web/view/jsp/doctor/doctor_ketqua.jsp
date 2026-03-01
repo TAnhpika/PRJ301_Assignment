@@ -215,8 +215,7 @@
                                                                             </span>
                                                                         </div>
                                                                         <div class="result-card-body">
-                                                                            <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="result-avatar"
-                                                                                onerror="this.src='${pageContext.request.contextPath}/view/assets/img/default-avatar.png'" alt="avatar">
+                                                                            <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="result-avatar" alt="avatar">
                                                                             <div class="result-info">
                                                                                 <h6 class="result-patient-name"><%= appointment.getPatientName() != null ? appointment.getPatientName() : "Không có tên" %></h6>
                                                                                 <div class="result-appointment-id">#<%= appointment.getAppointmentId() %></div>

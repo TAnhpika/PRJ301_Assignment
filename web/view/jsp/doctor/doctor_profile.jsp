@@ -1,4 +1,4 @@
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+﻿<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <%@ include file="/jsp/doctor/doctor_header.jsp" %>
         <%@ include file="/jsp/doctor/doctor_menu.jsp" %>
             <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -8,9 +8,9 @@
                 <head>
                     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
                     <title>Cập nhật thông tin bác sĩ</title>
-                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/view/assets/css/bootstrap.min.css"
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
                         rel="stylesheet">
-                    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/view/assets/css/all.min.css"
+                    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
                         rel="stylesheet">
                 </head>
 
@@ -109,7 +109,7 @@
                         </div>
                     </div>
 
-                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/view/assets/js/bootstrap.bundle.min.js"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                     <script>
                         // Form validation
                         const forms = document.querySelectorAll('.needs-validation');

@@ -1,4 +1,4 @@
-<%@page pageEncoding="UTF-8" %>
+﻿<%@page pageEncoding="UTF-8" %>
     <%@ include file="/jsp/staff/staff_header.jsp" %>
         <%@ include file="/jsp/staff/staff_menu.jsp" %>
             <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -14,9 +14,9 @@
                             <title>Quản lý thanh toán - Dental Clinic</title>
 
                             <!-- Font Awesome và Bootstrap -->
-                            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/view/assets/css/all.min.css"
+                            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
                                 rel="stylesheet">
-                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/view/assets/css/bootstrap.min.css"
+                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
                                 rel="stylesheet">
 
                             <style>
@@ -1889,7 +1889,7 @@
 
                             <!-- Bootstrap JS -->
                             <script
-                                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/view/assets/js/bootstrap.bundle.min.js"></script>
+                                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                         </body>
 
                         </html>

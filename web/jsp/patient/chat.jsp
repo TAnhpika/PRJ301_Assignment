@@ -1,699 +1,411 @@
 <%@page import="java.util.Map" %>
-    <%@page import="model.User" %>
-        <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-            <% // --- Lấy thông tin người dùng đã đăng nhập từ session --- User user=(User)
-                session.getAttribute("user"); Integer currentUserId=(user !=null) ? user.getId() : null; String
-                currentUsername=(user !=null) ? user.getEmail() : null; String currentUserRole=(user !=null) ?
-                user.getRole() : null; // DEBUG: In ra console của server để kiểm tra System.out.println("DEBUG
-                (chat.jsp): Đã lấy từ Session:"); System.out.println("userId: " + currentUserId + "
-                (Kiểu: " + (currentUserId != null ? currentUserId.getClass().getName() : " null") + ")" );
-                System.out.println("username: " + currentUsername + "
-                (Kiểu: " + (currentUsername != null ? currentUsername.getClass().getName() : " null") + ")" );
-                System.out.println("role: " + currentUserRole + "
-                (Kiểu: " + (currentUserRole != null ? currentUserRole.getClass().getName() : " null") + ")" ); // ---
-                Logic kiểm tra và chuyển hướng nếu chưa đăng nhập --- if (currentUserId==null || currentUsername==null
-                || currentUsername.isEmpty() || currentUserRole==null || currentUserRole.isEmpty()) {
-                System.out.println("DEBUG (chat.jsp): Thông tin người dùng không đầy đủ trong session. Chuyển hướng về
-                login.jsp."); response.sendRedirect(request.getContextPath() + "/jsp/auth/login.jsp" ); return; } %>
-                <!DOCTYPE html>
-                <html>
+<%@page import="model.User" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%
+    User user = (User) session.getAttribute("user");
+    Integer currentUserId = (user != null) ? user.getId() : null;
+    String currentUsername = (user != null) ? user.getEmail() : null;
+    String currentUserRole = (user != null) ? user.getRole() : null;
 
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Chat Bác sĩ - Bệnh nhân</title>
-                    <style>
-                        /* CSS của bạn ở đây */
-                        /* General Body Styles */
-                        body {
-                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                            display: flex;
-                            flex-direction: row;
-                            /* Thay đổi thành hàng ngang để có sidebar */
-                            align-items: flex-start;
-                            /* Căn trên cùng */
-                            justify-content: flex-start;
-                            min-height: 100vh;
-                            background-color: #e0f2f7;
-                            /* Light blue background */
-                            margin: 0;
-                            padding: 20px;
-                            /* Add some padding */
-                            box-sizing: border-box;
-                        }
+    if (currentUserId == null || currentUsername == null || currentUsername.isEmpty() || currentUserRole == null || currentUserRole.isEmpty()) {
+        response.sendRedirect(request.getContextPath() + "/jsp/auth/login.jsp");
+        return;
+    }
+%>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <%@ include file="/view/layout/dashboard_head.jsp" %>
+    <title>Tư vấn trực tuyến - Happy Smile</title>
+    <style>
+        .chat-layout { height: calc(100vh - 140px); display: flex; gap: 20px; }
+        .doctors-list { width: 320px; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; }
+        .doctors-list-header { padding: 20px; border-bottom: 1px solid #eef2f6; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); }
+        .doctors-list-body { flex: 1; overflow-y: auto; padding: 10px; }
+        .doctor-item { display: flex; align-items: center; padding: 15px; margin-bottom: 8px; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; border: 1px solid transparent; }
+        .doctor-item:hover { background-color: #f8f9fa; border-color: #eef2f6; }
+        .doctor-item.active { background-color: #eff6ff; border-color: #cce0ff; box-shadow: 0 4px 10px rgba(67, 97, 238, 0.1); }
+        .doctor-avatar-wrapper { position: relative; margin-right: 15px; flex-shrink: 0; }
+        .doctor-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .status-dot { position: absolute; bottom: 0; right: 0; width: 14px; height: 14px; background-color: #2ecc71; border: 2px solid white; border-radius: 50%; }
+        
+        .chat-window { flex: 1; min-width: 0; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; }
+        .chat-header { padding: 20px; border-bottom: 1px solid #eef2f6; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #ffffff 0%, #fcfdfe 100%); }
+        .chat-partner-info { display: flex; align-items: center; }
+        .chat-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 25px; background-color: #f8fbfd; display: flex; flex-direction: column; gap: 15px; }
+        .message-wrapper { display: flex; max-width: 75%; }
+        .message-wrapper.me { align-self: flex-end; justify-content: flex-end; }
+        .message-wrapper.other { align-self: flex-start; }
+        
+        .message-bubble { padding: 12px 18px; border-radius: 20px; font-size: 15px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .message-wrapper.me .message-bubble { background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%); color: white; border-bottom-right-radius: 4px; }
+        .message-wrapper.other .message-bubble { background: white; color: #2b3452; border-bottom-left-radius: 4px; border: 1px solid #eef2f6; }
+        .system-message { text-align: center; color: #8e9bb0; font-size: 13px; margin: 10px 0; font-style: italic; width: 100%; display: flex; justify-content: center; }
+        .system-message span { background: #f1f5f9; padding: 4px 12px; border-radius: 20px; }
+        
+        .chat-footer { padding: 20px; border-top: 1px solid #eef2f6; background: white; }
+        .chat-input-wrapper { display: flex; align-items: center; background: #f8f9fa; border-radius: 30px; padding: 8px 15px; border: 1px solid #eef2f6; transition: border-color 0.3s; }
+        .chat-input-wrapper:focus-within { border-color: #4361ee; background: white; box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1); }
+        .chat-input { border: none; background: transparent; flex: 1; padding: 8px; font-size: 15px; outline: none; }
+        .btn-send { background: #4361ee; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; }
+        .btn-send:hover { background: #3f37c9; transform: scale(1.05); }
+        .btn-send:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
+        
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; color: #8e9bb0; }
+        .empty-state i { font-size: 64px; margin-bottom: 20px; color: #cbd5e1; }
+        
+        @media (max-width: 992px) {
+            .chat-layout { flex-direction: column; height: auto; }
+            .doctors-list { width: 100%; height: 300px; }
+            .chat-window { height: 600px; }
+        }
+        
+        /* Custom Scrollbar for Chat */
+        .chat-body::-webkit-scrollbar, .doctors-list-body::-webkit-scrollbar { width: 6px; }
+        .chat-body::-webkit-scrollbar-track, .doctors-list-body::-webkit-scrollbar-track { background: transparent; }
+        .chat-body::-webkit-scrollbar-thumb, .doctors-list-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .chat-body::-webkit-scrollbar-thumb:hover, .doctors-list-body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
 
-                        /* Sidebar cho danh sách bác sĩ */
-                        .sidebar {
-                            background: linear-gradient(135deg, #ffffff, #f7f7f7);
-                            /* Subtle gradient */
-                            padding: 20px;
-                            border-radius: 12px;
-                            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-                            /* Stronger shadow */
-                            width: 280px;
-                            /* Chiều rộng sidebar */
-                            max-width: 90%;
-                            margin-right: 20px;
-                            /* Khoảng cách với khung chat */
-                            display: flex;
-                            flex-direction: column;
-                            border: 1px solid #cce7f0;
-                            /* Soft border */
-                            min-height: calc(100vh - 40px);
-                            /* Đảm bảo sidebar cao tương đương màn hình */
-                        }
+<body>
+    <div class="dashboard-wrapper">
+        <%@ include file="/jsp/patient/user_menu.jsp" %>
+        
+        <main class="dashboard-main">
+            <%@ include file="/jsp/patient/user_header.jsp" %>
+        
+        <div class="dashboard-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="mb-0 text-primary fw-bold"><i class="fas fa-stethoscope me-2"></i>Tư vấn trực tuyến</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 mt-1">
+                            <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/UserHompageServlet" class="text-decoration-none">Trang chủ</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Tư vấn Bác sĩ</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            
+            <div class="chat-layout">
+                <!-- Danh sách bác sĩ online -->
+                <div class="doctors-list">
+                    <div class="doctors-list-header">
+                        <h6 class="mb-0 fw-bold text-dark"><i class="fas fa-user-md me-2 text-primary"></i>Bác sĩ Online</h6>
+                        <small class="text-muted">Nhấn vào để bắt đầu tư vấn</small>
+                    </div>
+                    <div class="doctors-list-body" id="doctorList">
+                        <div class="text-center mt-5">
+                            <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+                            <p class="text-muted mt-2 small">Đang kết nối...</p>
+                        </div>
+                    </div>
+                </div>
 
-                        .sidebar h3 {
-                            text-align: center;
-                            color: #2c3e50;
-                            /* Darker title */
-                            margin-bottom: 20px;
-                            font-size: 1.4em;
-                            font-weight: 600;
-                        }
-
-                        #doctorList {
-                            flex-grow: 1;
-                            overflow-y: auto;
-                            /* Cuộn nếu danh sách dài */
-                            padding-right: 5px;
-                            /* Để tránh scrollbar che nội dung */
-                        }
-
-                        .doctor-item {
-                            display: flex;
-                            align-items: center;
-                            padding: 12px;
-                            margin-bottom: 10px;
-                            background-color: #eaf7fc;
-                            /* Nền nhẹ cho mỗi mục */
-                            border-radius: 8px;
-                            border: 1px solid #a7d9ed;
-                            cursor: pointer;
-                            transition: background-color 0.2s ease, transform 0.1s ease;
-                        }
-
-                        .doctor-item:hover {
-                            background-color: #d1effa;
-                            transform: translateY(-2px);
-                        }
-
-                        .doctor-item.active {
-                            /* Class khi bác sĩ được chọn */
-                            background-color: #007bff;
-                            /* Màu xanh nổi bật khi chọn */
-                            color: white;
-                            border-color: #0056b3;
-                            font-weight: bold;
-                            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
-                        }
-
-                        .doctor-item.active .doctor-status {
-                            background-color: #5cb85c;
-                            /* Xanh đậm hơn khi active */
-                            border-color: white;
-                        }
-
-                        .doctor-avatar {
-                            width: 40px;
-                            height: 40px;
-                            border-radius: 50%;
-                            background-color: #bbb;
-                            margin-right: 12px;
-                            overflow: hidden;
-                            flex-shrink: 0;
-                            /* Không co lại */
-                            border: 2px solid #fff;
-                            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-                        }
-
-                        .doctor-avatar img {
-                            width: 100%;
-                            height: 100%;
-                            object-fit: cover;
-                        }
-
-                        .doctor-info {
-                            flex-grow: 1;
-                        }
-
-                        .doctor-info strong {
-                            display: block;
-                            font-size: 1.1em;
-                            margin-bottom: 2px;
-                        }
-
-                        .doctor-info span {
-                            font-size: 0.85em;
-                            color: #555;
-                        }
-
-                        .doctor-item.active .doctor-info span {
-                            color: #e0e0e0;
-                        }
-
-                        .doctor-status {
-                            width: 12px;
-                            height: 12px;
-                            background-color: #28a745;
-                            /* Màu xanh lá cây cho online */
-                            border-radius: 50%;
-                            margin-left: auto;
-                            /* Đẩy sang phải */
-                            border: 2px solid white;
-                        }
-
-                        /* Chat Container */
-                        .chat-container {
-                            background: linear-gradient(135deg, #ffffff, #f7f7f7);
-                            /* Subtle gradient */
-                            padding: 30px;
-                            border-radius: 12px;
-                            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-                            /* Stronger shadow */
-                            width: 650px;
-                            /* Rộng hơn để chứa nội dung chat */
-                            max-width: 95%;
-                            /* Responsive */
-                            display: flex;
-                            flex-direction: column;
-                            border: 1px solid #cce7f0;
-                            /* Soft border */
-                            flex-grow: 1;
-                            /* Cho phép nó mở rộng để lấp đầy không gian còn lại */
-                        }
-
-                        h2 {
-                            text-align: center;
-                            color: #2c3e50;
-                            /* Darker title */
-                            margin-bottom: 25px;
-                            font-size: 1.8em;
-                            font-weight: 600;
-                            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
-                        }
-
-                        /* Chat Box (Messages Display Area) */
-                        #chatBox {
-                            width: 100%;
-                            height: 480px;
-                            /* Taller chat box */
-                            border: 1px solid #a7d9ed;
-                            /* Matching border */
-                            overflow-y: auto;
-                            /* Enable scrolling */
-                            padding: 15px;
-                            margin-bottom: 15px;
-                            background-color: #fcfdff;
-                            /* Very light background */
-                            border-radius: 8px;
-                            box-sizing: border-box;
-                            display: flex;
-                            /* Flexbox for messages */
-                            flex-direction: column;
-                            gap: 10px;
-                            /* Space between messages */
-                        }
-
-                        /* Individual Message Styles */
-                        #chatBox p {
-                            margin: 0;
-                            /* Remove default margin */
-                            padding: 10px 15px;
-                            border-radius: 18px;
-                            /* More rounded corners */
-                            word-wrap: break-word;
-                            line-height: 1.4;
-                            font-size: 0.95em;
-                            max-width: 75%;
-                            /* Limit message width */
-                            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-                            /* Subtle shadow for messages */
-                        }
-
-                        .my-message {
-                            background-color: #007bff;
-                            /* Primary blue for sender */
-                            color: white;
-                            align-self: flex-end;
-                            /* Align to right */
-                            border-bottom-right-radius: 4px;
-                            /* Tweak border radius for chat bubble effect */
-                        }
-
-                        .other-message {
-                            background-color: #ffffff;
-                            /* White for receiver */
-                            color: #333;
-                            align-self: flex-start;
-                            /* Align to left */
-                            border: 1px solid #e0e0e0;
-                            border-bottom-left-radius: 4px;
-                            /* Tweak border radius */
-                        }
-
-                        .system-message {
-                            color: #6a6a6a;
-                            font-style: italic;
-                            text-align: center;
-                            align-self: center;
-                            /* Center system messages */
-                            width: 100%;
-                            /* Full width */
-                            padding: 8px 0;
-                            font-size: 0.85em;
-                        }
-
-                        /* Input Area */
-                        .input-area {
-                            display: flex;
-                            gap: 10px;
-                            /* Space between input and button */
-                            width: 100%;
-                        }
-
-                        #inputMsg {
-                            flex-grow: 1;
-                            /* Take available space */
-                            padding: 12px 15px;
-                            border: 1px solid #a7d9ed;
-                            border-radius: 25px;
-                            /* Pill shape */
-                            font-size: 1em;
-                            outline: none;
-                            /* Remove outline on focus */
-                            transition: border-color 0.3s ease;
-                        }
-
-                        #inputMsg:focus {
-                            border-color: #007bff;
-                            /* Highlight on focus */
-                        }
-
-                        button {
-                            padding: 12px 25px;
-                            background-color: #007bff;
-                            color: white;
-                            border: none;
-                            border-radius: 25px;
-                            /* Pill shape */
-                            cursor: pointer;
-                            font-size: 1em;
-                            font-weight: 500;
-                            transition: background-color 0.3s ease, transform 0.1s ease;
-                        }
-
-                        button:hover {
-                            background-color: #0056b3;
-                            transform: translateY(-1px);
-                            /* Slight lift on hover */
-                        }
-
-                        button:active {
-                            transform: translateY(0);
-                            /* Press effect */
-                        }
-
-                        /* Ẩn sidebar nếu người dùng là bác sĩ (hoặc không phải bệnh nhân) */
-                        body.doctor-layout .sidebar,
-                        body.other-role-layout .sidebar {
-                            /* Các vai trò khác ngoài patient */
-                            display: none;
-                        }
-
-                        body.doctor-layout .chat-container,
-                        body.other-role-layout .chat-container {
-                            margin: auto;
-                            /* Căn giữa nếu sidebar bị ẩn */
-                            width: 700px;
-                            /* Rộng hơn nếu là bác sĩ/vai trò khác */
-                        }
-                    </style>
-                </head>
-
-                <body class="<%= " patient".equals(currentUserRole) ? "patient-layout" :
-                    ("doctor".equals(currentUserRole) ? "doctor-layout" : "other-role-layout" )%>">
-
-                    <%-- Sidebar chỉ hiển thị cho bệnh nhân --%>
-                        <% if ("patient".equals(currentUserRole)) { %>
-                            <div class="sidebar">
-                                <h3>Bác sĩ Online</h3>
-                                <div id="doctorList">
-                                    <p class="system-message">Đang tải danh sách bác sĩ...</p>
-                                </div>
+                <!-- Khung chat -->
+                <div class="chat-window">
+                    <div class="chat-header">
+                        <div class="chat-partner-info">
+                            <div class="doctor-avatar-wrapper me-3" id="chatPartnerAvatarWrapper" style="display: none;">
+                                <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="doctor-avatar" alt="Doctor avatar">
+                                <div class="status-dot"></div>
                             </div>
-                            <% } %>
+                            <div>
+                                <h5 class="mb-0 fw-bold text-dark" id="chatPartnerName">Hộp thư tư vấn</h5>
+                                <small class="text-muted" id="chatPartnerRole">Vui lòng chọn bác sĩ từ danh sách bên trái</small>
+                            </div>
+                        </div>
+                        <div class="chat-actions d-none" id="chatActions">
+                            <button class="btn btn-light btn-sm rounded-circle"><i class="fas fa-video text-primary"></i></button>
+                            <button class="btn btn-light btn-sm rounded-circle ms-2"><i class="fas fa-ellipsis-v text-muted"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-body" id="chatBox">
+                        <div class="empty-state" id="chatEmptyState">
+                            <i class="far fa-comments"></i>
+                            <h5 class="fw-bold text-secondary">Bắt đầu trò chuyện</h5>
+                            <p class="text-muted">Gửi và nhận tin nhắn để được tư vấn sức khỏe</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-footer">
+                        <div class="chat-input-wrapper">
+                            <button class="btn btn-link text-muted px-2" title="Đính kèm tệp"><i class="fas fa-paperclip"></i></button>
+                            <button class="btn btn-link text-muted px-2" title="Gửi ảnh"><i class="far fa-image"></i></button>
+                            <input type="text" id="inputMsg" class="chat-input" placeholder="Nhập câu hỏi của bạn..." onkeyup="if(event.keyCode === 13) sendMessage()" disabled autocomplete="off">
+                            <button class="btn-send ms-2" id="sendBtn" onclick="sendMessage()" disabled>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    </div>
+    
+    <%@ include file="/view/layout/dashboard_scripts.jsp" %>
+    
+    <!-- CHAT SCRIPT -->
+    <script>
+        const contextPath = "${pageContext.request.contextPath}";
+        const CURRENT_USERNAME = "<%= currentUsername %>";
+        const CURRENT_USER_ID = <%= currentUserId != null ? currentUserId : "null" %>;
+        const CURRENT_USER_ROLE = "<%= currentUserRole %>";
+        
+        let ws = null;
+        let chatBox = document.getElementById("chatBox");
+        let btnSend = document.getElementById("sendBtn");
+        let inputMsg = document.getElementById("inputMsg");
+        let chatEmptyState = document.getElementById("chatEmptyState");
+        let chatActionsDiv = document.getElementById("chatActions");
+        
+        let chatPartnerId = null; 
+        let chatPartnerName = ""; 
+        let chatPartnerRole = ""; 
+        const onlineDoctors = new Map();
 
-                                <div class="chat-container">
-                                    <h2>Chat với
-                                        <span id="chatPartnerName">
-                                            <% if ("patient".equals(currentUserRole)) { %>
-                                                Bác sĩ
-                                                <% } else if ("doctor".equals(currentUserRole)) { %>
-                                                    Bệnh nhân
-                                                    <% } else { %>
-                                                        Đối tác
-                                                        <% }%>
-                                        </span>
-                                    </h2>
+        function connectWebSocket() {
+            // Sử dụng wss:// cho HTTPS, ws:// cho HTTP
+            ws = new WebSocket("ws://" + window.location.host + contextPath + "/chat");
 
-                                    <div id="chatBox"></div>
+            ws.onopen = function() {
+                addMessage("Hệ thống: Đã kết nối an toàn với máy chủ tư vấn.", 'system');
+            };
 
-                                    <div class="input-area">
-                                        <input type="text" id="inputMsg" placeholder="Nhập tin nhắn..." onkeyup="if (event.keyCode === 13)
-                                sendMessage()" />
-                                        <button onclick="sendMessage()">Gửi</button>
-                                    </div>
-                                </div>
+            ws.onmessage = function(event) {
+                let receivedRawMessage = event.data;
+                const parts = receivedRawMessage.split('|', 6);
 
-                                <script>
-                                    const contextPath = "<%= request.getContextPath()%>";
-                                    const CURRENT_USERNAME = "<%= currentUsername%>";
-                                    const CURRENT_USER_ID = <%= currentUserId != null ? currentUserId : "null" %>;
-                                    const CURRENT_USER_ROLE = "<%= currentUserRole%>"; // Lấy vai trò của người dùng hiện tại
+                if (parts[0] === 'doctorlist') {
+                    handleUserList('doctor', receivedRawMessage.substring("doctorlist|".length));
+                    return;
+                }
 
-                                    let ws = null;
-                                    let chatBox = document.getElementById("chatBox");
+                if (parts.length < 6) return; // Nếu ko đủ 6 phần thì bỏ qua
 
-                                    let chatPartnerId = null; // ID của người đang chat cùng (bác sĩ nếu là bệnh nhân, hoặc bệnh nhân nếu là bác sĩ)
-                                    let chatPartnerName = ""; // Tên của người đang chat cùng
-                                    let chatPartnerRole = ""; // Vai trò của người đang chat cùng
+                const type = parts[0];
+                const senderId = parseInt(parts[1]);
+                const senderName = parts[2];
+                const senderRole = parts[3];
+                const receiverId = (parts[4] === 'null' || parts[4] === '') ? null : parseInt(parts[4]);
+                const content = parts[5];
 
-                                    // Map để lưu trữ thông tin các bác sĩ online (chỉ cho bệnh nhân)
-                                    const onlineDoctors = new Map(); // Key: doctorId, Value: { name, role }
+                if (type === 'system' || type === 'error') {
+                    addMessage(content, 'system');
+                } else if (type === 'chat' || type === 'history') {
+                    let isFromMe = (senderId === CURRENT_USER_ID);
+                    let belongsToActiveChat = false;
 
-                                    // Map để lưu trữ thông tin các bệnh nhân online (chỉ cho bác sĩ)
-                                    const onlinePatients = new Map(); // Key: patientId, Value: { name, role }
-                                    // Nếu bạn muốn bác sĩ có sidebar bệnh nhân
+                    // Kiểm tra tin nhắn này có thuộc cuộc trò chuyện hiện tại đang mở ko
+                    if (isFromMe) {
+                        if (receiverId !== null && receiverId === chatPartnerId) { belongsToActiveChat = true; }
+                    } else {
+                        if (receiverId === CURRENT_USER_ID && senderId === chatPartnerId) { belongsToActiveChat = true; }
+                        // Nếu nhận được tin từ bác sĩ nhưng chưa chọn ai → tự động chọn bác sĩ đó
+                        else if (receiverId === CURRENT_USER_ID && chatPartnerId === null) {
+                            if (onlineDoctors.has(senderId)) {
+                                const d = onlineDoctors.get(senderId);
+                                selectChatPartner(senderId, d.name, d.role);
+                                belongsToActiveChat = true;
+                            }
+                        }
+                    }
 
-                                    // Hàm kết nối WebSocket
-                                    function connectWebSocket() {
-                                        // Sử dụng wss:// cho HTTPS, ws:// cho HTTP
-                                        ws = new WebSocket("ws://" + window.location.host + contextPath + "/chat");
+                    if (belongsToActiveChat) {
+                        chatEmptyState.style.display = 'none';
+                        if (isFromMe && type === 'chat') {
+                            // Optimistic UI – bỏ qua confirm từ server
+                        } else if (isFromMe && type === 'history') {
+                            addMessage(content, 'me');
+                        } else {
+                            addMessage(content, 'other');
+                        }
+                    } else if (!isFromMe && receiverId === CURRENT_USER_ID && type === 'chat') {
+                        // Bác sĩ nhắn tin nhưng bệnh nhân định chọn bác sĩ khác → show badge
+                        const senderItem = document.querySelector(`[data-user-id="<%= "$" %>{senderId}"]`);
+                        if (senderItem) {
+                            let badge = senderItem.querySelector('.unread-badge');
+                            if (!badge) {
+                                badge = document.createElement('span');
+                                badge.className = 'unread-badge badge bg-danger rounded-pill ms-auto';
+                                badge.textContent = '1';
+                                senderItem.appendChild(badge);
+                            } else {
+                                badge.textContent = parseInt(badge.textContent||'0') + 1;
+                            }
+                        }
+                    }
+                }
+            };
 
-                                        ws.onopen = function () {
-                                            addMessage("Đã kết nối tới server.", 'system');
-                                            // Backend sẽ tự gửi danh sách bác sĩ online cho bệnh nhân
-                                            // hoặc chờ tin nhắn từ bệnh nhân nếu là bác sĩ
-                                        };
+            ws.onclose = function() {
+                addMessage("Đã ngắt kết nối. Đang thử kết nối lại...", 'system');
+                setTimeout(connectWebSocket, 3000); // Reconnect logic tự động
+            };
+            
+            ws.onerror = function(error) {
+                console.error("WebSocket Error:", error);
+            };
+        }
 
-                                        ws.onmessage = function (event) {
-                                            let receivedRawMessage = event.data;
-                                            const parts = receivedRawMessage.split('|', 6); // Tách tối đa 6 phần
+        window.onload = function() {
+            if (CURRENT_USER_ID !== null) {
+                connectWebSocket();
+            }
+        };
 
-                                            // Xử lý các loại tin nhắn đặc biệt trước
-                                            if (parts[0] === 'doctorlist') {
-                                                // Xóa thông báo "Đang tải..."
-                                                const doctorListDiv = document.getElementById('doctorList');
-                                                if (doctorListDiv)
-                                                    doctorListDiv.innerHTML = '';
-                                                handleUserList('doctor', receivedRawMessage.substring("doctorlist|".length()));
-                                                return;
-                                            } else if (parts[0] === 'patientlist') { // Nếu bạn muốn hiển thị danh sách bệnh nhân cho bác sĩ
-                                                // Xóa thông báo "Đang tải..."
-                                                const patientListDiv = document.getElementById('patientList'); // Đảm bảo bạn có #patientList
-                                                if (patientListDiv)
-                                                    patientListDiv.innerHTML = '';
-                                                handleUserList('patient', receivedRawMessage.substring("patientlist|".length()));
-                                                return;
-                                            }
+        function addMessage(text, type) {
+            if(type !== 'system' && chatEmptyState) chatEmptyState.style.display = 'none';
+            
+            if (type === 'system') {
+                let sysWrapper = document.createElement("div");
+                sysWrapper.className = "system-message";
+                sysWrapper.innerHTML = `<span><%= "$" %>{text}</span>`;
+                chatBox.appendChild(sysWrapper);
+            } else {
+                let wrapperMain = document.createElement("div"); 
+                wrapperMain.className = "d-flex w-100 flex-column";
+                
+                let wrapper = document.createElement("div");
+                wrapper.classList.add('message-wrapper');
+                wrapper.classList.add(type);
 
+                let bubble = document.createElement("div");
+                bubble.className = "message-bubble";
+                bubble.innerText = text;
+                
+                wrapper.appendChild(bubble);
+                wrapperMain.appendChild(wrapper);
+                chatBox.appendChild(wrapperMain);
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
 
-                                            // Xử lý tin nhắn chat và hệ thống thông thường
-                                            if (parts.length < 6) {
-                                                addMessage(receivedRawMessage, 'system'); // Coi là tin nhắn hệ thống nếu không đủ phần
-                                                console.warn("Tin nhắn không đúng định dạng chuẩn: ", receivedRawMessage);
-                                                return;
-                                            }
+        function sendMessage() {
+            let msg = inputMsg.value.trim();
+            if (!msg) return;
 
-                                            const type = parts[0];
-                                            const senderId = parseInt(parts[1]);
-                                            const senderName = parts[2];
-                                            const senderRole = parts[3];
-                                            // receiverId có thể là "null" dưới dạng string từ backend
-                                            const receiverId = (parts[4] === 'null' || parts[4] === '') ? null : parseInt(parts[4]);
-                                            const content = parts[5];
+            if (CURRENT_USER_ID === null) {
+                addMessage("Bạn cần đăng nhập để gửi tin nhắn.", 'system');
+                return;
+            }
 
-                                            if (type === 'system' || type === 'error') {
-                                                // Nếu là tin nhắn hệ thống riêng tư cho người dùng hiện tại (lỗi, chào mừng, v.v.)
-                                                // hoặc là tin nhắn hệ thống broadcast
-                                                addMessage(content, 'system');
-                                            } else if (type === 'chat' || type === 'history') {
-                                                let isFromMe = (senderId === CURRENT_USER_ID);
+            if (chatPartnerId === null && CURRENT_USER_ROLE === 'patient') {
+                addMessage("Vui lòng chọn bác sĩ để nhắn tin.", 'system');
+                return;
+            }
 
-                                                // Logic để hiển thị tin nhắn trong cuộc trò chuyện hiện tại
-                                                // Tin nhắn này có phải dành cho cuộc trò chuyện đang active không?
-                                                let belongsToActiveChat = false;
+            if (msg && ws && ws.readyState === WebSocket.OPEN) {
+                const receiverToSend = chatPartnerId !== null ? chatPartnerId : 0;
+                const messageToSend = receiverToSend + "|" + msg;
 
-                                                // Nếu là tin nhắn của chính mình (gửi đi)
-                                                if (isFromMe) {
-                                                    // Nếu là tin nhắn riêng tư và đích đến là chatPartnerId hiện tại
-                                                    if (receiverId !== null && receiverId === chatPartnerId) {
-                                                        belongsToActiveChat = true;
-                                                    }
-                                                    // Hoặc nếu là tin nhắn chat chung (không có receiverId) và đang chat chung (chatPartnerId = null)
-                                                    else if (receiverId === null && chatPartnerId === null) {
-                                                        belongsToActiveChat = true; // Đây là logic cho chat chung
-                                                    }
-                                                } else { // Nếu là tin nhắn từ người khác (nhận được)
-                                                    // Nếu là tin nhắn riêng tư, từ senderId đó đến tôi (CURRENT_USER_ID),
-                                                    // VÀ senderId đó chính là chatPartnerId hiện tại của tôi
-                                                    if (receiverId === CURRENT_USER_ID && senderId === chatPartnerId) {
-                                                        belongsToActiveChat = true;
-                                                    }
-                                                    // Hoặc nếu là tin nhắn chat chung (receiverId là null) và tôi đang ở chế độ chat chung
-                                                    else if (receiverId === null && chatPartnerId === null) {
-                                                        belongsToActiveChat = true; // Đây là logic cho chat chung
-                                                    }
-                                                }
+                addMessage(msg, 'me'); // Hiển thị lập tức cho mượt UI
+                ws.send(messageToSend); // Gửi vào socket xử lý lưu DB
+                inputMsg.value = "";
+                inputMsg.focus();
+            }
+        }
 
+        function handleUserList(userType, data) {
+            const userListDiv = document.getElementById('doctorList');
+            if (!userListDiv) return;
 
-                                                if (belongsToActiveChat) {
-                                                    // Hiển thị tin nhắn. Đối với tin nhắn của mình, đã hiển thị ngay khi gửi.
-                                                    // Tin nhắn "history" được gửi từ server, nên cũng cần hiển thị.
-                                                    // Tin nhắn "chat" từ người khác cần hiển thị.
-                                                    if (isFromMe && type === 'chat') {
-                                                        // Tin nhắn của chính mình, đã hiển thị cục bộ khi gửi. BỎ QUA.
-                                                        // console.log("Bỏ qua tin nhắn của chính mình từ server (loại chat): ", content);
-                                                        // Tuy nhiên, đối với tin nhắn "history" thì vẫn hiển thị để thấy lịch sử đầy đủ
-                                                        // (mặc dù nó là tin của mình gửi trước đó)
-                                                        const displayMessage = "Bạn: " + content;
-                                                        addMessage(displayMessage, 'my');
-                                                    } else {
-                                                        // Tin nhắn của người khác, hiển thị đầy đủ tên và vai trò
-                                                        const displayMessage = senderName + " (" + senderRole + "): " + content;
-                                                        addMessage(displayMessage, 'other');
-                                                    }
-                                                } else {
-                                                    console.log(`Tin nhắn không thuộc cuộc trò chuyện hiện tại (Từ: ${senderName}, Đến: ${receiverId}, Hiện tại: ${chatPartnerId}): ${content}`);
-                                                    // Tùy chọn: Hiển thị thông báo hoặc bật tab chat mới cho tin nhắn từ người khác không phải đối tác hiện tại
-                                                }
-                                            }
-                                        };
+            onlineDoctors.clear();
+            userListDiv.innerHTML = '';
 
-                                        ws.onclose = function () {
-                                            addMessage("Ngắt kết nối với server. Vui lòng refresh trang hoặc đăng nhập lại.", 'system');
-                                            // Xóa danh sách bác sĩ/bệnh nhân online khi ngắt kết nối
-                                            if (CURRENT_USER_ROLE === 'patient') {
-                                                document.getElementById('doctorList').innerHTML = `<p class="system-message">Đã ngắt kết nối. Không có bác sĩ online.</p>`;
-                                            }
-                                            // Reset chatPartner
-                                            chatPartnerId = null;
-                                            chatPartnerName = "";
-                                            chatPartnerRole = "";
-                                            updateChatPartnerDisplay(CURRENT_USER_ROLE === 'patient' ? "Bác sĩ" : "Đối tác"); // Reset hiển thị
-                                        };
+            let hasUsers = false;
+            if (data) {
+                const users = data.split(';');
+                users.forEach(userStr => {
+                    const parts = userStr.split(':');
+                    if (parts.length === 3) {
+                        hasUsers = true;
+                        const id = parseInt(parts[0]);
+                        const name = parts[1];
+                        const role = parts[2];
 
-                                        ws.onerror = function () {
-                                            addMessage("Lỗi kết nối WebSocket. Vui lòng kiểm tra console để biết chi tiết.", 'system');
-                                            console.error("WebSocket Error:", event); // Ghi log lỗi chi tiết vào console
-                                        };
-                                    }
+                        onlineDoctors.set(id, { name: name, role: role });
 
-                                    window.onload = function () {
-                                        if (CURRENT_USER_ID !== null) {
-                                            connectWebSocket();
-                                        } else {
-                                            addMessage("Vui lòng đăng nhập để bắt đầu chat.", 'system');
-                                            document.querySelector('.input-area').style.display = 'none';
-                                            if (CURRENT_USER_ROLE === 'patient') { // Chỉ ẩn sidebar nếu người dùng là bệnh nhân
-                                                document.querySelector('.sidebar').style.display = 'none';
-                                            }
-                                            document.getElementById('chatPartnerName').textContent = "Server"; // Khi chưa đăng nhập, chat với Server
-                                        }
-                                    };
+                        const userItem = document.createElement('div');
+                        userItem.className = 'doctor-item';
+                        userItem.dataset.userId = id;
+                        
+                        userItem.innerHTML = `
+                            <div class="doctor-avatar-wrapper">
+                                <img src="<%= "$" %>{contextPath}/view/assets/img/default-avatar.png" class="doctor-avatar" alt="Avatar">
+                                <div class="status-dot"></div>
+                            </div>
+                            <div class="flex-grow-1 overflow-hidden">
+                                <h6 class="mb-1 text-truncate text-dark fw-bold">BS. <%= "$" %>{name}</h6>
+                                <p class="mb-0 small text-muted text-truncate"><%= "$" %>{role}</p>
+                            </div>
+                        `;
 
-                                    function addMessage(text, type) {
-                                        let p = document.createElement("p");
-                                        p.textContent = text;
-                                        if (type === 'my') {
-                                            p.classList.add('my-message');
-                                        } else if (type === 'other') {
-                                            p.classList.add('other-message');
-                                        } else if (type === 'system') {
-                                            p.classList.add('system-message');
-                                        }
-                                        chatBox.appendChild(p);
-                                        chatBox.scrollTop = chatBox.scrollHeight; // Cuộn xuống cuối
-                                    }
+                        userItem.onclick = function() {
+                            selectChatPartner(id, name, role);
+                        };
+                        userListDiv.appendChild(userItem);
+                    }
+                });
+            }
 
-                                    function sendMessage() {
-                                        let msgInput = document.getElementById("inputMsg");
-                                        let msg = msgInput.value.trim();
+            if (!hasUsers) {
+                userListDiv.innerHTML = `
+                    <div class="text-center mt-5 text-muted">
+                        <i class="fas fa-stethoscope fs-1 mb-3 text-light" style="color:#eef2f6!important"></i>
+                        <p>Hiện không có bác sĩ nào online.</p>
+                    </div>
+                `;
+                btnSend.disabled = true;
+                inputMsg.disabled = true;
+            } else {
+                // Tự động chọn ông bác sĩ đầu tiên nếu chưa chọn ai
+                if (chatPartnerId === null || !onlineDoctors.has(chatPartnerId)) {
+                    const firstDoctorId = onlineDoctors.keys().next().value;
+                    if (firstDoctorId) {
+                        const firstDoctorInfo = onlineDoctors.get(firstDoctorId);
+                        selectChatPartner(firstDoctorId, firstDoctorInfo.name, firstDoctorInfo.role);
+                    }
+                }
+            }
+            
+            // Mark the selected one as active after re-rendering list
+            if (chatPartnerId !== null) {
+                const selectedItem = document.querySelector(`[data-user-id="<%= "$" %>{chatPartnerId}"]`);
+                if (selectedItem) selectedItem.classList.add('active');
+            }
+        }
 
-                                        if (CURRENT_USER_ID === null) {
-                                            addMessage("Bạn cần đăng nhập để gửi tin nhắn.", 'system');
-                                            msgInput.value = "";
-                                            return;
-                                        }
+        function selectChatPartner(id, name, role) {
+            chatPartnerId = id;
+            chatPartnerName = name;
+            chatPartnerRole = role;
+            
+            document.getElementById('chatPartnerName').textContent = "BS. " + name;
+            document.getElementById('chatPartnerRole').textContent = role; // Usually "Bác sĩ"
+            document.getElementById('chatPartnerAvatarWrapper').style.display = 'block';
+            chatActionsDiv.classList.remove('d-none');
+            
+            btnSend.disabled = false;
+            inputMsg.disabled = false;
+            inputMsg.focus();
 
-                                        // Đảm bảo đã chọn đối tác chat nếu người dùng là bệnh nhân
-                                        // Hoặc nếu là bác sĩ và bạn muốn bác sĩ phải chọn bệnh nhân để chat
-                                        if (chatPartnerId === null && CURRENT_USER_ROLE === 'patient') { // Bắt buộc bệnh nhân phải chọn bác sĩ
-                                            addMessage("Vui lòng chọn một bác sĩ để bắt đầu chat.", 'system');
-                                            return;
-                                        }
-                                        // Logic cho bác sĩ: nếu chưa chọn bệnh nhân, có thể mặc định là chat chung hoặc cấm gửi
-                                        if (chatPartnerId === null && CURRENT_USER_ROLE === 'doctor') {
-                                            addMessage("Bạn chưa chọn bệnh nhân để chat. Tin nhắn này sẽ được gửi chung (nếu có logic chat chung).", 'system');
-                                            // Tùy chọn: return; để cấm gửi nếu không chọn ai
-                                            // Hoặc set chatPartnerId = 0 để gửi tin nhắn chung
-                                            // chatPartnerId = 0;
-                                        }
+            chatBox.innerHTML = ''; // Làm trắng khung chat để tải cái mới
+            chatEmptyState.style.display = 'none'; 
+            
+            addMessage("Đang tải dữ liệu hồ sơ nhắn tin bảo mật...", 'system');
 
+            document.querySelectorAll('.doctor-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            const selectedItem = document.querySelector(`[data-user-id="<%= "$" %>{id}"]`);
+            if (selectedItem) selectedItem.classList.add('active');
 
-                                        if (msg && ws && ws.readyState === WebSocket.OPEN) {
-                                            // Gửi tin nhắn theo format: [RECEIVER_ID]|[CONTENT]
-                                            // Nếu chatPartnerId là null (ví dụ, bác sĩ chưa chọn bệnh nhân, hoặc chế độ chat chung),
-                                            // thì gửi 0 để backend hiểu là tin nhắn chung.
-                                            const receiverToSend = chatPartnerId !== null ? chatPartnerId : 0;
-                                            const messageToSend = receiverToSend + "|" + msg;
-
-                                            addMessage("Bạn: " + msg, 'my'); // Hiển thị tin nhắn của mình ngay lập tức
-                                            ws.send(messageToSend); // Gửi tin nhắn lên server
-                                            msgInput.value = ""; // Xóa nội dung input
-                                        } else if (ws && ws.readyState !== WebSocket.OPEN) {
-                                            addMessage("Kết nối WebSocket chưa sẵn sàng. Vui lòng đợi hoặc thử lại.", 'system');
-                                        }
-                                    }
-
-                                    // --- Hàm xử lý danh sách người dùng online (Bác sĩ cho bệnh nhân, Bệnh nhân cho bác sĩ) ---
-                                    function handleUserList(userType, data) {
-                                        const userListDiv = document.getElementById(userType === 'doctor' ? 'doctorList' : 'patientList');
-                                        if (!userListDiv)
-                                            return;
-
-                                        // Xóa danh sách cũ
-                                        if (userType === 'doctor')
-                                            onlineDoctors.clear();
-                                        else if (userType === 'patient')
-                                            onlinePatients.clear();
-
-                                        userListDiv.innerHTML = ''; // Xóa các mục cũ trong DOM
-
-                                        let hasUsers = false;
-                                        if (data) {
-                                            const users = data.split(';');
-                                            users.forEach(userStr => {
-                                                const parts = userStr.split(':');
-                                                if (parts.length === 3) {
-                                                    hasUsers = true;
-                                                    const id = parseInt(parts[0]);
-                                                    const name = parts[1];
-                                                    const role = parts[2];
-
-                                                    if (userType === 'doctor')
-                                                        onlineDoctors.set(id, { name: name, role: role });
-                                                    else if (userType === 'patient')
-                                                        onlinePatients.set(id, { name: name, role: role });
-
-                                                    const userItem = document.createElement('div');
-                                                    userItem.classList.add(userType === 'doctor' ? 'doctor-item' : 'patient-item'); // Thêm class riêng
-                                                    userItem.dataset.userId = id; // Lưu ID vào data attribute
-
-                                                    const avatarDiv = document.createElement('div');
-                                                    avatarDiv.classList.add('doctor-avatar'); // Dùng chung style avatar
-                                                    // Nếu có avatar URL, bạn có thể thêm img tag ở đây
-
-                                                    const infoDiv = document.createElement('div');
-                                                    infoDiv.classList.add('doctor-info'); // Dùng chung style info
-                                                    infoDiv.innerHTML = `<strong>${name}</strong><span>${role}</span>`;
-
-                                                    const statusDiv = document.createElement('div');
-                                                    statusDiv.classList.add('doctor-status'); // Màu xanh lá cây cho online
-
-                                                    userItem.appendChild(avatarDiv);
-                                                    userItem.appendChild(infoDiv);
-                                                    userItem.appendChild(statusDiv);
-
-                                                    userItem.onclick = function () {
-                                                        selectChatPartner(id, name, role);
-                                                    };
-                                                    userListDiv.appendChild(userItem);
-                                                }
-                                            });
-                                        }
-
-                                        if (!hasUsers) {
-                                            userListDiv.innerHTML = '<p class="system-message">Chưa có ' + (userType === 'doctor' ? 'bác sĩ' : 'bệnh nhân') + ' nào online.</p>';
-                                            // Reset chatPartner nếu không có ai online
-                                            chatPartnerId = null;
-                                            chatPartnerName = "";
-                                            chatPartnerRole = "";
-                                            updateChatPartnerDisplay(CURRENT_USER_ROLE === 'patient' ? "Bác sĩ" : "Đối tác");
-                                        } else {
-                                            // Nếu có users online nhưng chưa có chatPartnerId được chọn (hoặc đã offline)
-                                            // Tự động chọn đối tác chat đầu tiên trong danh sách (chỉ áp dụng cho bệnh nhân)
-                                            if (CURRENT_USER_ROLE === 'patient' && (chatPartnerId === null || !(onlineDoctors.has(chatPartnerId)))) {
-                                                const firstDoctorId = onlineDoctors.keys().next().value;
-                                                if (firstDoctorId) {
-                                                    const firstDoctorInfo = onlineDoctors.get(firstDoctorId);
-                                                    selectChatPartner(firstDoctorId, firstDoctorInfo.name, firstDoctorInfo.role);
-                                                }
-                                            }
-                                        }
-                                        // Sau khi render xong danh sách, đánh dấu lại item active nếu có
-                                        if (chatPartnerId !== null) {
-                                            const selectedItem = document.querySelector(`[data-user-id="${chatPartnerId}"]`);
-                                            if (selectedItem) {
-                                                selectedItem.classList.add('active');
-                                            }
-                                        }
-                                    }
-
-                                    // --- Hàm khi người dùng (bệnh nhân/bác sĩ) chọn một đối tác chat ---
-                                    function selectChatPartner(id, name, role) {
-                                        // Cập nhật chatPartnerId, Name và Role
-                                        chatPartnerId = id;
-                                        chatPartnerName = name;
-                                        chatPartnerRole = role;
-                                        updateChatPartnerDisplay(name + " (" + role + ")");
-
-                                        // Xóa nội dung chat cũ
-                                        chatBox.innerHTML = '';
-                                        addMessage("Đang tải lịch sử chat với " + name + "...", 'system');
-
-                                        // Đánh dấu đối tác được chọn trên sidebar
-                                        // Xóa tất cả các active class trước
-                                        document.querySelectorAll('.doctor-item, .patient-item').forEach(item => {
-                                            item.classList.remove('active');
-                                        });
-                                        // Thêm active class cho mục được chọn
-                                        const selectedItem = document.querySelector(`[data-user-id="${id}"]`);
-                                        if (selectedItem) {
-                                            selectedItem.classList.add('active');
-                                        }
-
-                                        // Gửi yêu cầu server tải lịch sử chat riêng tư
-                                        ws.send("HISTORY_REQUEST|" + chatPartnerId); // Backend sẽ xử lý tin nhắn này
-                                    }
-
-                                    // --- Hàm cập nhật hiển thị tên người chat ---
-                                    function updateChatPartnerDisplay(name) {
-                                        document.getElementById('chatPartnerName').textContent = name;
-                                    }
-
-                                </script>
-                </body>
-
-                </html>
+            ws.send("HISTORY_REQUEST|" + chatPartnerId); // Gửi tín hiệu lấy History
+        }
+    </script>
+</body>
+</html>

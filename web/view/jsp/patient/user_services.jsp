@@ -139,7 +139,7 @@
                             <div class="service-card dashboard-card p-0">
                                 <c:choose>
                                     <c:when test="${not empty service.image}">
-                                        <img src="${service.image}" class="service-image" alt="${service.serviceName}">
+                                        <img src="${pageContext.request.contextPath}${service.image}" class="service-image" alt="${service.serviceName}">
                                     </c:when>
                                     <c:otherwise>
                                         <div class="service-placeholder">
@@ -302,8 +302,9 @@
                     document.getElementById('serviceDetailContent').innerHTML = `
                         <div class="row">
                             <div class="col-md-4">
+                                <%-- Using template literals for image path in JS - Restore <%= "$" %>{ for browser-side evaluation --%>
                                 <%= "$" %>{service.image
-                                    ? '<img src="' + service.image + '" class="img-fluid rounded" alt="' + service.serviceName + '">'
+                                    ? '<img src="${pageContext.request.contextPath}' + service.image + '" class="img-fluid rounded" alt="' + service.serviceName + '">'
                                     : '<div class="bg-light p-5 text-center rounded"><i class="fas fa-tooth fa-4x text-muted"></i></div>'
                                 }
                             </div>

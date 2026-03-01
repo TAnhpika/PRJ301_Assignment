@@ -1,6 +1,7 @@
 package util;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,15 +27,37 @@ public final class Env {
             }
             envMap = new HashMap<>();
             String pathStr = System.getProperty("env.file");
-            if (pathStr == null || pathStr.isEmpty()) {
-                pathStr = System.getProperty("user.dir") + "/.env";
+            Path path = null;
+
+            if (pathStr != null && !pathStr.isEmpty()) {
+                path = Paths.get(pathStr);
+            } else {
+                // Thử nhiều vị trí phổ biến
+                String[] possiblePaths = {
+                        System.getProperty("user.dir") + "/.env",
+                        System.getProperty("user.dir") + "/../.env", // Tomcat bin -> project root
+                        "d:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/.env", // Fallback path
+                                                                                                       // if known
+                        "/.env"
+                };
+
+                for (String p : possiblePaths) {
+                    Path t = Paths.get(p);
+                    if (Files.exists(t)) {
+                        path = t;
+                        System.out.println("[Env] Found .env at: " + t.toAbsolutePath());
+                        break;
+                    }
+                }
             }
-            Path path = Paths.get(pathStr);
-            if (!Files.exists(path)) {
+
+            if (path == null || !Files.exists(path)) {
+                System.err.println("[Env] WARNING: .env file not found. System may use default values.");
                 return envMap;
             }
+
             try {
-                Files.readAllLines(path).stream()
+                Files.readAllLines(path, StandardCharsets.UTF_8).stream()
                         .map(String::trim)
                         .filter(line -> !line.isEmpty() && !line.startsWith("#"))
                         .forEach(line -> {
@@ -48,8 +71,9 @@ public final class Env {
                                 envMap.put(key, value);
                             }
                         });
+                System.out.println("[Env] Loaded " + envMap.size() + " variables from " + path.toAbsolutePath());
             } catch (IOException e) {
-                System.err.println("[Env] Cannot read .env: " + e.getMessage());
+                System.err.println("[Env] ERROR: Cannot read .env: " + e.getMessage());
             }
             return envMap;
         }

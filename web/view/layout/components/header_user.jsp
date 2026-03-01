@@ -25,12 +25,12 @@
     if (userRole == null) userRole = "User";
     if (logoutUrl == null) logoutUrl = "/LogoutServlet";
     
-    String defaultAvatar = request.getContextPath() + "/img/default-avatar.png";
+    String defaultAvatar = request.getContextPath() + "/view/assets/img/default-avatar.png";
     String avatarSrc = (userAvatar != null && !userAvatar.isEmpty()) ? userAvatar : defaultAvatar;
 %>
 
 <div class="header-user">
-    <img src="<%= avatarSrc %>" alt="Avatar" onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+    <img src="<%= avatarSrc %>" alt="Avatar">
     <div class="header-user-info">
         <span class="header-user-name"><%= userName %></span>
         <span class="header-user-role"><%= userRole %></span>

@@ -132,10 +132,16 @@ public class BookingPageServlet extends HttpServlet {
                     if (selectedService == null || selectedService.getServiceId() != serviceId) {
                         ServicePriceDAO servicePriceDAO = new ServicePriceDAO();
                         selectedService = servicePriceDAO.getServiceWithFixedPrice(serviceId);
-                        // Lưu vào session để giữ qua các bước
-                        session.setAttribute("selectedService", selectedService);
-                        System.out.println("🎯 Service được chọn với giá cố định: " + selectedService.getServiceName()
-                                + " - 50,000 VNĐ");
+                        if (selectedService != null) {
+                            // Lưu vào session để giữ qua các bước
+                            session.setAttribute("selectedService", selectedService);
+                            System.out
+                                    .println("🎯 Service được chọn với giá cố định: " + selectedService.getServiceName()
+                                            + " - 50,000 VNĐ");
+                        } else {
+                            System.err.println("❌ Không tìm thấy ServiceId trong DB: " + serviceId);
+                            session.removeAttribute("selectedService");
+                        }
                     }
                 } catch (NumberFormatException e) {
                     System.err.println("❌ ServiceId không hợp lệ: " + serviceIdStr);
@@ -269,8 +275,9 @@ public class BookingPageServlet extends HttpServlet {
 
             // Không cần validate thông tin người thân ở doGet nữa - xử lý ở doPost
 
-            request.getRequestDispatcher("/view/jsp/patient/user_datlich.jsp").forward(request, response); // forward ra ở
-                                                                                                      // đây
+            request.getRequestDispatcher("/view/jsp/patient/user_datlich.jsp").forward(request, response); // forward ra
+                                                                                                           // ở
+            // đây
 
         } catch (ServletException | IOException | NumberFormatException e) {
             if (!response.isCommitted()) {

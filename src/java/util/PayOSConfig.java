@@ -10,19 +10,31 @@ public class PayOSConfig {
     // PayOS Credentials - đọc từ .env (Env.get)
     public static String getClientId() {
         String val = Env.get("PAYOS_CLIENT_ID");
-        System.out.println("[PayOS DEBUG] clientId loaded: " + (val != null ? val.substring(0, Math.min(8, val.length())) + "..." : "NULL"));
+        if (val == null || val.isEmpty()) {
+            System.err.println("[PayOS ERROR] PAYOS_CLIENT_ID is EMPTY or NULL!");
+            return null;
+        }
+        System.out.println("[PayOS DEBUG] clientId loaded: " + val.substring(0, Math.min(8, val.length())) + "...");
         return val;
     }
 
     public static String getApiKey() {
         String val = Env.get("PAYOS_API_KEY");
-        System.out.println("[PayOS DEBUG] apiKey loaded: " + (val != null ? val.substring(0, Math.min(8, val.length())) + "..." : "NULL"));
+        if (val == null || val.isEmpty()) {
+            System.err.println("[PayOS ERROR] PAYOS_API_KEY is EMPTY or NULL!");
+            return null;
+        }
+        System.out.println("[PayOS DEBUG] apiKey loaded: " + val.substring(0, Math.min(8, val.length())) + "...");
         return val;
     }
 
     public static String getChecksumKey() {
         String val = Env.get("PAYOS_CHECKSUM_KEY");
-        System.out.println("[PayOS DEBUG] checksumKey loaded: " + (val != null ? val.substring(0, Math.min(8, val.length())) + "..." : "NULL"));
+        if (val == null || val.isEmpty()) {
+            System.err.println("[PayOS ERROR] PAYOS_CHECKSUM_KEY is EMPTY or NULL!");
+            return null;
+        }
+        System.out.println("[PayOS DEBUG] checksumKey loaded: " + val.substring(0, Math.min(8, val.length())) + "...");
         return val;
     }
 

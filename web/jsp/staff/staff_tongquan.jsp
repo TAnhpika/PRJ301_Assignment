@@ -12,7 +12,7 @@
     String staffName = staff != null ? staff.getFullName() : (user != null ? user.getUsername() : "Nhân viên");
     String staffAvatar = user != null && user.getAvatar() != null 
         ? user.getAvatar() 
-        : request.getContextPath() + "/img/default-avatar.png";
+        : request.getContextPath() + "/view/assets/img/default-avatar.png";
 %>
 
                 <!DOCTYPE html>
@@ -95,8 +95,7 @@
                             <div class="text-center mb-4">
                                 <img src="<%= staffAvatar %>" alt="Avatar" 
                                      class="rounded-circle mb-3"
-                                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);"
-                                     onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);">
                                 <h5 class="mb-1"><%= staffName %></h5>
                                 <span class="badge-dashboard badge-primary">Nhân viên lễ tân</span>
                             </div>
@@ -158,7 +157,7 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img src="${pageContext.request.contextPath}/img/default-avatar.png" 
+                                                    <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
                                                          class="rounded-circle me-2" 
                                                          style="width: 32px; height: 32px; object-fit: cover;">
                                                     <span>Trần Thị B</span>
@@ -174,7 +173,7 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img src="${pageContext.request.contextPath}/img/default-avatar.png" 
+                                                    <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
                                                          class="rounded-circle me-2" 
                                                          style="width: 32px; height: 32px; object-fit: cover;">
                                                     <span>Lê Văn C</span>
@@ -190,7 +189,7 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img src="${pageContext.request.contextPath}/img/default-avatar.png" 
+                                                    <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
                                                          class="rounded-circle me-2" 
                                                          style="width: 32px; height: 32px; object-fit: cover;">
                                                     <span>Nguyễn Văn D</span>
@@ -218,7 +217,7 @@
                             </div>
                             <div class="list-group list-group-flush">
                                 <div class="list-group-item d-flex align-items-start px-0 py-3">
-                                    <img src="${pageContext.request.contextPath}/img/default-avatar.png" 
+                                    <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
                                          class="rounded-circle me-3" 
                                          style="width: 48px; height: 48px; object-fit: cover;">
                                     <div class="flex-grow-1">
@@ -235,7 +234,7 @@
                                     </div>
                                 </div>
                                 <div class="list-group-item d-flex align-items-start px-0 py-3">
-                                    <img src="${pageContext.request.contextPath}/img/default-avatar.png" 
+                                    <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
                                          class="rounded-circle me-3" 
                                          style="width: 48px; height: 48px; object-fit: cover;">
                                     <div class="flex-grow-1">

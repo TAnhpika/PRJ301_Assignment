@@ -127,8 +127,7 @@
                                 <img src="<%= avatarPath != null ? avatarPath : request.getContextPath() + "/view/assets/img/default-avatar.png" %>" 
                                      alt="Avatar" 
                                      class="rounded-circle mb-3"
-                                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);"
-                                     onerror="this.src='${pageContext.request.contextPath}/view/assets/img/default-avatar.png'">
+                                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);">
                                 <h5 class="mb-1"><%= doctorName %></h5>
                                 <span class="badge-dashboard badge-primary">Bác sĩ <%= doctorSpecialty %></span>
                             </div>

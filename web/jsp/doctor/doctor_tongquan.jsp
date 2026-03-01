@@ -124,11 +124,10 @@
                     <div class="col-12 col-lg-4">
                         <div class="dashboard-card">
                             <div class="text-center mb-4">
-                                <img src="<%= avatarPath != null ? avatarPath : request.getContextPath() + "/img/default-avatar.png" %>" 
+                                <img src="<%= avatarPath != null ? avatarPath : request.getContextPath() + "/view/assets/img/default-avatar.png" %>" 
                                      alt="Avatar" 
                                      class="rounded-circle mb-3"
-                                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);"
-                                     onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);">
                                 <h5 class="mb-1"><%= doctorName %></h5>
                                 <span class="badge-dashboard badge-primary">Bác sĩ <%= doctorSpecialty %></span>
                             </div>
@@ -218,7 +217,7 @@
                                     }
                             %>
                             <div class="d-flex align-items-center p-3 border-bottom">
-                                <img src="${pageContext.request.contextPath}/img/default-avatar.png" 
+                                <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
                                      class="rounded-circle me-3" 
                                      style="width: 48px; height: 48px; object-fit: cover;">
                                 <div class="flex-grow-1">
@@ -264,7 +263,7 @@
                                     ? cancelledApp.getWorkDate().format(dateFormatter) : "N/A";
                 %>
                             <div class="d-flex align-items-center p-3 border-bottom">
-                                <img src="${pageContext.request.contextPath}/img/default-avatar.png" 
+                                <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
                                      class="rounded-circle me-3" 
                                      style="width: 40px; height: 40px; object-fit: cover;">
                                 <div class="flex-grow-1">

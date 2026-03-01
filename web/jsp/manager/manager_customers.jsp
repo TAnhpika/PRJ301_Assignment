@@ -102,7 +102,7 @@
                                                             <img src="${patient.avatar}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <img src="${pageContext.request.contextPath}/img/default-avatar.png" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                                            <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </td>

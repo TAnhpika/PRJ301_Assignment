@@ -132,7 +132,7 @@
 
             <div class="profile">
                 <div class="left">
-                    <img src="${pageContext.request.contextPath}/img/benhnhan.jpg" alt="Avatar" onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                    <img src="${pageContext.request.contextPath}/view/assets/img/benhnhan.jpg" alt="Avatar">
                 </div>
                 <div class="middle">
                     <p><strong>Họ và tên:</strong> Nguyễn Văn Quốc Đạt</p>

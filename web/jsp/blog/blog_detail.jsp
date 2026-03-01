@@ -107,7 +107,7 @@
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
             <!-- Logo -->
                        <a href="<%= homeUrl %>" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
-    <img src="<%= request.getContextPath()%>/img/logo.png" alt="Logo" style="height: 50px;">
+    <img src="<%= request.getContextPath() %>/view/assets/img/logo.png" alt="Logo" style="height: 50px;">
     <span style="font-size: 1.6rem; font-weight: bold; color: #287bff;">HAPPY SMILE</span>
 </a>
 

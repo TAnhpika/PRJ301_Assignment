@@ -29,7 +29,7 @@
     if (description == null) description = "";
     if (colClass == null) colClass = "col-12 col-md-6 col-lg-4";
     
-    String defaultImage = request.getContextPath() + "/img/default-service.jpg";
+    String defaultImage = request.getContextPath() + "/view/assets/img/default-service.jpg";
     String imgSrc = (imageUrl != null && !imageUrl.isEmpty()) ? imageUrl : defaultImage;
 %>
 
@@ -40,8 +40,7 @@
             <img src="<%= imgSrc %>" 
                  alt="<%= serviceName %>" 
                  class="w-100 rounded" 
-                 style="height: 180px; object-fit: cover;"
-                 onerror="this.src='${pageContext.request.contextPath}/img/default-service.jpg'">
+                 style="height: 180px; object-fit: cover;">
         </div>
         <% } %>
         

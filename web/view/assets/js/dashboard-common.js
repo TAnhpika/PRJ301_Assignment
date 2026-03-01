@@ -40,6 +40,17 @@ function toggleDropdown(element) {
 }
 
 // ========================================
+// Header User Dropdown
+// ========================================
+function toggleUserDropdown(event) {
+    if (event) event.stopPropagation();
+    const headerUser = document.querySelector('.header-user');
+    if (headerUser) {
+        headerUser.classList.toggle('active');
+    }
+}
+
+// ========================================
 // Active Menu Highlighting
 // ========================================
 function highlightActiveMenu() {
@@ -79,7 +90,9 @@ function highlightActiveMenu() {
 function handleOutsideClick(event) {
     const sidebar = document.querySelector('.dashboard-sidebar');
     const toggleBtn = document.querySelector('.sidebar-toggle');
+    const headerUser = document.querySelector('.header-user');
     
+    // Close sidebar
     if (sidebar && sidebar.classList.contains('show')) {
         if (!sidebar.contains(event.target) && !toggleBtn?.contains(event.target)) {
             sidebar.classList.remove('show');
@@ -87,6 +100,13 @@ function handleOutsideClick(event) {
             if (overlay) {
                 overlay.classList.remove('show');
             }
+        }
+    }
+
+    // Close header user dropdown
+    if (headerUser && headerUser.classList.contains('active')) {
+        if (!headerUser.contains(event.target)) {
+            headerUser.classList.remove('active');
         }
     }
 }
@@ -360,6 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Export functions for global use
 window.toggleSidebar = toggleSidebar;
 window.toggleDropdown = toggleDropdown;
+window.toggleUserDropdown = toggleUserDropdown;
 window.showToast = showToast;
 window.confirmAction = confirmAction;
 window.showLoading = showLoading;

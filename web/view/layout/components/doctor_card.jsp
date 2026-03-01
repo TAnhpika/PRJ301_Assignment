@@ -45,8 +45,7 @@
             <img src="<%= avatarSrc %>" 
                  alt="<%= doctorName %>" 
                  class="rounded-circle"
-                 style="width: 100px; height: 100px; object-fit: cover; border: 3px solid var(--border-color);"
-                 onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                 style="width: 100px; height: 100px; object-fit: cover; border: 3px solid var(--border-color);">
             <% if ("available".equals(status)) { %>
             <span class="position-absolute bottom-0 end-0 bg-success rounded-circle border border-2 border-white" 
                   style="width: 20px; height: 20px;"

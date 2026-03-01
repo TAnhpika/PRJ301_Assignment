@@ -131,7 +131,7 @@
                                         <tr class="doctor-row" data-name="<%= doctor.getFull_name() != null ? doctor.getFull_name().toLowerCase() : "" %>" data-phone="<%= doctor.getPhone() != null ? doctor.getPhone() : "" %>">
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img src="${pageContext.request.contextPath}/img/default-avatar.png" class="rounded-circle me-2" style="width: 36px; height: 36px; object-fit: cover;">
+                                                    <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="rounded-circle me-2" style="width: 36px; height: 36px; object-fit: cover;">
                                                     <span><%= doctor.getFull_name() != null ? doctor.getFull_name() : "N/A" %></span>
                                                 </div>
                                             </td>
@@ -188,7 +188,7 @@
                                         <tr class="staff-row" data-name="<%= staff.getFullName() != null ? staff.getFullName().toLowerCase() : "" %>" data-phone="<%= staff.getPhone() != null ? staff.getPhone() : "" %>">
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img src="${pageContext.request.contextPath}/img/default-avatar.png" class="rounded-circle me-2" style="width: 36px; height: 36px; object-fit: cover;">
+                                                    <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="rounded-circle me-2" style="width: 36px; height: 36px; object-fit: cover;">
                                                     <span><%= staff.getFullName() != null ? staff.getFullName() : "N/A" %></span>
                                                 </div>
                                             </td>

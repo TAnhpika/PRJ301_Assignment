@@ -68,21 +68,22 @@ public class LoginServlet extends HttpServlet {
         // Get the context path dynamically
         String contextPath = "/TestFull"; // Hardcode context path
         REDIRECT_URI = "http://localhost:8080" + contextPath + "/LoginGG/LoginGoogleHandler";
-        System.out.println("[DEBUG] REDIRECT_URI initialized: " + REDIRECT_URI);
-        System.out.println("[DEBUG] CLIENT_ID: " + getGoogleClientId());
+        // System.out.println("[DEBUG] REDIRECT_URI initialized: " + REDIRECT_URI);
+        // System.out.println("[DEBUG] CLIENT_ID: " + getGoogleClientId());
         String secret = getGoogleClientSecret();
-        System.out.println("[DEBUG] CLIENT_SECRET (first 4 chars): "
-                + (secret != null && secret.length() >= 4 ? secret.substring(0, 4) + "****" : "****"));
+        // System.out.println("[DEBUG] CLIENT_SECRET (first 4 chars): "
+        // + (secret != null && secret.length() >= 4 ? secret.substring(0, 4) + "****" :
+        // "****"));
     }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -106,10 +107,10 @@ public class LoginServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -251,7 +252,8 @@ public class LoginServlet extends HttpServlet {
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    response.sendRedirect(request.getContextPath() + "/view/jsp/auth/login.jsp?error=google_auth_failed");
+                    response.sendRedirect(
+                            request.getContextPath() + "/view/jsp/auth/login.jsp?error=google_auth_failed");
                 }
             }
         }
@@ -267,10 +269,10 @@ public class LoginServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -278,22 +280,23 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password_hash"); // Actually plain text from form
 
-        System.out.println("=== LOGIN ATTEMPT ===");
-        System.out.println("Email: " + email);
-        System.out.println("Password (plain): " + password);
-        System.out.println("Password (hashed): " + UserDAO.hashPassword(password));
+        // System.out.println("=== LOGIN ATTEMPT ===");
+        // System.out.println("Email: " + email);
+        // System.out.println("Password (plain): " + password);
+        // System.out.println("Password (hashed): " + UserDAO.hashPassword(password));
 
         // Use loginUser which handles hashing internally
         User user = UserDAO.loginUser(email, password);
-        System.out.println("User found: " + (user != null));
+        // System.out.println("User found: " + (user != null));
 
         if (user != null) {
-            System.out.println("User role: " + user.getRole());
+            // System.out.println("User role: " + user.getRole());
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
             session.setAttribute("role", user.getRole());
             session.setAttribute("userId", user.getId());
-            System.out.println("[DEBUG] Login thành công - role=" + user.getRole() + ", userId=" + user.getId());
+            // System.out.println("[DEBUG] Login thành công - role=" + user.getRole() + ",
+            // userId=" + user.getId());
 
             Patients patient = UserDAO.getPatientByUserId(user.getId());
             session.setAttribute("patient", patient);
@@ -309,16 +312,18 @@ public class LoginServlet extends HttpServlet {
                 if (doctor != null) {
                     session.setAttribute("doctor_id", doctor.getDoctor_id());
                     session.setAttribute("doctor", doctor); // ✅ THÊM DÒNG NÀY
-                    System.out.println("Form login - doctor_id set in session: " + doctor.getDoctor_id());
+                    // System.out.println("Form login - doctor_id set in session: " +
+                    // doctor.getDoctor_id());
                 } else {
-                    System.out.println("Form login - Không tìm thấy doctor theo user_id: " + user.getId());
+                    System.err.println("Form login - Không tìm thấy doctor theo user_id: " + user.getId());
                 }
                 response.sendRedirect(request.getContextPath() + "/DoctorHomePageServlet");
 
             } else if ("PATIENT".equalsIgnoreCase(role)) {
                 // Kiểm tra patient có null không
                 if (patient == null) {
-                    System.out.println("[WARN] Patient không tồn tại cho user_id: " + user.getId() + " - Tiếp tục với dữ liệu trống");
+                    System.err.println("[WARN] Patient không tồn tại cho user_id: " + user.getId()
+                            + " - Tiếp tục với dữ liệu trống");
                     request.setAttribute("upcomingAppointments", new java.util.ArrayList<>());
                     request.setAttribute("totalVisits", 0);
                 } else {
@@ -328,9 +333,8 @@ public class LoginServlet extends HttpServlet {
 
                     int totalVisits = PatientDAO.getTotalVisitsByPatientId(patient.getPatientId());
                     request.setAttribute("totalVisits", totalVisits);
-
-                    System.out.println("Patient ID: " + patient.getPatientId());
-                    System.out.println("Total visits: " + totalVisits);
+                    // System.out.println("Patient ID: " + patient.getPatientId());
+                    // System.out.println("Total visits: " + totalVisits);
                 }
 
                 BlogDAO blogDAO = new BlogDAO();
@@ -358,7 +362,8 @@ public class LoginServlet extends HttpServlet {
             } else {
                 System.out.println("Invalid role: " + role);
                 response.sendRedirect(
-                        request.getContextPath() + "/view/jsp/auth/login.jsp?error=" + java.net.URLEncoder.encode("invalid_role", "UTF-8"));
+                        request.getContextPath() + "/view/jsp/auth/login.jsp?error="
+                                + java.net.URLEncoder.encode("invalid_role", "UTF-8"));
             }
         } else {
             System.out.println("Login failed - User not found");

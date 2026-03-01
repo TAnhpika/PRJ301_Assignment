@@ -9,6 +9,111 @@
                     && currentUser.getAvatar() !=null ? currentUser.getAvatar() : request.getContextPath()
                     + "/view/assets/img/default-avatar.png" ; %>
 
+                    <style>
+                        /* Đẩy toàn bộ nội dung header lên trên cùng */
+                        .dashboard-header {
+                            align-items: flex-start !important;
+                            padding-top: 10px !important;
+                        }
+                        .sidebar-toggle {
+                            display: none; /* ẩn trên desktop */
+                            position: fixed;
+                            top: 14px;
+                            left: 14px;
+                            z-index: 1100;
+                            padding: 6px 10px;
+                        }
+                        @media (max-width: 768px) {
+                            .sidebar-toggle { display: block; }
+                        }
+
+                        /* Notification button */
+                        .dashboard-header .btn-light {
+                            width: 38px;
+                            height: 38px;
+                            padding: 0;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            border-radius: 10px;
+                            background: #f8fafc;
+                            border: 1.5px solid #e2e8f0;
+                            color: #475569;
+                            font-size: 15px;
+                            flex-shrink: 0;
+                        }
+                        .dashboard-header .btn-light:hover { background: #eef2f8; }
+
+                        /* User profile block */
+                        .header-user {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            cursor: pointer;
+                            padding: 6px 10px;
+                            border-radius: 10px;
+                            transition: background 0.2s;
+                            position: relative;
+                        }
+                        .header-user:hover { background: #f1f5f9; }
+                        .header-user img {
+                            width: 36px;
+                            height: 36px;
+                            border-radius: 50%;
+                            object-fit: cover;
+                            border: 2px solid #e2e8f0;
+                            flex-shrink: 0;
+                        }
+                        .header-user-info {
+                            display: flex;
+                            flex-direction: column;
+                            line-height: 1.25;
+                        }
+                        .header-user-name {
+                            font-size: 13.5px;
+                            font-weight: 700;
+                            color: #1e293b;
+                            white-space: nowrap;
+                            max-width: 160px;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                        .header-user-role {
+                            font-size: 11.5px;
+                            color: #64748b;
+                        }
+
+                        /* Dropdown menu của user */
+                        .header-dropdown {
+                            display: none;
+                            position: absolute;
+                            top: calc(100% + 8px);
+                            right: 0;
+                            background: white;
+                            border: 1.5px solid #e2e8f0;
+                            border-radius: 12px;
+                            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+                            min-width: 200px;
+                            padding: 8px 0;
+                            z-index: 9999;
+                        }
+                        /* JS thêm class 'active' vào .header-user khi click */
+                        .header-user.active .header-dropdown { display: block; }
+                        .header-dropdown a {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            padding: 10px 18px;
+                            font-size: 13.5px;
+                            color: #334155;
+                            text-decoration: none;
+                            transition: background 0.15s;
+                        }
+                        .header-dropdown a:hover { background: #f8fafc; }
+                        .header-dropdown a.text-danger { color: #ef4444; }
+                        .header-dropdown hr { margin: 6px 12px; border-color: #f1f5f9; opacity: 1; }
+                    </style>
+
                     <!-- Sidebar Toggle Button (Mobile) -->
                     <button class="btn btn-primary sidebar-toggle" onclick="toggleSidebar()">
                         <i class="fas fa-bars"></i>
@@ -48,32 +153,26 @@
                             </div>
 
                             <!-- User Profile -->
-                            <div class="dropdown">
-                                <button class="btn btn-light d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-                                    <img src="<%= userAvatar %>" alt="Avatar" class="rounded-circle"
-                                        style="width: 32px; height: 32px; object-fit: cover;"
-                                        onerror="this.src='${pageContext.request.contextPath}/view/assets/img/default-avatar.png'">
-                                    <div class="text-start d-none d-md-block">
-                                        <div class="fw-semibold small">
-                                            <%= userName %>
-                                        </div>
-                                        <div class="text-muted" style="font-size: 0.75rem;">Bác sĩ</div>
-                                    </div>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item"
-                                            href="${pageContext.request.contextPath}/doctor_trangcanhan">
-                                            <i class="fas fa-user me-2"></i>Trang cá nhân
-                                        </a></li>
-                                    <li><a class="dropdown-item"
-                                            href="${pageContext.request.contextPath}/EditDoctorServlet">
-                                            <i class="fas fa-cog me-2"></i> Cài đặt
-                                        </a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="${pageContext.request.contextPath}/LogoutServlet">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
-                                        </a></li>
-                                </ul>
+                            <div class="header-user" onclick="toggleUserDropdown(event)">
+                                <img src="<%= userAvatar %>" alt="Avatar">
+                                <div class="header-user-info">
+                                    <span class="header-user-name">
+                                        <%= userName %>
+                                    </span>
+                                    <span class="header-user-role">Bác sĩ</span>
+                                </div>
+                                <div class="header-dropdown">
+                                    <a href="${pageContext.request.contextPath}/doctor_trangcanhan">
+                                        <i class="fas fa-user"></i> Trang cá nhân
+                                    </a>
+                                    <a href="${pageContext.request.contextPath}/EditDoctorServlet">
+                                        <i class="fas fa-cog"></i> Cài đặt
+                                    </a>
+                                    <hr class="m-0 opacity-10">
+                                    <a href="${pageContext.request.contextPath}/LogoutServlet" class="text-danger">
+                                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </header>

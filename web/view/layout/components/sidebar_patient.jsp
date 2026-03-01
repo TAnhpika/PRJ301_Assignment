@@ -11,7 +11,7 @@
             <div class="sidebar-header">
                 <a href="${pageContext.request.contextPath}/UserHompageServlet" class="sidebar-logo"
                     title="Về trang chủ">
-                    <img src="${pageContext.request.contextPath}/img/logo.png" alt="Logo Happy Smile">
+                    <img src="${pageContext.request.contextPath}/view/assets/img/logo.png" alt="Logo Happy Smile">
                     <span class="sidebar-logo-text">HAPPY <em>Smile</em></span>
                 </a>
             </div>
@@ -69,7 +69,7 @@
                                 <i class="fas fa-robot me-2"></i>
                                 Tư vấn với AI
                             </a>
-                            <a href="${pageContext.request.contextPath}/public/chat.jsp" class="sidebar-dropdown-item"
+                            <a href="${pageContext.request.contextPath}/jsp/patient/chat.jsp" class="sidebar-dropdown-item"
                                 id="sidebar-doctor-chat">
                                 <i class="fas fa-user-md me-2"></i>
                                 Nhắn tin với bác sĩ
@@ -89,13 +89,6 @@
                         <i class="fas fa-user-circle"></i>
                         <span>Tài khoản của tôi</span>
                     </a>
-
-                    <a href="${pageContext.request.contextPath}/jsp/patient/user_datlich_bacsi.jsp" class="sidebar-item"
-                        id="sidebar-medical-record">
-                        <i class="fas fa-file-medical"></i>
-                        <span>Hồ sơ y tế</span>
-                    </a>
-
                 </div>
             </div>
         </nav>

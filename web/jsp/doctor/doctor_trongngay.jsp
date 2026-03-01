@@ -493,7 +493,7 @@
                             <span class="badge <%=badgeClass%>"><%=statusText%></span>
                         </div>
                         <div class="info">
-                            <img src="${pageContext.request.contextPath}/img/default-avatar.png" alt="avatar" style="width: 64px; height: 64px; object-fit: cover;" onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                            <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" alt="avatar" style="width: 64px; height: 64px; object-fit: cover;">
                             <div class="info-details">
                                 <p><strong>Bệnh nhân: <%=appointment.getPatientName() != null ? appointment.getPatientName() : "Không có tên"%></strong></p>
                                 <p>Mã cuộc hẹn: <%=appointment.getAppointmentId()%></p>
@@ -565,7 +565,7 @@
                             <span class="badge <%=badgeClass%>"><%=statusText%></span>
                         </div>
                         <div class="info">
-                            <img src="${pageContext.request.contextPath}/img/default-avatar.png" alt="avatar" style="width: 64px; height: 64px; object-fit: cover;" onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                            <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" alt="avatar" style="width: 64px; height: 64px; object-fit: cover;">
                             <div class="info-details">
                                 <p><strong>Bệnh nhân: <%=appointment.getPatientName() != null ? appointment.getPatientName() : "Không có tên"%></strong></p>
                                 <p>Mã cuộc hẹn: #<%=appointment.getAppointmentId()%></p>

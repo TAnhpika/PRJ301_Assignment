@@ -446,9 +446,21 @@ html, body {
     z-index: 1001;
 }
 
+/* Cầu nối vô hình để không bị mất hover khi di chuột qua khoảng trống 8px */
+.header-dropdown::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 15px;
+    background: transparent;
+}
+
+.header-user.active .header-dropdown,
 .header-user:hover .header-dropdown {
     display: block;
-    animation: fadeIn 0.2s ease;
+    animation: fadeIn 0.15s ease-out;
 }
 
 @keyframes fadeIn {

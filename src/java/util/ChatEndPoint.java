@@ -9,7 +9,6 @@ import jakarta.websocket.server.ServerEndpoint;
 import jakarta.websocket.server.ServerEndpointConfig;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,17 +29,15 @@ public class ChatEndPoint {
 
     // --- Cấu hình Database ---
     // Đảm bảo các giá trị này phù hợp với database SQL Server của bạn!
-    // VÍ DỤ: "jdbc:sqlserver://localhost:1433;databaseName=YourDBName;encrypt=false;trustServerCertificate=false;loginTimeout=30;"
-    public static final String DB_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    public static final String DB_URL = "jdbc:sqlserver://DESKTOP-F84C0VL;databaseName=Demo;encrypt=false;trustServerCertificate=false;loginTimeout=30;"; // CẬP NHẬT DÒNG NÀY
-    public static final String DB_USER = "sa"; // CẬP NHẬT DÒNG NÀY
-    public static final String DB_PASSWORD = "Phuoc12345@"; // CẬP NHẬT DÒNG NÀY
+    // VÍ DỤ:
+    // "jdbc:sqlserver://localhost:1433;databaseName=YourDBName;encrypt=false;trustServerCertificate=false;loginTimeout=30;"
 
     // --- Quản lý Sessions ---
     // activeSessions: Lưu trữ tất cả các session WebSocket đang hoạt động
     private static Set<Session> activeSessions = Collections.synchronizedSet(new HashSet<>());
 
-    // userSessionData: Lưu trữ thông tin userId, username, role cho mỗi session WebSocket.
+    // userSessionData: Lưu trữ thông tin userId, username, role cho mỗi session
+    // WebSocket.
     // Key: Session, Value: Map<String, Object> (userId, username, role)
     private static Map<Session, Map<String, Object>> userSessionData = Collections.synchronizedMap(new HashMap<>());
 
@@ -54,26 +51,24 @@ public class ChatEndPoint {
 
     // --- Phương thức kết nối Database ---
     private Connection getConnection() throws SQLException {
-        try {
-            Class.forName(DB_DRIVER);
-        } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "SQL Server JDBC Driver không tìm thấy.", e);
-            throw new SQLException("SQL Server JDBC Driver không tìm thấy.", e);
-        }
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        return util.DBContext.getConnection();
     }
 
     // --- ONOPEN: Xử lý khi kết nối WebSocket được mở ---
     @OnOpen
     public void onOpen(Session session) throws IOException {
         activeSessions.add(session);
-        // Lấy thông tin người dùng từ HttpSession (được truyền qua GetHttpSessionConfigurator)
-        Map<String, Object> httpSessionAttributes = (Map<String, Object>) session.getUserProperties().get("httpSessionAttributes");
+        // Lấy thông tin người dùng từ HttpSession (được truyền qua
+        // GetHttpSessionConfigurator)
+        Map<String, Object> httpSessionAttributes = (Map<String, Object>) session.getUserProperties()
+                .get("httpSessionAttributes");
 
         if (httpSessionAttributes != null) {
-            Integer userId = (Integer) httpSessionAttributes.get("userId");
-            String username = (String) httpSessionAttributes.get("username");
-            String role = (String) httpSessionAttributes.get("role");
+            model.User user = (model.User) httpSessionAttributes.get("user");
+            Integer userId = (user != null) ? user.getId() : (Integer) httpSessionAttributes.get("userId");
+            String username = (user != null) ? (user.getUsername() != null ? user.getUsername() : user.getEmail())
+                    : (String) httpSessionAttributes.get("username");
+            String role = (user != null) ? user.getRole() : (String) httpSessionAttributes.get("role");
 
             if (userId != null && username != null && role != null) {
                 Map<String, Object> userData = new HashMap<>();
@@ -85,16 +80,21 @@ public class ChatEndPoint {
                 LOGGER.info("Người dùng " + username + " (" + role + ") đã kết nối. Session ID: " + session.getId());
 
                 // Thêm session vào danh sách theo vai trò để quản lý chat riêng tư
-                if ("doctor".equals(role)) {
+                // Support cả DOCTOR (uppercase, từ DB) và doctor (lowercase)
+                if ("doctor".equalsIgnoreCase(role)) {
                     doctorSessions.put(userId, session);
-                    // Thông báo cho TẤT CẢ bệnh nhân đang online rằng có bác sĩ mới online
+                    // Gửi danh sách bệnh nhân đang online cho bác sĩ vừa kết nối
+                    sendPatientListToDoctor(session);
+                    // Thông báo cho TẤT CẢ bệnh nhân rằng có bác sĩ mới online
                     broadcastSystemMessage("system|0|Server|System|null|Bác sĩ " + username + " vừa online.");
-                    // Tùy chọn: gửi danh sách bệnh nhân online cho bác sĩ vừa kết nối (nếu có sidebar bệnh nhân)
-                    // sendPatientListToDoctor(session); // Bạn có thể tự viết hàm này tương tự sendDoctorListToPatient
-                } else if ("patient".equals(role)) {
+                    // Gửi lại danh sách bác sĩ cho tất cả bệnh nhân đang online
+                    sendDoctorListToAllPatients();
+                } else if ("patient".equalsIgnoreCase(role)) {
                     patientSessions.put(userId, session);
                     // Gửi danh sách bác sĩ đang online cho bệnh nhân vừa kết nối
                     sendDoctorListToPatient(session);
+                    // Thông báo cho tất cả bác sĩ rằng có bệnh nhân mới online
+                    sendPatientListToAllDoctors();
                 }
 
                 // Gửi chào mừng riêng tư cho người dùng vừa kết nối
@@ -112,7 +112,6 @@ public class ChatEndPoint {
         }
     }
 
-
     // --- ONMESSAGE: Xử lý khi nhận tin nhắn từ client ---
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
@@ -126,25 +125,37 @@ public class ChatEndPoint {
         String senderUsername = (String) userData.get("username");
         String senderRole = (String) userData.get("role");
 
-        // Xử lý các tin nhắn yêu cầu đặc biệt từ frontend (ví dụ: yêu cầu lịch sử chat riêng tư)
+        // Xử lý các tin nhắn yêu cầu đặc biệt từ frontend (ví dụ: yêu cầu lịch sử chat
+        // riêng tư)
         if (message.startsWith("HISTORY_REQUEST|")) {
             try {
                 Integer requestedChatPartnerId = Integer.parseInt(message.split("\\|", 2)[1]);
                 sendChatHistory(session, requestedChatPartnerId);
-                LOGGER.info("Lịch sử được yêu cầu cho đối tác chat ID: " + requestedChatPartnerId + " bởi " + senderUsername);
+                LOGGER.info("Lịch sử được yêu cầu cho đối tác chat ID: " + requestedChatPartnerId + " bởi "
+                        + senderUsername);
             } catch (NumberFormatException e) {
                 sendPrivateSystemMessage(session, "Lỗi: ID đối tác chat không hợp lệ cho yêu cầu lịch sử.");
                 LOGGER.log(Level.WARNING, "ID đối tác chat không hợp lệ cho yêu cầu lịch sử: " + message, e);
             }
-            return; // Dừng xử lý tiếp vì đây là yêu cầu đặc biệt, không phải tin nhắn chat
+            return;
+        }
+
+        // Bác sĩ yêu cầu danh sách bệnh nhân đang online
+        if ("PATIENT_LIST_REQUEST".equals(message)) {
+            if ("doctor".equalsIgnoreCase(senderRole)) {
+                sendPatientListToDoctor(session);
+            }
+            return;
         }
 
         // Xử lý tin nhắn chat thông thường
         // Tin nhắn từ client theo format: [RECEIVER_ID]|[CONTENT]
         String[] parts = message.split("\\|", 2);
         if (parts.length < 2) {
-            sendPrivateSystemMessage(session, "Lỗi: Định dạng tin nhắn không hợp lệ. Vui lòng thử lại theo format [RECEIVER_ID]|[CONTENT].");
-            LOGGER.log(Level.WARNING, "Định dạng tin nhắn không hợp lệ nhận được từ " + senderUsername + ": " + message);
+            sendPrivateSystemMessage(session,
+                    "Lỗi: Định dạng tin nhắn không hợp lệ. Vui lòng thử lại theo format [RECEIVER_ID]|[CONTENT].");
+            LOGGER.log(Level.WARNING,
+                    "Định dạng tin nhắn không hợp lệ nhận được từ " + senderUsername + ": " + message);
             return;
         }
 
@@ -162,39 +173,51 @@ public class ChatEndPoint {
         }
         String content = parts[1];
 
-        // --- Lưu tin nhắn vào Database ---
+        // --- Lưu tin nhắn vào Database (non-blocking: lỗi DB không dừng việc gửi tin)
+        // ---
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
             conn = getConnection();
-            // Cập nhật câu lệnh SQL để lưu cả receiver_id
+            // Tự tạo bảng ChatMessages nếu chưa tồn tại
+            conn.createStatement().execute(
+                    "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ChatMessages' AND xtype='U') " +
+                            "CREATE TABLE ChatMessages (" +
+                            "  id INT IDENTITY(1,1) PRIMARY KEY," +
+                            "  user_id INT NOT NULL," +
+                            "  sender_name NVARCHAR(255)," +
+                            "  message_content NVARCHAR(MAX)," +
+                            "  receiver_id INT NULL," +
+                            "  timestamp DATETIME DEFAULT GETDATE()" +
+                            ")");
             String sql = "INSERT INTO ChatMessages (user_id, sender_name, message_content, receiver_id) VALUES (?, ?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, senderId);
             pstmt.setString(2, senderUsername);
             pstmt.setString(3, content);
-            // Lưu receiverId. Nếu receiverId là null, PreparedStatement.setObject sẽ lưu NULL vào cột INT NULL
             pstmt.setObject(4, receiverId);
             pstmt.executeUpdate();
-            LOGGER.info("Tin nhắn đã lưu vào DB từ " + senderUsername + " đến " + (receiverId != null ? receiverId : "tất cả (chat chung)") + ": " + content);
-
+            LOGGER.info("Tin nhắn đã lưu vào DB từ " + senderUsername + ": " + content);
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Lỗi khi lưu tin nhắn vào database: " + e.getMessage(), e);
-            sendPrivateSystemMessage(session, "Lỗi: Có lỗi xảy ra khi lưu tin nhắn.");
-            return;
+            // Chỉ log lỗi, KHÔNG return - vẫn tiếp tục forward tin nhắn đến người nhận
+            LOGGER.log(Level.WARNING, "Lỗi khi lưu tin nhắn vào database (bỏ qua, vẫn gửi): " + e.getMessage());
         } finally {
             try {
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
+                if (pstmt != null)
+                    pstmt.close();
+                if (conn != null)
+                    conn.close();
             } catch (SQLException e) {
                 LOGGER.log(Level.WARNING, "Lỗi khi đóng tài nguyên DB: " + e.getMessage(), e);
             }
         }
-        // --- Kết thúc lưu tin nhắn vào Database ---
+        // --- Kết thúc lưu tin nhắn ---
 
         // Xây dựng chuỗi tin nhắn để gửi đến các client
-        // Format: [TYPE]|[SENDER_ID]|[SENDER_NAME]|[SENDER_ROLE]|[RECEIVER_ID]|[CONTENT]
-        String chatMessagePayload = "chat|" + senderId + "|" + senderUsername + "|" + senderRole + "|" + (receiverId != null ? receiverId : "null") + "|" + content;
+        // Format:
+        // [TYPE]|[SENDER_ID]|[SENDER_NAME]|[SENDER_ROLE]|[RECEIVER_ID]|[CONTENT]
+        String chatMessagePayload = "chat|" + senderId + "|" + senderUsername + "|" + senderRole + "|"
+                + (receiverId != null ? receiverId : "null") + "|" + content;
 
         // Logic gửi tin nhắn đích danh hoặc chat chung
         if (receiverId != null) { // Đây là tin nhắn riêng tư (có receiverId cụ thể)
@@ -217,11 +240,13 @@ public class ChatEndPoint {
                 sendPrivateSystemMessage(session, "Người dùng bạn muốn chat không online hoặc không tồn tại.");
                 LOGGER.warning("Người nhận " + receiverId + " không online hoặc session không hợp lệ.");
             }
-            // Luôn gửi lại tin nhắn cho chính người gửi để họ thấy tin của mình đã được xử lý bởi server
+            // Luôn gửi lại tin nhắn cho chính người gửi để họ thấy tin của mình đã được xử
+            // lý bởi server
             session.getBasicRemote().sendText(chatMessagePayload);
             LOGGER.info("Đã gửi tin nhắn riêng tư trở lại người gửi " + senderId);
 
-        } else { // receiverId là null (tức là client gửi "0|Content" hoặc không gửi ID người nhận)
+        } else { // receiverId là null (tức là client gửi "0|Content" hoặc không gửi ID người
+                 // nhận)
                  // Coi là tin nhắn chat chung (public chat)
             // Gửi tin nhắn đến tất cả các session đang hoạt động
             synchronized (activeSessions) {
@@ -304,7 +329,8 @@ public class ChatEndPoint {
         StringBuilder doctors = new StringBuilder("doctorlist|");
         synchronized (doctorSessions) { // Đồng bộ hóa khi duyệt doctorSessions
             if (doctorSessions.isEmpty()) {
-                // sendPrivateSystemMessage(patientSession, "Chưa có bác sĩ nào online."); // Không cần gửi message này nếu không có bác sĩ nào
+                // sendPrivateSystemMessage(patientSession, "Chưa có bác sĩ nào online."); //
+                // Không cần gửi message này nếu không có bác sĩ nào
                 // Thay vào đó, gửi một doctorlist rỗng để frontend biết
                 patientSession.getBasicRemote().sendText("doctorlist|"); // Gửi chuỗi rỗng
                 return;
@@ -318,8 +344,8 @@ public class ChatEndPoint {
 
                 if (doctorData != null) {
                     doctors.append(doctorId).append(":")
-                           .append(doctorData.get("username")).append(":")
-                           .append(doctorData.get("role")).append(";");
+                            .append(doctorData.get("username")).append(":")
+                            .append(doctorData.get("role")).append(";");
                 }
             }
         }
@@ -330,10 +356,66 @@ public class ChatEndPoint {
 
         if (patientSession != null && patientSession.isOpen()) {
             patientSession.getBasicRemote().sendText(doctors.toString());
-            LOGGER.info("Đã gửi danh sách bác sĩ cho session bệnh nhân " + patientSession.getId() + ": " + doctors.toString());
+            LOGGER.info("Đã gửi danh sách bác sĩ cho session bệnh nhân " + patientSession.getId() + ": "
+                    + doctors.toString());
         }
     }
 
+    // --- Phương thức hỗ trợ: Gửi danh sách bệnh nhân online cho một bác sĩ cụ thể
+    // ---
+    private void sendPatientListToDoctor(Session doctorSession) throws IOException {
+        // Format: patientlist|[ID]:[Tên]:[Vai trò];...
+        StringBuilder patients = new StringBuilder("patientlist|");
+        synchronized (patientSessions) {
+            if (patientSessions.isEmpty()) {
+                if (doctorSession != null && doctorSession.isOpen()) {
+                    doctorSession.getBasicRemote().sendText("patientlist|");
+                }
+                return;
+            }
+            for (Map.Entry<Integer, Session> entry : patientSessions.entrySet()) {
+                Integer patientId = entry.getKey();
+                Session patientSession = entry.getValue();
+                Map<String, Object> patientData = userSessionData.get(patientSession);
+                if (patientData != null) {
+                    patients.append(patientId).append(":")
+                            .append(patientData.get("username")).append(":")
+                            .append(patientData.get("role")).append(";");
+                }
+            }
+        }
+        if (patients.length() > "patientlist|".length()) {
+            patients.setLength(patients.length() - 1);
+        }
+        if (doctorSession != null && doctorSession.isOpen()) {
+            doctorSession.getBasicRemote().sendText(patients.toString());
+            LOGGER.info("Đã gửi danh sách bệnh nhân cho bác sĩ session " + doctorSession.getId());
+        }
+    }
+
+    // --- Gửi danh sách bác sĩ cho TẤT CẢ bệnh nhân đang online ---
+    private void sendDoctorListToAllPatients() throws IOException {
+        synchronized (patientSessions) {
+            for (Map.Entry<Integer, Session> entry : patientSessions.entrySet()) {
+                Session pSession = entry.getValue();
+                if (pSession != null && pSession.isOpen()) {
+                    sendDoctorListToPatient(pSession);
+                }
+            }
+        }
+    }
+
+    // --- Gửi danh sách bệnh nhân cho TẤT CẢ bác sĩ đang online ---
+    private void sendPatientListToAllDoctors() throws IOException {
+        synchronized (doctorSessions) {
+            for (Map.Entry<Integer, Session> entry : doctorSessions.entrySet()) {
+                Session dSession = entry.getValue();
+                if (dSession != null && dSession.isOpen()) {
+                    sendPatientListToDoctor(dSession);
+                }
+            }
+        }
+    }
 
     // --- Phương thức hỗ trợ: Gửi lịch sử chat ---
     public void sendChatHistory(Session session, Integer chatPartnerId) throws IOException {
@@ -357,9 +439,9 @@ public class ChatEndPoint {
                 // Đảm bảo tin nhắn được gửi BỞI currentUserId TỚI chatPartnerId,
                 // HOẶC được gửi BỞI chatPartnerId TỚI currentUserId.
                 sql = "SELECT TOP 50 user_id, sender_name, message_content, receiver_id, timestamp " +
-                      "FROM ChatMessages " +
-                      "WHERE (user_id = ? AND receiver_id = ?) OR (user_id = ? AND receiver_id = ?) " +
-                      "ORDER BY timestamp ASC";
+                        "FROM ChatMessages " +
+                        "WHERE (user_id = ? AND receiver_id = ?) OR (user_id = ? AND receiver_id = ?) " +
+                        "ORDER BY timestamp ASC";
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setInt(1, currentUserId);
                 pstmt.setInt(2, chatPartnerId);
@@ -368,9 +450,9 @@ public class ChatEndPoint {
             } else {
                 // Lịch sử chat chung (nếu receiver_id là NULL hoặc 0)
                 sql = "SELECT TOP 50 user_id, sender_name, message_content, receiver_id, timestamp " +
-                      "FROM ChatMessages " +
-                      "WHERE receiver_id IS NULL OR receiver_id = 0 " +
-                      "ORDER BY timestamp ASC";
+                        "FROM ChatMessages " +
+                        "WHERE receiver_id IS NULL OR receiver_id = 0 " +
+                        "ORDER BY timestamp ASC";
                 pstmt = conn.prepareStatement(sql);
             }
 
@@ -384,25 +466,32 @@ public class ChatEndPoint {
                 String content = rs.getString("message_content");
                 // Kiểm tra xem receiver_id có NULL không trước khi lấy giá trị
                 Integer msgReceiverId = rs.getObject("receiver_id") != null ? rs.getInt("receiver_id") : null;
-                // Trong lịch sử, chúng ta không có vai trò của người gửi trong bảng ChatMessages,
-                // bạn có thể lấy từ bảng Users nếu cần bằng cách JOIN, hoặc để mặc định là "unknown"
+                // Trong lịch sử, chúng ta không có vai trò của người gửi trong bảng
+                // ChatMessages,
+                // bạn có thể lấy từ bảng Users nếu cần bằng cách JOIN, hoặc để mặc định là
+                // "unknown"
                 String senderRole = "unknown"; // Cần JOIN với bảng Users để lấy đúng role nếu muốn hiển thị.
 
                 // Format: type|sender_id|sender_name|sender_role|receiver_id|content
-                String historyMessage = "history|" + msgSenderId + "|" + senderName + "|" + senderRole + "|" + (msgReceiverId != null ? msgReceiverId : "null") + "|" + content;
+                String historyMessage = "history|" + msgSenderId + "|" + senderName + "|" + senderRole + "|"
+                        + (msgReceiverId != null ? msgReceiverId : "null") + "|" + content;
                 session.getBasicRemote().sendText(historyMessage);
             }
 
             sendPrivateSystemMessage(session, "--- Hết lịch sử ---");
 
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Lỗi khi tải lịch sử chat cho người dùng " + currentUserId + " với đối tác " + chatPartnerId + ": " + e.getMessage(), e);
+            LOGGER.log(Level.SEVERE, "Lỗi khi tải lịch sử chat cho người dùng " + currentUserId + " với đối tác "
+                    + chatPartnerId + ": " + e.getMessage(), e);
             sendPrivateSystemMessage(session, "Lỗi: Không thể tải lịch sử chat.");
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
+                if (rs != null)
+                    rs.close();
+                if (pstmt != null)
+                    pstmt.close();
+                if (conn != null)
+                    conn.close();
             } catch (SQLException e) {
                 LOGGER.log(Level.WARNING, "Lỗi khi đóng tài nguyên DB: " + e.getMessage(), e);
             }

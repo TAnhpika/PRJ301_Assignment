@@ -7,7 +7,7 @@
                     session.getAttribute("doctor"); String userName=currentDoctor !=null ? currentDoctor.getFullName() :
                     (currentUser !=null ? currentUser.getUsername() : "Bác sĩ" ); String userAvatar=currentUser !=null
                     && currentUser.getAvatar() !=null ? currentUser.getAvatar() : request.getContextPath()
-                    + "/img/default-avatar.png" ; %>
+                    + "/view/assets/img/default-avatar.png" ; %>
 
                     <!-- Sidebar Toggle Button (Mobile) -->
                     <button class="btn btn-primary sidebar-toggle" onclick="toggleSidebar()">
@@ -48,32 +48,26 @@
                             </div>
 
                             <!-- User Profile -->
-                            <div class="dropdown">
-                                <button class="btn btn-light d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-                                    <img src="<%= userAvatar %>" alt="Avatar" class="rounded-circle"
-                                        style="width: 32px; height: 32px; object-fit: cover;"
-                                        onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
-                                    <div class="text-start d-none d-md-block">
-                                        <div class="fw-semibold small">
-                                            <%= userName %>
-                                        </div>
-                                        <div class="text-muted" style="font-size: 0.75rem;">Bác sĩ</div>
-                                    </div>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item"
-                                            href="${pageContext.request.contextPath}/doctor_trangcanhan">
-                                            <i class="fas fa-user me-2"></i>Trang cá nhân
-                                        </a></li>
-                                    <li><a class="dropdown-item"
-                                            href="${pageContext.request.contextPath}/EditDoctorServlet">
-                                            <i class="fas fa-cog me-2"></i> Cài đặt
-                                        </a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="${pageContext.request.contextPath}/LogoutServlet">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
-                                        </a></li>
-                                </ul>
+                            <div class="header-user" onclick="toggleUserDropdown(event)">
+                                <img src="<%= userAvatar %>" alt="Avatar">
+                                <div class="header-user-info">
+                                    <span class="header-user-name">
+                                        <%= userName %>
+                                    </span>
+                                    <span class="header-user-role">Bác sĩ</span>
+                                </div>
+                                <div class="header-dropdown">
+                                    <a href="${pageContext.request.contextPath}/doctor_trangcanhan">
+                                        <i class="fas fa-user"></i> Trang cá nhân
+                                    </a>
+                                    <a href="${pageContext.request.contextPath}/EditDoctorServlet">
+                                        <i class="fas fa-cog"></i> Cài đặt
+                                    </a>
+                                    <hr class="m-0 opacity-10">
+                                    <a href="${pageContext.request.contextPath}/LogoutServlet" class="text-danger">
+                                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </header>

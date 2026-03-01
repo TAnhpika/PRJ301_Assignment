@@ -7,7 +7,7 @@
             <div class="sidebar-header">
                 <a href="${pageContext.request.contextPath}/DoctorHomePageServlet" class="sidebar-logo"
                     title="Về trang chủ">
-                    <img src="${pageContext.request.contextPath}/img/logo.png" alt="Logo Happy Smile">
+                    <img src="${pageContext.request.contextPath}/view/assets/img/logo.png" alt="Logo Happy Smile">
                     <span class="sidebar-logo-text">HAPPY <em>Smile</em></span>
                 </a>
             </div>
@@ -81,11 +81,8 @@
                             <span>Tư vấn</span>
                         </div>
                         <div class="sidebar-dropdown-menu">
-                            <a href="${pageContext.request.contextPath}/public/chat.jsp" class="sidebar-dropdown-item">
-                                Phòng chờ
-                            </a>
-                            <a href="${pageContext.request.contextPath}/public/chat.jsp" class="sidebar-dropdown-item">
-                                Trò chuyện
+                            <a href="${pageContext.request.contextPath}/jsp/doctor/doctor_trochuyen.jsp" class="sidebar-dropdown-item">
+                                <i class="fas fa-comment-medical me-2"></i>Trò chuyện bệnh nhân
                             </a>
                         </div>
                     </div>

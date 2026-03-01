@@ -62,7 +62,7 @@
             statusIcon = "fa-circle";
     }
     
-    String defaultAvatar = request.getContextPath() + "/img/default-avatar.png";
+    String defaultAvatar = request.getContextPath() + "/view/assets/img/default-avatar.png";
     String avatarSrc = (patientAvatar != null && !patientAvatar.isEmpty()) ? patientAvatar : defaultAvatar;
 %>
 
@@ -72,8 +72,7 @@
             <img src="<%= avatarSrc %>" 
                  alt="<%= patientName %>" 
                  class="rounded-circle me-3"
-                 style="width: 48px; height: 48px; object-fit: cover;"
-                 onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                 style="width: 48px; height: 48px; object-fit: cover;">
             <div>
                 <h6 class="mb-1"><%= patientName %></h6>
                 <p class="text-muted mb-0 small">

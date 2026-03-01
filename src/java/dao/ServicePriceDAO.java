@@ -14,16 +14,17 @@ import util.DBContext;
  * Ngày tạo: 2025-01-02
  */
 public class ServicePriceDAO {
-    
-    private static final String GET_SERVICE_WITH_FIXED_PRICE = "SELECT service_id, service_name, description, status, category, specialty_id, image FROM Services WHERE service_id = ? AND status = 'active'";
-    private static final String GET_ALL_SERVICES_WITH_FIXED_PRICE = "SELECT service_id, service_name, description, status, category, specialty_id, image FROM Services WHERE status = 'active' ORDER BY service_name";
 
+    private static final String GET_SERVICE_WITH_FIXED_PRICE = "SELECT service_id, service_name, description, status, category, image FROM Services WHERE service_id = ? AND status = 'active'";
+    private static final String GET_ALL_SERVICES_WITH_FIXED_PRICE = "SELECT service_id, service_name, description, status, category, image FROM Services WHERE status = 'active' ORDER BY service_name";
 
     /**
      * Lấy dịch vụ theo ID với giá cố định 50,000 VNĐ
      */
     public static Service getServiceWithFixedPrice(int serviceId) {
-        Connection conn = null; PreparedStatement ps = null; ResultSet rs = null;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         Service service = null;
         try {
             conn = DBContext.getConnection();
@@ -49,7 +50,9 @@ public class ServicePriceDAO {
      * Lấy tất cả dịch vụ với giá cố định 50,000 VNĐ
      */
     public static java.util.List<Service> getAllServicesWithFixedPrice() {
-        Connection conn = null; PreparedStatement ps = null; ResultSet rs = null;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         java.util.List<Service> services = new java.util.ArrayList<>();
         try {
             System.out.println("🔍 Bắt đầu lấy danh sách dịch vụ...");
@@ -86,7 +89,7 @@ public class ServicePriceDAO {
         if (rs == null || rs.isClosed()) {
             throw new SQLException("ResultSet is null or closed");
         }
-        
+
         try {
             Service service = new Service();
             service.setServiceId(rs.getInt("service_id"));
@@ -100,7 +103,8 @@ public class ServicePriceDAO {
                     int sid = rs.getInt("specialty_id");
                     service.setSpecialtyId(rs.wasNull() ? 0 : sid);
                 }
-            } catch (SQLException e) { /* column may not exist */ }
+            } catch (SQLException e) {
+                /* column may not exist */ }
             service.setImage(rs.getString("image"));
             return service;
         } catch (SQLException e) {
@@ -127,7 +131,9 @@ public class ServicePriceDAO {
      * Kiểm tra dịch vụ có tồn tại và active không
      */
     public static boolean isServiceActive(int serviceId) {
-        Connection conn = null; PreparedStatement ps = null; ResultSet rs = null;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         boolean isActive = false;
         try {
             conn = DBContext.getConnection();
@@ -153,7 +159,9 @@ public class ServicePriceDAO {
      * Lấy thông tin dịch vụ cơ bản (không có giá) để hiển thị
      */
     public static Service getServiceInfoOnly(int serviceId) {
-        Connection conn = null; PreparedStatement ps = null; ResultSet rs = null;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         Service service = null;
         try {
             conn = DBContext.getConnection();
@@ -187,9 +195,9 @@ public class ServicePriceDAO {
      */
     public static void main(String[] args) {
         ServicePriceDAO dao = new ServicePriceDAO();
-        
+
         System.out.println("=== Test ServicePriceDAO ===");
-        
+
         // Test lấy dịch vụ với giá cố định
         Service service = dao.getServiceWithFixedPrice(1);
         if (service != null) {
@@ -197,16 +205,16 @@ public class ServicePriceDAO {
         } else {
             System.out.println("❌ Không tìm thấy dịch vụ ID 1");
         }
-        
+
         // Test lấy tất cả dịch vụ
         java.util.List<Service> services = dao.getAllServicesWithFixedPrice();
         System.out.println("📋 Tổng số dịch vụ: " + services.size());
         for (Service s : services) {
             System.out.println("   - " + s.getServiceName() + ": " + s.getPrice() + " VNĐ");
         }
-        
+
         // Test giá cố định
         System.out.println("💰 Giá cố định cho service 1: " + getFixedPrice(1) + " VNĐ");
         System.out.println("💰 Giá cố định cho service 999: " + getFixedPrice(999) + " VNĐ");
     }
-} 
+}

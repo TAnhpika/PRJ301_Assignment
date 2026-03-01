@@ -482,14 +482,16 @@ public class PayOSServlet extends HttpServlet {
             boolean appointmentCreated = false;
             if (activeReservation != null) {
                 try {
-                    // Complete reservation - chuyển status thành "ĐÃ ĐẶT"
-                    boolean reservationCompleted = AppointmentDAO.completeReservation(
-                            activeReservation.getAppointmentId());
+                    // Chuyển từ SlotReservation sang Appointment chính thức
+                    int appointmentId = AppointmentDAO.insertAppointmentFromReservation(activeReservation);
+                    boolean reservationCompleted = appointmentId > 0;
 
                     if (reservationCompleted) {
-                        // completeReservation đã cập nhật status thành COMPLETED rồi, không cần gọi lại
                         appointmentCreated = true;
-                        System.out.println("🎉 TẠO LỊCH HẸN THÀNH CÔNG: " + activeReservation.getAppointmentId());
+                        // Cập nhật ID mới để các bước sau (gửi email) có ID chính xác
+                        activeReservation.setReservationId(appointmentId);
+
+                        System.out.println("🎉 TẠO LỊCH HẸN THÀNH CÔNG: " + appointmentId);
                         System.out.println("👨‍⚕️ Bác sĩ: " + activeReservation.getDoctorId());
                         System.out.println("📅 Ngày khám: " + activeReservation.getWorkDate());
                         System.out.println("⏰ Ca khám: Slot " + activeReservation.getSlotId());
@@ -722,11 +724,14 @@ public class PayOSServlet extends HttpServlet {
             request.setAttribute("paymentInfo", paymentInfo);
             request.setAttribute("appointmentCreated", appointmentCreated);
 
-            // 🔧 GIỮ SESSION DATA cho JSP page, chỉ xóa sau khi render
-            // ✅ Xóa selectedService sau khi thanh toán thành công để người dùng có thể chọn
-            // dịch vụ mới
+            // ✅ Hủy reservation sau khi đã tạo appointment thành công
+            if (appointmentCreated && activeReservation != null) {
+                AppointmentDAO.cancelReservation(activeReservation.getReservationId());
+                session.removeAttribute("activeReservation");
+            }
+
+            // ✅ Xóa selectedService sau khi thanh toán thành công
             session.removeAttribute("selectedService");
-            System.out.println("🔄 Đã xóa selectedService khỏi session sau thanh toán thành công");
 
             request.getRequestDispatcher("/view/jsp/payment/payment-success.jsp").forward(request, response);
 
@@ -812,16 +817,15 @@ public class PayOSServlet extends HttpServlet {
             // 1. HỦY SLOT RESERVATION - Trả slot về hàng đợi
             if (activeReservation != null) {
                 boolean reservationCancelled = AppointmentDAO.cancelReservation(
-                        activeReservation.getAppointmentId());
+                        activeReservation.getReservationId()); // ✅ Dùng Reservation ID
 
                 if (reservationCancelled) {
                     System.out.println("✅ TRẢ SLOT VỀ HÀNG ĐỢI: Slot " + activeReservation.getSlotId() +
                             " đã được trả về hàng đợi");
-                    System.out.println("👨‍⚕️ Bác sĩ: " + activeReservation.getDoctorId() +
-                            " | 📅 Ngày: " + activeReservation.getWorkDate());
                     System.out.println("🔓 Trạng thái: Slot hiện đã SẴN SÀNG cho người khác đặt");
+                    session.removeAttribute("activeReservation"); // ✅ Xóa khởi session
                 } else {
-                    System.err.println("❌ KHÔNG THỂ HỦY: Đặt chỗ " + activeReservation.getAppointmentId());
+                    System.err.println("❌ KHÔNG THỂ HỦY: Đặt chỗ " + activeReservation.getReservationId());
                 }
             }
 

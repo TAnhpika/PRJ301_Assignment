@@ -89,8 +89,7 @@
                             </div>
                             <div class="d-flex align-items-center">
                                 <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
-                                     class="rounded-circle me-3" style="width: 56px; height: 56px; object-fit: cover;"
-                                     onerror="this.src='${pageContext.request.contextPath}/view/assets/img/default-avatar.png'">
+                                     class="rounded-circle me-3" style="width: 56px; height: 56px; object-fit: cover;">
                                 <div class="flex-grow-1">
                                     <h6 class="mb-1"><%= appointment.getPatientName() != null ? appointment.getPatientName() : "Không có tên" %></h6>
                                     <small class="text-muted">Mã cuộc hẹn: #<%= appointment.getAppointmentId() %></small>

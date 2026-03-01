@@ -163,7 +163,7 @@
                         
                         <div class="patient-item active">
                             <div class="d-flex align-items-center">
-                                <img src="${pageContext.request.contextPath}/img/default-avatar.png" class="patient-avatar me-3" alt="Avatar">
+                                <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="patient-avatar me-3" alt="Avatar">
                                 <div class="flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <strong>Trần Thị B</strong>
@@ -176,7 +176,7 @@
                         
                         <div class="patient-item">
                             <div class="d-flex align-items-center">
-                                <img src="${pageContext.request.contextPath}/img/default-avatar.png" class="patient-avatar me-3" alt="Avatar">
+                                <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="patient-avatar me-3" alt="Avatar">
                                 <div class="flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <strong>Lê Văn C</strong>
@@ -189,7 +189,7 @@
                         
                         <div class="patient-item">
                             <div class="d-flex align-items-center">
-                                <img src="${pageContext.request.contextPath}/img/default-avatar.png" class="patient-avatar me-3" alt="Avatar">
+                                <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="patient-avatar me-3" alt="Avatar">
                                 <div class="flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <strong>Phạm Thị D</strong>
@@ -204,7 +204,7 @@
                     <!-- Chat Box -->
                     <div class="chat-box">
                         <div class="chat-header">
-                            <img src="${pageContext.request.contextPath}/img/default-avatar.png" class="patient-avatar me-3" alt="Avatar">
+                            <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="patient-avatar me-3" alt="Avatar">
                             <div>
                                 <strong>Trần Thị B</strong><br>
                                 <small class="text-muted"><span class="online-badge me-1"></span>Đang online</small>

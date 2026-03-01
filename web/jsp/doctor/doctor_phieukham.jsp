@@ -109,9 +109,8 @@
                 
                 <!-- Patient Info -->
                 <div class="patient-info-card">
-                    <img src="${pageContext.request.contextPath}/img/default-avatar.png" 
-                         alt="Avatar" class="patient-avatar"
-                         onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                    <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
+                         alt="Avatar" class="patient-avatar">
                     <div class="flex-grow-1">
                         <div class="row">
                             <div class="col-md-6">

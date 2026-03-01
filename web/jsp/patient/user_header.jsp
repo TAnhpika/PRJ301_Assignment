@@ -8,7 +8,7 @@
                     session.getAttribute("patient"); String userName=currentPatient !=null ?
                     currentPatient.getFullName() : (currentUser !=null ? currentUser.getUsername() : "Khách" ); String
                     userAvatar=currentUser !=null && currentUser.getAvatar() !=null ? currentUser.getAvatar() :
-                    request.getContextPath() + "/img/default-avatar.png" ; %>
+                    request.getContextPath() + "/view/assets/img/default-avatar.png" ; %>
 
                     <!-- Sidebar Toggle Button (Mobile) -->
                     <button class="sidebar-toggle" onclick="toggleSidebar()">
@@ -45,9 +45,8 @@
 
                             <!-- User Profile -->
                             <% if (currentUser !=null) { %>
-                                <div class="header-user">
-                                    <img src="<%= userAvatar %>" alt="Avatar"
-                                        onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                                <div class="header-user" onclick="toggleUserDropdown(event)">
+                                    <img src="<%= userAvatar %>" alt="Avatar">
                                     <div class="header-user-info">
                                         <span class="header-user-name">
                                             <%= userName %>

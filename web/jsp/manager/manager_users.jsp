@@ -152,7 +152,7 @@
                                 <tr data-role="<%= u.getRole() %>" data-status="<%= u.isActive() ? "active" : "inactive" %>">
                                     <td><span class="badge bg-secondary">#<%= u.getId() %></span></td>
                                     <td>
-                                        <img src="<%= u.getAvatar() != null ? u.getAvatar() : request.getContextPath() + "/img/default-avatar.png" %>" 
+                                        <img src="<%= u.getAvatar() != null ? u.getAvatar() : request.getContextPath() + "/view/assets/img/default-avatar.png" %>" 
                                              class="user-avatar" alt="User Avatar">
                                     </td>
                                     <td><strong><%= u.getName() %></strong></td>

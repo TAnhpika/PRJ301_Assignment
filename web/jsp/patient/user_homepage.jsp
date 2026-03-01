@@ -53,7 +53,7 @@
                 
                 <!-- Stats Cards Row -->
                 <div class="row g-4 mb-4">
-                    <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="col-12 col-md-4">
                         <div class="stat-card">
                             <div class="stat-card-icon">
                                 <i class="fas fa-calendar-check"></i>
@@ -64,7 +64,7 @@
                             <div class="stat-card-label">Lịch hẹn sắp tới</div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="col-12 col-md-4">
                         <div class="stat-card success">
                             <div class="stat-card-icon">
                                 <i class="fas fa-clipboard-check"></i>
@@ -73,22 +73,13 @@
                             <div class="stat-card-label">Lần khám tại đây</div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="col-12 col-md-4">
                         <div class="stat-card info">
                             <div class="stat-card-icon">
                                 <i class="fas fa-user-md"></i>
                             </div>
                             <div class="stat-card-value"><%= doctors != null ? doctors.size() : 0 %></div>
                             <div class="stat-card-label">Bác sĩ đang trực</div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="stat-card warning">
-                            <div class="stat-card-icon">
-                                <i class="fas fa-file-medical"></i>
-                            </div>
-                            <div class="stat-card-value">0</div>
-                            <div class="stat-card-label">Hồ sơ y tế</div>
                         </div>
                     </div>
                 </div>
@@ -161,7 +152,7 @@
                                 %>
                                 <div class="col-12 col-md-6">
                                     <div class="d-flex align-items-center p-3 bg-light rounded">
-                                        <img src="${pageContext.request.contextPath}/img/default-avatar.png" 
+                                        <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
                                              class="rounded-circle me-3" 
                                              style="width: 50px; height: 50px; object-fit: cover;">
                                         <div class="flex-grow-1">
@@ -191,8 +182,7 @@
                                 <img src="${pageContext.request.contextPath}<%= patientAvatar %>" 
                                      alt="Avatar" 
                                      class="rounded-circle mb-3"
-                                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);"
-                                     onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);">
                                 <% } else { %>
                                 <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
                                      style="width: 80px; height: 80px; font-size: 32px;">
@@ -259,8 +249,7 @@
                             <div class="d-flex mb-3 pb-3 border-bottom">
                                 <img src="${pageContext.request.contextPath}/<%= blog.getImageUrl() %>" 
                                      class="rounded me-3" 
-                                     style="width: 60px; height: 60px; object-fit: cover;"
-                                     onerror="this.src='${pageContext.request.contextPath}/img/default-avatar.png'">
+                                     style="width: 60px; height: 60px; object-fit: cover;">
                                 <div>
                                     <h6 class="mb-1 small"><%= blog.getTitle() %></h6>
                                     <small class="text-muted"><%= blog.getCreatedAt().toString().substring(0, 10) %></small>

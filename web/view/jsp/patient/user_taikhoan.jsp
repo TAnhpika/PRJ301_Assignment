@@ -92,8 +92,7 @@
                         <div class="dashboard-card text-center">
                             <% if (patient != null && patient.getAvatar() != null && !patient.getAvatar().isEmpty()) { %>
                             <img src="${pageContext.request.contextPath}<%= patient.getAvatar() %>" 
-                                 class="profile-avatar mb-3" alt="Avatar"
-                                 onerror="this.src='${pageContext.request.contextPath}/view/assets/img/default-avatar.png'">
+                                 class="profile-avatar mb-3" alt="Avatar">
                             <% } else { %>
                             <div class="profile-avatar-placeholder mx-auto mb-3">
                                 <%= users.getUsername() != null ? users.getUsername().substring(0, 1).toUpperCase() : "U" %>

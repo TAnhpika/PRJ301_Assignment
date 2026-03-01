@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <%@ page import="java.util.*, model.MedicalReport, model.Prescription" %>
         <%@ include file="user_header.jsp" %>
             <%@ include file="user_menu.jsp" %>
@@ -11,10 +11,10 @@
                         <head>
                             <meta charset="UTF-8">
                             <title>Chi tiết báo cáo y tế</title>
-                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/view/assets/css/bootstrap.min.css"
+                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
                                 rel="stylesheet">
                             <link rel="stylesheet"
-                                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/view/assets/css/all.min.css">
+                                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
                             <style>
                                 body {
                                     font-family: 'Segoe UI', sans-serif;
@@ -219,7 +219,7 @@
                             </div>
 
                             <script
-                                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/view/assets/js/bootstrap.bundle.min.js"></script>
+                                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
                         </body>
 
                         </html>
