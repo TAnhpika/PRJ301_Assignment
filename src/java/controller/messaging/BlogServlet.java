@@ -74,19 +74,19 @@ public class BlogServlet extends HttpServlet {
                 int blogId = Integer.parseInt(blogIdStr);
                 BlogPost post = BlogDAO.getPostById(blogId);
                 request.setAttribute("post", post);
-                request.getRequestDispatcher("/editblog.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/blog/editblog.jsp").forward(request, response);
                 return;
             } else if ("detail".equals(action) && blogIdStr != null) {
                 int blogId = Integer.parseInt(blogIdStr);
                 BlogPost post = BlogDAO.getPostById(blogId);
                 request.setAttribute("post", post);
-                request.getRequestDispatcher("/view/jsp/blog/blog_detail.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/blog/blog_detail.jsp").forward(request, response);
                 return;
             }
 
             List<BlogPost> posts = BlogDAO.getAllPosts();
             request.setAttribute("posts", posts);
-            request.getRequestDispatcher("/view/jsp/blog/blog.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/blog/blog.jsp").forward(request, response);
 
         } catch (Exception e) {
             throw new ServletException(e);

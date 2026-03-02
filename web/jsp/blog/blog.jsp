@@ -1,11 +1,11 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.*, model.BlogPost" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 
 <%
     List<BlogPost> posts = (List<BlogPost>) request.getAttribute("posts");
     String role = (String) session.getAttribute("role"); // STAFF hoặc PATIENT, MANAGER, null...
-    boolean isStaff = "STAFF".equals(role);
+    boolean isStaff = "staff".equalsIgnoreCase(role);
 
     BlogPost featuredPost = null;
     List<BlogPost> otherPosts = new ArrayList<>();
@@ -19,11 +19,11 @@
 <%
     String homeUrl = request.getContextPath() + "/LandingPageServlet"; // mặc định
 
-    if ("patient".equals(role)) {
+    if ("patient".equalsIgnoreCase(role)) {
         homeUrl = request.getContextPath() + "/UserHompageServlet";
-    } else if ("doctor".equals(role)) {
+    } else if ("doctor".equalsIgnoreCase(role)) {
         homeUrl = request.getContextPath() + "/DoctorHomePageServlet";
-    } else if ("STAFF".equals(role)) {
+    } else if ("staff".equalsIgnoreCase(role)) {
         homeUrl = request.getContextPath() + "/jsp/staff/staff_tongquan.jsp";
     }
 %>
@@ -586,7 +586,7 @@
             <% if (isStaff) { %>
             <div class="post-form">
                 <h3>Đăng bài viết mới</h3>
-                <form action="blog" method="post" enctype="multipart/form-data">
+                <form action="${pageContext.request.contextPath}/blog" method="post" enctype="multipart/form-data">
                     <label for="title">Tiêu đề bài viết:</label>
                     <input type="text" id="title" name="title" placeholder="Tiêu đề chính của tin tức..." required>
 
@@ -606,11 +606,11 @@
             <h2 class="section-title">Bài Viết Mới Nhất</h2>
             <div class="featured-post">
                 <div class="featured-post-img">
-                    <img src="<%= request.getContextPath() + "/" + featuredPost.imageUrl%>" alt="<%= featuredPost.title%>">
+                    <img src="<%= request.getContextPath() + "/" + featuredPost.imageUrl%>" alt="<%= featuredPost.title%>" onerror="this.onerror=null; this.src='<%= request.getContextPath() %>/view/assets/img/default_blog.jpg'">
                 </div>
                 <div class="featured-post-content">
                     <h2>
-                        <a href="blog?action=detail&blog_id=<%= featuredPost.blogId%>" style="text-decoration: none; color: #0056b3;">
+                        <a href="${pageContext.request.contextPath}/blog?action=detail&blog_id=<%= featuredPost.blogId%>" style="text-decoration: none; color: #0056b3;">
                             <%= featuredPost.title%>
                         </a>
                     </h2>
@@ -619,8 +619,8 @@
                         <small><i class="far fa-clock"></i> <%= new SimpleDateFormat("HH:mm dd/MM/yyyy").format(featuredPost.getCreatedAt())%></small>
                         <% if (isStaff) {%>
                         <div class="actions">
-                            <a href="blog?action=edit&blog_id=<%= featuredPost.blogId%>"><i class="fas fa-edit"></i> Sửa</a>
-                            <form action="blog" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể hoàn tác.')">
+                            <a href="${pageContext.request.contextPath}/blog?action=edit&blog_id=<%= featuredPost.blogId%>"><i class="fas fa-edit"></i> Sửa</a>
+                            <form action="${pageContext.request.contextPath}/blog" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể hoàn tác.')">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="blog_id" value="<%= featuredPost.blogId%>">
                                 <button type="submit"><i class="fas fa-trash-alt"></i> Xóa</button>
@@ -639,11 +639,11 @@
                 <% for (BlogPost p : otherPosts) {%>
                 <div class="blog-card">
                     <% if (p.imageUrl != null && !p.imageUrl.isEmpty()) {%>
-                    <img src="<%= request.getContextPath() + "/" + p.imageUrl%>" alt="<%= p.title%>">
+                    <img src="<%= request.getContextPath() + "/" + p.imageUrl%>" alt="<%= p.title%>" onerror="this.onerror=null; this.src='<%= request.getContextPath() %>/view/assets/img/default_blog.jpg'">
                     <% }%>
                     <div class="blog-content">
                         <h3>
-                            <a href="blog?action=detail&blog_id=<%= p.blogId%>" style="text-decoration: none; color: #0056b3;">
+                            <a href="${pageContext.request.contextPath}/blog?action=detail&blog_id=<%= p.blogId%>" style="text-decoration: none; color: #0056b3;">
                                 <%= p.title%>
                             </a>
                         </h3>
@@ -652,8 +652,8 @@
 
                         <% if (isStaff) {%>
                         <div class="actions">
-                            <a href="blog?action=edit&blog_id=<%= p.blogId%>"><i class="fas fa-edit"></i> Sửa</a>
-                            <form action="blog" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể hoàn tác.')">
+                            <a href="${pageContext.request.contextPath}/blog?action=edit&blog_id=<%= p.blogId%>"><i class="fas fa-edit"></i> Sửa</a>
+                            <form action="${pageContext.request.contextPath}/blog" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể hoàn tác.')">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="blog_id" value="<%= p.blogId%>">
                                 <button type="submit"><i class="fas fa-trash-alt"></i> Xóa</button>
