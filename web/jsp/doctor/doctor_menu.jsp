@@ -81,7 +81,7 @@
                             <span>Tư vấn</span>
                         </div>
                         <div class="sidebar-dropdown-menu">
-                            <a href="${pageContext.request.contextPath}/jsp/doctor/doctor_trochuyen.jsp" class="sidebar-dropdown-item">
+                            <a href="${pageContext.request.contextPath}/jsp/doctor/chat.jsp" class="sidebar-dropdown-item">
                                 <i class="fas fa-comment-medical me-2"></i>Trò chuyện bệnh nhân
                             </a>
                         </div>

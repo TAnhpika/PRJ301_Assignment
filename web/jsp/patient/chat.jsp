@@ -117,8 +117,9 @@
                             </div>
                         </div>
                         <div class="chat-actions d-none" id="chatActions">
-                            <button class="btn btn-light btn-sm rounded-circle"><i class="fas fa-video text-primary"></i></button>
-                            <button class="btn btn-light btn-sm rounded-circle ms-2"><i class="fas fa-ellipsis-v text-muted"></i></button>
+                            <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2" style="background-color: #d1e7dd; color: #0f5132 !important;">
+                                <i class="fas fa-circle me-1" style="font-size:8px"></i>Đang online
+                            </span>
                         </div>
                     </div>
                     

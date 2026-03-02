@@ -224,10 +224,10 @@ public class ChatEndPoint {
             Session receiverSession = null;
 
             // Xác định session của người nhận dựa trên vai trò của người gửi
-            if ("doctor".equals(senderRole)) {
+            if ("doctor".equalsIgnoreCase(senderRole)) {
                 receiverSession = patientSessions.get(receiverId); // Bác sĩ gửi cho bệnh nhân
                 LOGGER.info("Đang cố gắng gửi từ Bác sĩ " + senderId + " đến Bệnh nhân " + receiverId);
-            } else if ("patient".equals(senderRole)) {
+            } else if ("patient".equalsIgnoreCase(senderRole)) {
                 receiverSession = doctorSessions.get(receiverId); // Bệnh nhân gửi cho bác sĩ
                 LOGGER.info("Đang cố gắng gửi từ Bệnh nhân " + senderId + " đến Bác sĩ " + receiverId);
             }
@@ -272,12 +272,12 @@ public class ChatEndPoint {
             String role = (String) userData.get("role");
 
             // Xóa session khỏi danh sách theo vai trò
-            if ("doctor".equals(role)) {
+            if ("doctor".equalsIgnoreCase(role)) {
                 doctorSessions.remove(userId);
                 // Gửi thông báo tới TẤT CẢ bệnh nhân rằng có bác sĩ vừa offline
                 broadcastSystemMessage("system|0|Server|System|null|Bác sĩ " + username + " vừa offline.");
                 LOGGER.info("Bác sĩ " + username + " đã ngắt kết nối.");
-            } else if ("patient".equals(role)) {
+            } else if ("patient".equalsIgnoreCase(role)) {
                 patientSessions.remove(userId);
                 LOGGER.info("Bệnh nhân " + username + " đã ngắt kết nối.");
             }

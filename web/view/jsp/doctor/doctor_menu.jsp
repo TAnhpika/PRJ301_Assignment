@@ -75,20 +75,10 @@
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">Tư vấn</div>
 
-                    <div class="sidebar-dropdown">
-                        <div class="sidebar-item sidebar-dropdown-toggle" onclick="toggleDropdown(this)">
-                            <i class="fas fa-comments"></i>
-                            <span>Tư vấn</span>
-                        </div>
-                        <div class="sidebar-dropdown-menu">
-                            <a href="${pageContext.request.contextPath}/public/chat.jsp" class="sidebar-dropdown-item">
-                                Phòng chờ
-                            </a>
-                            <a href="${pageContext.request.contextPath}/public/chat.jsp" class="sidebar-dropdown-item">
-                                Trò chuyện
-                            </a>
-                        </div>
-                    </div>
+                    <a href="${pageContext.request.contextPath}/ChatPageServlet" class="sidebar-item">
+                        <i class="fas fa-comments"></i>
+                        <span>Tư vấn / Chat</span>
+                    </a>
                 </div>
 
                 <!-- Account Section -->
