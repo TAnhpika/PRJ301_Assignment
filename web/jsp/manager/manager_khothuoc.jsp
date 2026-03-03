@@ -32,6 +32,23 @@
             <%@ include file="/jsp/manager/manager_header.jsp" %>
             
             <div class="dashboard-content">
+                <!-- Alerts -->
+                <% String successMessage = (String) session.getAttribute("successMessage");
+                   if (successMessage != null) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i><%= successMessage %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% session.removeAttribute("successMessage"); } %>
+
+                <% String errorMessage = (String) session.getAttribute("errorMessage");
+                   if (errorMessage != null) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i><%= errorMessage %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                <% session.removeAttribute("errorMessage"); } %>
+
                 <!-- Page Header -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -126,11 +143,11 @@
                     <td><%= med.getUnit() %></td>
                                     <td><small class="text-muted"><%= med.getDescription() != null ? med.getDescription() : "N/A" %></small></td>
                                     <td>
-                                        <button class="btn btn-sm btn-outline-primary me-1" title="Chỉnh sửa">
+                                        <button class="btn btn-sm btn-outline-primary me-1" title="Chỉnh sửa" onclick="editMedicine(<%= med.getMedicineId() %>, '<%= med.getName() %>', <%= med.getQuantityInStock() %>, '<%= med.getUnit() %>', '<%= med.getDescription() != null ? med.getDescription().replace("'", "\\'") : "" %>')">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-success" title="Nhập thêm">
-                                            <i class="fas fa-plus"></i>
+                                        <button class="btn btn-sm btn-outline-danger" title="Xóa" onclick="confirmDelete(<%= med.getMedicineId() %>, '<%= med.getName() %>')">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                 </tr>
@@ -187,6 +204,56 @@
         </div>
     </div>
     
+    <!-- Edit Medicine Modal -->
+    <div class="modal fade" id="editMedicineModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Chỉnh sửa thông tin thuốc</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="${pageContext.request.contextPath}/UpdateMedicineServlet" method="POST">
+                    <input type="hidden" name="medicineId" id="editMedicineId">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Tên thuốc <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" id="editName" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Số lượng <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" name="quantity" id="editQuantity" min="0" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Đơn vị <span class="text-danger">*</span></label>
+                                <select class="form-select" name="unit" id="editUnit" required>
+                                    <option value="Viên">Viên</option>
+                                    <option value="Hộp">Hộp</option>
+                                    <option value="Chai">Chai</option>
+                                    <option value="Tuýp">Tuýp</option>
+                                    <option value="Gói">Gói</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" name="description" id="editDescription" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hidden Delete Form -->
+    <form id="deleteMedicineForm" action="${pageContext.request.contextPath}/DeleteMedicineServlet" method="POST" style="display: none;">
+        <input type="hidden" name="medicineId" id="deleteMedicineId">
+    </form>
+    
     <%@ include file="/view/layout/dashboard_scripts.jsp" %>
     
     <script>
@@ -211,6 +278,24 @@
                 }
                 
                 tr[i].style.display = show ? "" : "none";
+            }
+        }
+
+        function editMedicine(id, name, quantity, unit, description) {
+            document.getElementById('editMedicineId').value = id;
+            document.getElementById('editName').value = name;
+            document.getElementById('editQuantity').value = quantity;
+            document.getElementById('editUnit').value = unit;
+            document.getElementById('editDescription').value = description;
+            
+            var editModal = new bootstrap.Modal(document.getElementById('editMedicineModal'));
+            editModal.show();
+        }
+
+        function confirmDelete(id, name) {
+            if (confirm('Bạn có chắc chắn muốn xóa thuốc "' + name + '" khỏi hệ thống không?')) {
+                document.getElementById('deleteMedicineId').value = id;
+                document.getElementById('deleteMedicineForm').submit();
             }
         }
     </script>

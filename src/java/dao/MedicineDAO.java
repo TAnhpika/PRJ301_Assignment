@@ -351,4 +351,35 @@ public class MedicineDAO {
         return medicine;
     }
 
+    public static boolean addMedicine(String name, int quantity, String unit, String description) throws SQLException {
+        String sql = "INSERT INTO Medicine (name, quantity_in_stock, unit, description) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setInt(2, quantity);
+            ps.setString(3, unit);
+            ps.setString(4, description);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public static boolean updateMedicine(int medicineId, String name, int quantity, String unit, String description)
+            throws SQLException {
+        String sql = "UPDATE Medicine SET name = ?, quantity_in_stock = ?, unit = ?, description = ? WHERE medicine_id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setInt(2, quantity);
+            ps.setString(3, unit);
+            ps.setString(4, description);
+            ps.setInt(5, medicineId);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    public static boolean deleteMedicine(int medicineId) throws SQLException {
+        String sql = "DELETE FROM Medicine WHERE medicine_id = ?";
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, medicineId);
+            return ps.executeUpdate() > 0;
+        }
+    }
 }

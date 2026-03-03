@@ -10,8 +10,6 @@
                         + "/jsp/auth/login.jsp" ); return; }
                         List<BlogPost> blogs = null;
                         try { blogs = BlogDAO.getAllPosts(); } catch (SQLException e) { blogs = new java.util.ArrayList<>(); }
-                        int pendingCount = 0;
-                        int approvedCount = (blogs != null) ? blogs.size() : 0;
                         %>
 
                         <!DOCTYPE html>
@@ -46,37 +44,15 @@
 
                                                 <!-- Stats Cards -->
                                                 <div class="row g-4 mb-4">
-                                                    <div class="col-12 col-sm-6 col-xl-4">
-                                                        <div class="stat-card">
-                                                            <div class="stat-card-icon">
-                                                                <i class="fas fa-newspaper"></i>
+                                                    <div class="col-12">
+                                                        <div class="stat-card d-flex flex-column align-items-center justify-content-center py-4">
+                                                            <div class="stat-card-icon mb-3">
+                                                                 <i class="fas fa-newspaper"></i>
                                                             </div>
                                                             <div class="stat-card-value">
                                                                 <%= blogs.size() %>
                                                             </div>
                                                             <div class="stat-card-label">Tổng số bài viết</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-sm-6 col-xl-4">
-                                                        <div class="stat-card warning">
-                                                            <div class="stat-card-icon">
-                                                                <i class="fas fa-clock"></i>
-                                                            </div>
-                                                            <div class="stat-card-value">
-                                                                <%= pendingCount %>
-                                                            </div>
-                                                            <div class="stat-card-label">Chờ duyệt</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-sm-6 col-xl-4">
-                                                        <div class="stat-card success">
-                                                            <div class="stat-card-icon">
-                                                                <i class="fas fa-check-circle"></i>
-                                                            </div>
-                                                            <div class="stat-card-value">
-                                                                <%= approvedCount %>
-                                                            </div>
-                                                            <div class="stat-card-label">Đã duyệt</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -119,22 +95,20 @@
                                                                     <% } else { for (BlogPost blog : blogs) { %>
                                                                         <tr>
                                                                             <td><span class="badge bg-secondary">#<%= blog.getBlogId() %></span></td>
-                                                                            <td>
-                                                                                <img src="<%= blog.getImageUrl() != null ? blog.getImageUrl() : request.getContextPath() + "/view/assets/img/default-blog.jpg" %>"
-                                                                                    class="rounded" style="width: 80px; height: 50px; object-fit: cover;"
-                                                                                    alt="Blog Image">
-                                                                            </td>
+                                                                             <td>
+                                                                                 <img src="<%= blog.getImageUrl() != null && !blog.getImageUrl().isEmpty() ? blog.getImageUrl() : request.getContextPath() + "/view/assets/img/default_blog.jpg" %>"
+                                                                                     class="rounded" style="width: 80px; height: 50px; object-fit: cover;"
+                                                                                     alt="Blog Image"
+                                                                                     onerror="this.onerror=null;this.src='<%= request.getContextPath() %>/view/assets/img/default_blog.jpg';">
+                                                                             </td>
                                                                             <td>
                                                                                 <strong class="d-block mb-1"><%= blog.getTitle() %></strong>
-                                                                                <small class="text-muted" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                                                <small class="text-muted" style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                                                                     <%= blog.getContent() != null ? (blog.getContent().length() > 100 ? blog.getContent().substring(0, 100) + "..." : blog.getContent()) : "" %>
                                                                                 </small>
                                                                             </td>
                                                                             <td><%= blog.getCreatedAt() %></td>
                                                                             <td>
-                                                                                <button class="btn btn-sm btn-outline-info me-1" title="Xem chi tiết">
-                                                                                    <i class="fas fa-eye"></i>
-                                                                                </button>
                                                                                 <button class="btn btn-sm btn-outline-danger" title="Xóa" onclick="confirmDelete(<%= blog.getBlogId() %>)">
                                                                                     <i class="fas fa-trash"></i>
                                                                                 </button>

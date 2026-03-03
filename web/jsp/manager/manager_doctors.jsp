@@ -149,9 +149,9 @@
                                                                 data-name="<%= doctor.getFullName().toLowerCase() %>">
                                                                 <div class="doctor-card">
                                                                     <div class="d-flex align-items-center mb-3">
-                                                                        <img src="<%= doctor.getAvatar() != null ? doctor.getAvatar() : request.getContextPath() + "
-                                                                            /view/assets/img/default-avatar.png" %>"
-                                                                        class="doctor-avatar me-3" alt="Doctor Avatar">
+                                                                         <img src="<%= doctor.getAvatar() != null && !doctor.getAvatar().isEmpty() ? doctor.getAvatar() : request.getContextPath() + "/view/assets/img/default-avatar.png" %>"
+                                                                         class="doctor-avatar me-3" alt="Doctor Avatar"
+                                                                         onerror="this.onerror=null;this.src='<%= request.getContextPath() %>/view/assets/img/default-avatar.png';">
                                                                         <div>
                                                                             <h6 class="mb-1">
                                                                                 <%= doctor.getFullName() %>
