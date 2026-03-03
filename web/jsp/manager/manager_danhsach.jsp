@@ -27,8 +27,14 @@
 
     int doctorCount = doctorData != null ? doctorData.size() : 0;
     int staffCount = staffData != null ? staffData.size() : 0;
+    
     String successMessage = (String) request.getAttribute("successMessage");
+    if (successMessage == null) successMessage = (String) session.getAttribute("success");
+    session.removeAttribute("success");
+    
     String errorMessage = (String) request.getAttribute("errorMessage");
+    if (errorMessage == null) errorMessage = (String) session.getAttribute("error");
+    session.removeAttribute("error");
 %>
 
 <!DOCTYPE html>

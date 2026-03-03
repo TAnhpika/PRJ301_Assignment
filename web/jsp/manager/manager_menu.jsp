@@ -37,13 +37,9 @@
                                 class="sidebar-dropdown-item">
                                 Danh sách nhân viên
                             </a>
-                            <a href="${pageContext.request.contextPath}/jsp/manager/manager_customers.jsp"
+                            <a href="${pageContext.request.contextPath}/ManagerCustomerListServlet"
                                 class="sidebar-dropdown-item">
                                 Danh sách khách hàng
-                            </a>
-                            <a href="${pageContext.request.contextPath}/jsp/manager/manager_doctors.jsp"
-                                class="sidebar-dropdown-item">
-                                Danh sách bác sĩ
                             </a>
                         </div>
                     </div>

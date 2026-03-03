@@ -99,7 +99,18 @@
                                                 <td>
                                                     <c:choose>
                                                         <c:when test="${not empty patient.avatar}">
-                                                            <img src="${patient.avatar}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                                            <c:choose>
+                                                                <c:when test="${patient.avatar.startsWith('http')}">
+                                                                    <c:set var="avatarPath" value="${patient.avatar}" />
+                                                                </c:when>
+                                                                <c:when test="${patient.avatar.startsWith('/')}">
+                                                                    <c:set var="avatarPath" value="${pageContext.request.contextPath}${patient.avatar}" />
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <c:set var="avatarPath" value="${pageContext.request.contextPath}/${patient.avatar}" />
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                            <img src="${avatarPath}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/view/assets/img/default-avatar.png';">
                                                         </c:when>
                                                         <c:otherwise>
                                                             <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
