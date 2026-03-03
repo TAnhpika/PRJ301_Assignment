@@ -8,27 +8,31 @@ import java.util.Date;
 
 /**
  * Model Staff đại diện cho thông tin của nhân viên
+ * 
  * @author TranHongPhuoc && B.Chou
  */
 public class Staff {
-    private long staffId;         // ID của nhân viên (IDENTITY)
-    private long userId;          // ID của user tương ứng (unique)
-    private String fullName;      // Họ tên đầy đủ (NOT NULL)
-    private String phone;         // Số điện thoại (NOT NULL)
-    private Date dateOfBirth;     // Ngày sinh
-    private String gender;        // Giới tính (male/female/other)
-    private String address;       // Địa chỉ
-    private String position;      // Chức vụ (NOT NULL)
+    private long staffId; // ID của nhân viên (IDENTITY)
+    private long userId; // ID của user tương ứng (unique)
+    private String fullName; // Họ tên đầy đủ (NOT NULL)
+    private String phone; // Số điện thoại (NOT NULL)
+    private Date dateOfBirth; // Ngày sinh
+    private String gender; // Giới tính (male/female/other)
+    private String address; // Địa chỉ
+    private String position; // Chức vụ (NOT NULL)
     private String employmentType; // Loại nhân viên (fulltime/parttime)
-    private Date createdAt;       // Ngày tạo
-    private String avatar;        // Đường dẫn avatar
-    private String userEmail;  
+    private Date createdAt; // Ngày tạo
+    private String avatar; // Đường dẫn avatar
+    private String userEmail;
+    private String status; // Trạng thái (active/inactive/on_leave)
+    private String department; // Phòng ban
 
     // Constructor mặc định
     public Staff() {
     }
 
-    public Staff(long staffId, long userId, String fullName, String phone, Date dateOfBirth, String gender, String address, String position, String employmentType) {
+    public Staff(long staffId, long userId, String fullName, String phone, Date dateOfBirth, String gender,
+            String address, String position, String employmentType) {
         this.staffId = staffId;
         this.userId = userId;
         this.fullName = fullName;
@@ -39,10 +43,9 @@ public class Staff {
         this.position = position;
         this.employmentType = employmentType;
     }
-    
-    
 
-    public Staff(long staffId, long userId, String fullName, String phone, Date dateOfBirth, String gender, String address, String position, String employmentType, Date createdAt, String avatar, String userEmail) {
+    public Staff(long staffId, long userId, String fullName, String phone, Date dateOfBirth, String gender,
+            String address, String position, String employmentType, Date createdAt, String avatar, String userEmail) {
         this.staffId = staffId;
         this.userId = userId;
         this.fullName = fullName;
@@ -64,10 +67,6 @@ public class Staff {
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
     }
-
-    
-    
-    
 
     // Getters và Setters
     public long getStaffId() {
@@ -170,22 +169,47 @@ public class Staff {
         this.avatar = avatar;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    // Alias methods for JSP compatibility
+    public String getName() {
+        return fullName;
+    }
+
+    public String getEmail() {
+        return userEmail;
+    }
+
     // toString method để in thông tin
     @Override
     public String toString() {
-        return "Staff{" + 
-               "staffId=" + staffId + 
-               ", userId=" + userId + 
-               ", fullName='" + fullName + '\'' + 
-               ", phone='" + phone + '\'' + 
-               ", dateOfBirth=" + dateOfBirth + 
-               ", gender='" + gender + '\'' + 
-               ", address='" + address + '\'' + 
-               ", position='" + position + '\'' + 
-               ", employmentType='" + employmentType + '\'' + 
-               ", createdAt=" + createdAt + 
-               ", avatar='" + avatar + '\'' + 
-               '}';
+        return "Staff{" +
+                "staffId=" + staffId +
+                ", userId=" + userId +
+                ", fullName='" + fullName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", gender='" + gender + '\'' +
+                ", address='" + address + '\'' +
+                ", position='" + position + '\'' +
+                ", employmentType='" + employmentType + '\'' +
+                ", createdAt=" + createdAt +
+                ", avatar='" + avatar + '\'' +
+                '}';
     }
 
     // Phương thức kiểm tra thông tin hợp lệ
@@ -194,17 +218,17 @@ public class Staff {
         if (fullName == null || fullName.trim().isEmpty()) {
             return false;
         }
-        
+
         // Kiểm tra phone không được null và phải đúng định dạng
         if (phone == null || phone.trim().isEmpty()) {
             return false;
         }
-        
+
         // Kiểm tra position không được null và không được rỗng
         if (position == null || position.trim().isEmpty()) {
             return false;
         }
-        
+
         // Kiểm tra gender phải là "male", "female" hoặc "other"
         if (gender != null) {
             String genderLower = gender.toLowerCase();
@@ -212,7 +236,6 @@ public class Staff {
                 return false;
             }
         }
-        
 
         //
         // Kiểm tra employmentType phải là "fulltime" hoặc "parttime"
@@ -222,7 +245,7 @@ public class Staff {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -231,7 +254,7 @@ public class Staff {
         if (dateOfBirth == null) {
             return 0;
         }
-        
+
         Date now = new Date();
         long diffInMillies = Math.abs(now.getTime() - dateOfBirth.getTime());
         long diff = diffInMillies / (1000L * 60 * 60 * 24 * 365);

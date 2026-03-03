@@ -35,7 +35,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h4 class="mb-1">Tổng quan phòng khám</h4>
-                        <p class="text-muted mb-0">Chào mừng trở lại, <%= manager != null ? manager.getName() : user.getUsername() %>!</p>
+                        <p class="text-muted mb-0">Chào mừng trở lại, <%= manager != null ? manager.getFullName() : user.getUsername() %>!</p>
                     </div>
                     <div>
                         <span class="badge bg-light text-dark">

@@ -108,6 +108,10 @@ public class StaffDAO {
                     staff.setEmploymentType(rs.getString("employment_type"));
                     staff.setCreatedAt(rs.getDate("created_at"));
 
+                    // Lấy các trường mới
+                    staff.setStatus(rs.getString("status"));
+                    staff.setDepartment(rs.getString("department"));
+
                     // Lấy email từ JOIN query
                     staff.setUserEmail(rs.getString("email"));
 

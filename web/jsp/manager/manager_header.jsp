@@ -1,5 +1,5 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/manager.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/view/assets/css/manager.css">
     <%@page import="model.User" %>
         <%-- Manager Header Component - Bootstrap Version Unified UI/UX Dashboard Header --%>
 

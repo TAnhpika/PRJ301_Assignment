@@ -124,7 +124,7 @@
                                                                 </td>
                                                         <td><span class="badge bg-warning"><i class="fas fa-clock me-1"></i>Chờ duyệt</span></td>
                                                         <td class="text-center">
-                                                            <form action="${pageContext.request.contextPath}/ManagerApprovalStaffScheduleServlet" method="POST" class="d-inline">
+                                                            <form action="${pageContext.request.contextPath}/ManagerProcessApprovalServlet" method="POST" class="d-inline">
                                                                 <input type="hidden" name="request_type" value="doctor">
                                                                 <input type="hidden" name="schedule_id" value="${schedule.scheduleId}">
                                                                 <button type="submit" name="action" value="approve" class="btn btn-sm btn-success me-1" onclick="return confirm('Bạn có chắc muốn phê duyệt lịch này?')">
@@ -208,7 +208,7 @@
                                                                 </td>
                                                         <td><span class="badge bg-warning"><i class="fas fa-clock me-1"></i>Chờ duyệt</span></td>
                                                         <td class="text-center">
-                                                            <form action="${pageContext.request.contextPath}/ManagerApprovalStaffScheduleServlet" method="POST" class="d-inline">
+                                                            <form action="${pageContext.request.contextPath}/ManagerProcessApprovalServlet" method="POST" class="d-inline">
                                                                 <input type="hidden" name="request_type" value="staff">
                                                                 <input type="hidden" name="schedule_id" value="${request.scheduleId}">
                                                                 <button type="submit" name="action" value="approve" class="btn btn-sm btn-success me-1" onclick="return confirm('Bạn có chắc muốn phê duyệt yêu cầu này?')">

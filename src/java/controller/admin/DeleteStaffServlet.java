@@ -49,10 +49,12 @@ public class DeleteStaffServlet extends HttpServlet {
                 boolean deleted = false;
                 if ("staff".equalsIgnoreCase(type)) {
                     deleted = staffDAO.delete(id);
-                    request.setAttribute("successMessage", deleted ? "Xóa nhân viên thành công!" : "Không tìm thấy nhân viên để xóa!");
+                    request.setAttribute("successMessage",
+                            deleted ? "Xóa nhân viên thành công!" : "Không tìm thấy nhân viên để xóa!");
                 } else if ("doctor".equalsIgnoreCase(type)) {
                     deleted = doctorDAO.delete(id);
-                    request.setAttribute("successMessage", deleted ? "Xóa bác sĩ thành công!" : "Không tìm thấy bác sĩ để xóa!");
+                    request.setAttribute("successMessage",
+                            deleted ? "Xóa bác sĩ thành công!" : "Không tìm thấy bác sĩ để xóa!");
                 } else {
                     request.setAttribute("errorMessage", "Loại tài khoản không hợp lệ!");
                 }
@@ -63,7 +65,14 @@ public class DeleteStaffServlet extends HttpServlet {
                 request.setAttribute("errorMessage", "Mã tài khoản không hợp lệ!");
             } catch (SQLException e) {
                 LOGGER.log(Level.SEVERE, "SQL error when deleting " + type, e);
-                request.setAttribute("errorMessage", "Lỗi khi xóa tài khoản: " + e.getMessage());
+                String msg = e.getMessage();
+                if (msg != null && (msg.contains("REFERENCE constraint")
+                        || msg.contains("conflicted with the REFERENCE constraint"))) {
+                    request.setAttribute("errorMessage",
+                            "Không thể xóa bác sĩ/nhân viên này vì họ đang có dữ liệu liên quan (lịch hẹn, báo cáo, v.v.). Vui lòng chuyển trạng thái sang 'Ngưng hoạt động' thay vì xóa.");
+                } else {
+                    request.setAttribute("errorMessage", "Lỗi khi xóa tài khoản: " + e.getMessage());
+                }
             }
         }
 
@@ -79,6 +88,6 @@ public class DeleteStaffServlet extends HttpServlet {
         }
 
         // Forward về trang danh sách
-        request.getRequestDispatcher("/view/jsp/admin/manager_danhsach.jsp").forward(request, response);
+        request.getRequestDispatcher("/jsp/manager/manager_danhsach.jsp").forward(request, response);
     }
 }

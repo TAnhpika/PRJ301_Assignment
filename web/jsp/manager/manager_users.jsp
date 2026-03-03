@@ -155,7 +155,7 @@
                                         <img src="<%= u.getAvatar() != null ? u.getAvatar() : request.getContextPath() + "/view/assets/img/default-avatar.png" %>" 
                                              class="user-avatar" alt="User Avatar">
                                     </td>
-                                    <td><strong><%= u.getName() %></strong></td>
+                                    <td><strong><%= u.getUsername() %></strong></td>
                                     <td><%= u.getEmail() %></td>
                                     <td><%= u.getPhone() %></td>
                                     <td>

@@ -142,11 +142,11 @@
                                                                     thống</p>
                                                             </div>
                                                         </div>
-                                                        <% } else { for (Doctor doctor : doctors) { %>
+                                                        <% } else { for (Doctors doctor : doctors) { %>
                                                             <div class="col-md-6 col-lg-4 doctor-item"
                                                                 data-specialty="<%= doctor.getSpecialty() %>"
                                                                 data-status="<%= doctor.getStatus() %>"
-                                                                data-name="<%= doctor.getName().toLowerCase() %>">
+                                                                data-name="<%= doctor.getFullName().toLowerCase() %>">
                                                                 <div class="doctor-card">
                                                                     <div class="d-flex align-items-center mb-3">
                                                                         <img src="<%= doctor.getAvatar() != null ? doctor.getAvatar() : request.getContextPath() + "
@@ -154,7 +154,7 @@
                                                                         class="doctor-avatar me-3" alt="Doctor Avatar">
                                                                         <div>
                                                                             <h6 class="mb-1">
-                                                                                <%= doctor.getName() %>
+                                                                                <%= doctor.getFullName() %>
                                                                             </h6>
                                                                             <span class="text-muted"
                                                                                 style="font-size: 13px;">

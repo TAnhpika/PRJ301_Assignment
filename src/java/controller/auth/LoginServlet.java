@@ -179,7 +179,7 @@ public class LoginServlet extends HttpServlet {
                 }
                 request.getRequestDispatcher("/view/jsp/admin/staff_tongquan.jsp").forward(request, response);
             } else if ("MANAGER".equalsIgnoreCase(role)) {
-                request.getRequestDispatcher("/view/jsp/admin/manager_tongquan.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/manager/manager_tongquan.jsp").forward(request, response);
             } else {
                 System.out.println("Invalid role: " + role);
                 response.sendRedirect(request.getContextPath() + "/view/jsp/auth/login.jsp?error=invalid_role");
@@ -358,7 +358,7 @@ public class LoginServlet extends HttpServlet {
                 }
                 request.getRequestDispatcher("/view/jsp/admin/staff_tongquan.jsp").forward(request, response);
             } else if ("MANAGER".equalsIgnoreCase(role)) {
-                request.getRequestDispatcher("/view/jsp/admin/manager_tongquan.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/manager/manager_tongquan.jsp").forward(request, response);
             } else {
                 System.out.println("Invalid role: " + role);
                 response.sendRedirect(

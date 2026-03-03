@@ -17,11 +17,14 @@ public class Doctors {
     private Date created_at;
     private String status;
     private String avatar;
-    private String userEmail;     // Email từ user table
+    private String userEmail; // Email từ user table
+    private String degree; // Bằng cấp
+    private int experience; // Kinh nghiệm (năm)
     private List<DoctorSchedule> schedules;
     private List<String> workDates;
 
-    public Doctors(long doctor_id, String full_name, String phone, String address, Date date_of_birth, String gender, String specialty, String license_number, Date created_at) {
+    public Doctors(long doctor_id, String full_name, String phone, String address, Date date_of_birth, String gender,
+            String specialty, String license_number, Date created_at) {
         this.doctor_id = doctor_id;
         this.full_name = full_name;
         this.phone = phone;
@@ -35,7 +38,8 @@ public class Doctors {
         this.workDates = new ArrayList<>();
     }
 
-    public Doctors(long doctor_id, long user_id, String full_name, String phone, String address, Date date_of_birth, String gender, String specialty, String license_number, Date created_at, String status, String avatar) {
+    public Doctors(long doctor_id, long user_id, String full_name, String phone, String address, Date date_of_birth,
+            String gender, String specialty, String license_number, Date created_at, String status, String avatar) {
         this.doctor_id = doctor_id;
         this.user_id = user_id;
         this.full_name = full_name;
@@ -59,9 +63,6 @@ public class Doctors {
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
     }
-
-  
-    
 
     public Doctors() {
         this.schedules = new ArrayList<>();
@@ -94,6 +95,42 @@ public class Doctors {
 
     public String getFull_name() {
         return full_name;
+    }
+
+    public String getFullName() {
+        return full_name;
+    }
+
+    public String getName() {
+        return full_name;
+    }
+
+    public String getEmail() {
+        return userEmail;
+    }
+
+    public String getDegree() {
+        return degree != null ? degree : "Bác sĩ";
+    }
+
+    public void setDegree(String degree) {
+        this.degree = degree;
+    }
+
+    public int getExperience() {
+        return experience;
+    }
+
+    public void setExperience(int experience) {
+        this.experience = experience;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public void setFull_name(String full_name) {
@@ -156,14 +193,6 @@ public class Doctors {
         this.created_at = created_at;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public List<DoctorSchedule> getSchedules() {
         return schedules;
     }
@@ -178,11 +207,6 @@ public class Doctors {
 
     public void setWorkDates(List<String> workDates) {
         this.workDates = workDates;
-    }
-
-    // Alias methods for JSP compatibility
-    public String getFullName() {
-        return full_name;
     }
 
     public long getDoctorId() {
