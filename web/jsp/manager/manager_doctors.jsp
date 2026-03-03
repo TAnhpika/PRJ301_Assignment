@@ -184,10 +184,8 @@
                                                                     </div>
                                                                     <div
                                                                         class="d-flex justify-content-between align-items-center">
-                                                                        <span class="badge bg-<%= "
-                                                                            ACTIVE".equals(doctor.getStatus())
-                                                                            ? "success" : "ON_LEAVE"
-                                                                            .equals(doctor.getStatus()) ? "warning"
+                                                                        <span class="badge bg-<%= "ACTIVE".equals(doctor.getStatus())
+                                                                            ? "success" : "ON_LEAVE".equals(doctor.getStatus()) ? "warning"
                                                                             : "danger" %>">
                                                                             <%= "ACTIVE" .equals(doctor.getStatus())
                                                                                 ? "Đang làm việc" : "ON_LEAVE"

@@ -59,11 +59,8 @@
                                 <span class="header-user-role">Quản lý</span>
                             </div>
                             <div class="header-dropdown">
-                                <a href="${pageContext.request.contextPath}/jsp/manager/manager_trangcanhan.jsp">
+                                <a href="${pageContext.request.contextPath}/ManagerProfileServlet">
                                     <i class="fas fa-user"></i> Trang cá nhân
-                                </a>
-                                <a href="${pageContext.request.contextPath}/jsp/manager/manager_caidat.jsp">
-                                    <i class="fas fa-cog"></i> Cài đặt
                                 </a>
                                 <hr class="m-0 opacity-10">
                                 <a href="${pageContext.request.contextPath}/LogoutServlet" class="text-danger">
