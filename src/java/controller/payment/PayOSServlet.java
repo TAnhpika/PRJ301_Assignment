@@ -458,9 +458,45 @@ public class PayOSServlet extends HttpServlet {
         Bill currentBill = (Bill) session.getAttribute("currentBill");
         SlotReservation activeReservation = (SlotReservation) session.getAttribute("activeReservation");
 
+        // ===== FALLBACK: Nếu session bị mất (hết hạn), tra cứu bill từ DB =====
         if (paymentInfo == null || currentBill == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Không tìm thấy thông tin thanh toán");
-            return;
+            System.out.println("⚠️ Session không có paymentInfo/currentBill - thử tra cứu từ DB bằng orderCode...");
+            // PayOS gửi ?orderCode=XXXXXXXXX trong URL
+            String orderCodeParam = request.getParameter("orderCode");
+            if (orderCodeParam != null && !orderCodeParam.isEmpty()) {
+                try {
+                    Bill foundBill = BillDAO.getBillByPayosOrderCode(orderCodeParam);
+                    if (foundBill != null) {
+                        currentBill = foundBill;
+                        // Tạo PaymentInfo tối thiểu từ bill để hiển thị trang thành công
+                        paymentInfo = new PaymentInfo(
+                                foundBill.getOrderId(),
+                                foundBill.getBillId(),
+                                foundBill.getServiceName() != null ? foundBill.getServiceName() : "Dịch vụ nha khoa",
+                                "",
+                                foundBill.getAmount() != null ? foundBill.getAmount().intValue() : 0,
+                                foundBill.getCustomerName(),
+                                foundBill.getCustomerPhone(),
+                                foundBill.getDoctorId() != null ? String.valueOf(foundBill.getDoctorId()) : null,
+                                foundBill.getAppointmentDate() != null ? foundBill.getAppointmentDate().toString()
+                                        : null,
+                                null,
+                                foundBill.getAppointmentNotes(),
+                                null);
+                        session.setAttribute("paymentInfo", paymentInfo);
+                        session.setAttribute("currentBill", currentBill);
+                        System.out.println(
+                                "✅ Tìm thấy bill từ DB: " + foundBill.getBillId() + " qua orderCode=" + orderCodeParam);
+                    }
+                } catch (Exception ex) {
+                    System.err.println("❌ Lỗi tra cứu bill từ orderCode: " + ex.getMessage());
+                }
+            }
+            // Nếu vẫn không tìm thấy, thông báo lỗi
+            if (paymentInfo == null || currentBill == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Không tìm thấy thông tin thanh toán");
+                return;
+            }
         }
 
         try {

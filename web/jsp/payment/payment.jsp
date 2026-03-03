@@ -576,8 +576,8 @@
                                                 <div class="alert alert-info">
                                                     <b>Thanh toán chuyển khoản</b><br>
                                                     Ngân hàng: MB Bank<br>
-                                                    STK: 5529062004<br>
-                                                    Chủ TK: TRAN HONG PHUOC<br>
+                                                    STK: 70410082004<br>
+                                                    Chủ TK: NGUYEN VAN TUAN ANH<br>
                                                     Nội dung: ${bill.billId}
                                                 </div>
                                             </div>
@@ -1512,7 +1512,7 @@
                                     function confirmRealPayment() {
                                         if (!confirm('Bạn đã hoàn tất chuyển khoản bằng app ngân hàng?\n\n' +
                                             '- Số tiền: ${paymentInfo.formattedAmount}\n' +
-                                            '- STK: 5529062004 (MB Bank)\n' +
+                                            '- STK: 70410082004 (MB Bank)\n' +
                                             '- Nội dung: ${paymentInfo.billId}\n\n' +
                                             '✅ Có thể chuyển từ BẤT KỲ ngân hàng nào!\n' +
                                             'Chỉ xác nhận khi đã thực sự chuyển khoản thành công!')) {

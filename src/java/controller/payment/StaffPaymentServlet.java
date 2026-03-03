@@ -27,9 +27,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.gson.Gson;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-  import jakarta.servlet.ServletException;
-  import jakarta.servlet.http.HttpServletRequest;
-  import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 // @WebServlet annotation removed - using web.xml mapping instead
 public class StaffPaymentServlet extends HttpServlet {
@@ -38,7 +38,7 @@ public class StaffPaymentServlet extends HttpServlet {
     private static final AtomicInteger totalRequests = new AtomicInteger(0);
     private static final AtomicInteger successfulRequests = new AtomicInteger(0);
     private static final AtomicInteger failedRequests = new AtomicInteger(0);
-    
+
     /**
      * Get servlet performance statistics
      */
@@ -47,9 +47,9 @@ public class StaffPaymentServlet extends HttpServlet {
         int success = successfulRequests.get();
         int failed = failedRequests.get();
         double successRate = total > 0 ? (double) success / total * 100.0 : 0.0;
-        
-        return String.format("StaffPaymentServlet Stats - Total: %d, Success: %d (%.1f%%), Failed: %d", 
-                           total, success, successRate, failed);
+
+        return String.format("StaffPaymentServlet Stats - Total: %d, Success: %d (%.1f%%), Failed: %d",
+                total, success, successRate, failed);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class StaffPaymentServlet extends HttpServlet {
 
         totalRequests.incrementAndGet();
         long startTime = System.currentTimeMillis();
-        
+
         HttpSession session = request.getSession();
         String action = request.getParameter("action");
 
@@ -86,18 +86,19 @@ public class StaffPaymentServlet extends HttpServlet {
                 // Mặc định hiển thị trang quản lý thanh toán
                 handlePaymentManagement(request, response);
             }
-            
+
             // Success monitoring
             successfulRequests.incrementAndGet();
             long duration = System.currentTimeMillis() - startTime;
             System.out.println("✅ doGet completed successfully in " + duration + "ms - Action: " + action);
-            
+
         } catch (Exception e) {
             failedRequests.incrementAndGet();
             long duration = System.currentTimeMillis() - startTime;
-            System.err.println("❌ doGet failed after " + duration + "ms - Action: " + action + " - Error: " + e.getMessage());
+            System.err.println(
+                    "❌ doGet failed after " + duration + "ms - Action: " + action + " - Error: " + e.getMessage());
             e.printStackTrace();
-            
+
             // Kiểm tra response đã committed chưa trước khi forward
             if (!response.isCommitted()) {
                 request.setAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
@@ -133,7 +134,7 @@ public class StaffPaymentServlet extends HttpServlet {
             return;
         }
 
-        //==========================================
+        // ==========================================
         // Gọi PayOSUtil để lấy QR code thật
         String qrUrl = util.PayOSUtil.createPayOSPaymentRequestForStaff(bill, bill.getServiceName());
         System.out.println("[DEBUG][getQR] qrUrl: " + qrUrl);
@@ -143,7 +144,7 @@ public class StaffPaymentServlet extends HttpServlet {
             return;
         }
         response.getWriter().write("{\"success\":true,\"qrUrl\":\"" + qrUrl + "\"}");
-        //==========================================
+        // ==========================================
     }
 
     @Override
@@ -152,7 +153,7 @@ public class StaffPaymentServlet extends HttpServlet {
         System.out.println("[DEBUG][doPost] BẮT ĐẦU doPost - action=" + request.getParameter("action"));
         totalRequests.incrementAndGet();
         long startTime = System.currentTimeMillis();
-        
+
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
@@ -168,7 +169,7 @@ public class StaffPaymentServlet extends HttpServlet {
             response.setContentType("application/json;charset=UTF-8");
             response.setHeader("Cache-Control", "no-cache");
         }
-        
+
         // Thêm action mới trong doPost để staff xác nhận đã nhận tiền chuyển khoản
         if ("confirmBankTransfer".equals(action)) {
             String billId = request.getParameter("billId");
@@ -178,17 +179,18 @@ public class StaffPaymentServlet extends HttpServlet {
             }
             BillDAO billDAO = new BillDAO();
             Bill bill = null;
-                try {
-                    bill = billDAO.getBillById(billId);
-                } catch (SQLException ex) {
-                    Logger.getLogger(StaffPaymentServlet.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            try {
+                bill = billDAO.getBillById(billId);
+            } catch (SQLException ex) {
+                Logger.getLogger(StaffPaymentServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
             if (bill == null) {
                 sendJsonResponse(response, false, "Không tìm thấy hóa đơn để xác nhận", null);
                 return;
             }
             if ("bank_transfer".equalsIgnoreCase(bill.getPaymentMethod()) &&
-                ("PENDING".equalsIgnoreCase(bill.getPaymentStatus()) || "pending".equalsIgnoreCase(bill.getPaymentStatus()))) {
+                    ("PENDING".equalsIgnoreCase(bill.getPaymentStatus())
+                            || "pending".equalsIgnoreCase(bill.getPaymentStatus()))) {
                 boolean updated = false;
                 try {
                     updated = billDAO.updatePaymentStatus(billId, "PAID");
@@ -201,7 +203,8 @@ public class StaffPaymentServlet extends HttpServlet {
                     sendJsonResponse(response, false, "Không thể cập nhật trạng thái hóa đơn!", null);
                 }
             } else {
-                sendJsonResponse(response, false, "Hóa đơn không ở trạng thái chờ chuyển khoản hoặc không phải chuyển khoản!", null);
+                sendJsonResponse(response, false,
+                        "Hóa đơn không ở trạng thái chờ chuyển khoản hoặc không phải chuyển khoản!", null);
             }
             return;
         }
@@ -226,17 +229,18 @@ public class StaffPaymentServlet extends HttpServlet {
                 System.out.println("📋 No matching action, forwarding to doGet");
                 doGet(request, response);
             }
-            
+
             // Success monitoring (only if no exception thrown)
             successfulRequests.incrementAndGet();
             long duration = System.currentTimeMillis() - startTime;
             System.out.println("✅ doPost completed successfully in " + duration + "ms - Action: " + action);
-            
+
         } catch (Exception e) {
             System.err.println("[DEBUG][doPost] CATCH-ALL EXCEPTION: " + e.getMessage());
             failedRequests.incrementAndGet();
             long duration = System.currentTimeMillis() - startTime;
-            System.err.println("❌ doPost failed after " + duration + "ms - Action: " + action + " - Error: " + e.getMessage());
+            System.err.println(
+                    "❌ doPost failed after " + duration + "ms - Action: " + action + " - Error: " + e.getMessage());
             e.printStackTrace();
             System.err.println("❌ Error in doPost: " + e.getMessage());
             System.err.println("❌ Error type: " + e.getClass().getSimpleName());
@@ -306,10 +310,9 @@ public class StaffPaymentServlet extends HttpServlet {
             // Log some services info
             if (!activeServices.isEmpty()) {
                 System.out.println("🏥 Available services:");
-                activeServices.stream().limit(5).forEach(service
-                        -> System.out.println("  - " + service.getServiceName() + ": "
-                                + String.format("%,.0f", service.getPrice()) + " VNĐ (" + service.getCategory() + ")")
-                );
+                activeServices.stream().limit(5)
+                        .forEach(service -> System.out.println("  - " + service.getServiceName() + ": "
+                                + String.format("%,.0f", service.getPrice()) + " VNĐ (" + service.getCategory() + ")"));
                 if (activeServices.size() > 5) {
                     System.out.println("  ... and " + (activeServices.size() - 5) + " more services");
                 }
@@ -346,10 +349,12 @@ public class StaffPaymentServlet extends HttpServlet {
                         PaymentInstallment summary = installmentDAO.getInstallmentSummary(bill.getBillId());
                         if (summary != null) {
                             bill.setTotalRemaining(summary.getTotalRemaining());
-                            System.out.println("[DEBUG] Bill trả góp: " + bill.getBillId() + " | totalRemaining: " + summary.getTotalRemaining());
+                            System.out.println("[DEBUG] Bill trả góp: " + bill.getBillId() + " | totalRemaining: "
+                                    + summary.getTotalRemaining());
                         }
                     }
-                    // Nếu bill là bill con trả góp, luôn lấy số nợ còn lại của bill gốc (cache theo parentBillId)
+                    // Nếu bill là bill con trả góp, luôn lấy số nợ còn lại của bill gốc (cache theo
+                    // parentBillId)
                     if (bill.getParentBillId() != null && !bill.getParentBillId().isEmpty()) {
                         double parentTotalRemaining;
                         if (parentBillRemainingMap.containsKey(bill.getParentBillId())) {
@@ -359,12 +364,14 @@ public class StaffPaymentServlet extends HttpServlet {
                             parentBillRemainingMap.put(bill.getParentBillId(), parentTotalRemaining);
                         }
                         bill.setTotalRemaining(parentTotalRemaining); // Luôn là số nợ còn lại của bill gốc
-                        System.out.println("[DEBUG] Bill con: " + bill.getBillId() + " | Bill gốc: " + bill.getParentBillId() + " | totalRemaining: " + parentTotalRemaining);
+                        System.out.println("[DEBUG] Bill con: " + bill.getBillId() + " | Bill gốc: "
+                                + bill.getParentBillId() + " | totalRemaining: " + parentTotalRemaining);
                     } else if (!"INSTALLMENT".equalsIgnoreCase(bill.getPaymentStatus())) {
                         // Bill gốc không phải trả góp: lấy số nợ còn lại nếu có
                         double selfRemaining = installmentDAO.getTotalRemainingAmount(bill.getBillId());
                         bill.setTotalRemaining(selfRemaining);
-                        System.out.println("[DEBUG] Bill gốc: " + bill.getBillId() + " | totalRemaining: " + selfRemaining);
+                        System.out.println(
+                                "[DEBUG] Bill gốc: " + bill.getBillId() + " | totalRemaining: " + selfRemaining);
                     }
 
                 } catch (Exception e) {
@@ -391,7 +398,8 @@ public class StaffPaymentServlet extends HttpServlet {
                     paidAmount += billAmount;
                 } else if ("PENDING".equals(status) || "pending".equals(status) || "WAITING_PAYMENT".equals(status)) {
                     pendingAmount += billAmount;
-                } else if ("PARTIAL".equals(status) || "partial".equals(status) || "Thanh toán một phần".equals(status)) {
+                } else if ("PARTIAL".equals(status) || "partial".equals(status)
+                        || "Thanh toán một phần".equals(status)) {
                     paidAmount += billAmount * 0.5; // Giả sử trả 50%
                     partialAmount += billAmount * 0.5;
                 }
@@ -438,7 +446,8 @@ public class StaffPaymentServlet extends HttpServlet {
 
                 request.getRequestDispatcher("/view/jsp/admin/staff_thanhtoan.jsp").forward(request, response);
             } else {
-                System.err.println("❌ Cannot forward from handlePaymentManagement - response already committed. Error: " + e.getMessage());
+                System.err.println("❌ Cannot forward from handlePaymentManagement - response already committed. Error: "
+                        + e.getMessage());
             }
         }
     }
@@ -480,19 +489,19 @@ public class StaffPaymentServlet extends HttpServlet {
             String serviceIds = request.getParameter("serviceIds"); // Comma-separated service IDs
             String paymentMethod = request.getParameter("paymentMethod");
             String notes = request.getParameter("notes");
-            
+
             if (customerName == null || customerPhone == null || serviceIds == null) {
                 request.setAttribute("errorMessage", "Thiếu thông tin bắt buộc để tạo hóa đơn!");
                 handlePaymentManagement(request, response);
                 return;
             }
-            
+
             // Calculate total amount from selected services
             ServiceDAO serviceDAO = new ServiceDAO();
             double totalAmount = 0.0;
             String[] serviceIdArray = serviceIds.split(",");
             StringBuilder serviceNames = new StringBuilder();
-            
+
             for (String serviceId : serviceIdArray) {
                 try {
                     Service service = serviceDAO.getServiceById(Integer.parseInt(serviceId.trim()));
@@ -507,30 +516,30 @@ public class StaffPaymentServlet extends HttpServlet {
                     System.err.println("Invalid service ID: " + serviceId);
                 }
             }
-            
+
             // Create new bill
             BillDAO billDAO = new BillDAO();
             String billId = "BILL" + System.currentTimeMillis(); // Generate unique bill ID
-            
-            Bill newBill = createBillObject(billId, customerName, customerPhone, 
-                    totalAmount, "PENDING", paymentMethod != null ? paymentMethod : "CASH", 
+
+            Bill newBill = createBillObject(billId, customerName, customerPhone,
+                    totalAmount, "PENDING", paymentMethod != null ? paymentMethod : "CASH",
                     notes, serviceIdArray.length > 0 ? serviceIdArray[0] : "1");
-            
+
             Bill createdBill = billDAO.createBill(newBill);
             boolean success = (createdBill != null);
-            
+
             if (success) {
                 request.setAttribute("successMessage", "Tạo hóa đơn thành công! Mã hóa đơn: " + billId);
                 System.out.println("✅ Created new invoice: " + billId + " for " + customerName);
             } else {
                 request.setAttribute("errorMessage", "Có lỗi khi tạo hóa đơn!");
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Lỗi tạo hóa đơn: " + e.getMessage());
         }
-        
+
         // Return to payment management page
         handlePaymentManagement(request, response);
     }
@@ -539,27 +548,27 @@ public class StaffPaymentServlet extends HttpServlet {
             throws ServletException, IOException {
         try {
             String billId = request.getParameter("billId");
-            
+
             if (billId == null || billId.trim().isEmpty()) {
                 request.setAttribute("errorMessage", "Không tìm thấy mã hóa đơn!");
                 handlePaymentManagement(request, response);
                 return;
             }
-            
+
             // Get bill details
             BillDAO billDAO = new BillDAO();
             Bill bill = billDAO.getBillById(billId);
-            
+
             if (bill == null) {
                 request.setAttribute("errorMessage", "Không tìm thấy hóa đơn với mã: " + billId);
                 handlePaymentManagement(request, response);
                 return;
             }
-            
+
             // Get installment details if exists
             PaymentInstallmentDAO installmentDAO = new PaymentInstallmentDAO();
             List<PaymentInstallment> installments = installmentDAO.getInstallmentsByBillId(billId);
-            
+
             // Get service details
             ServiceDAO serviceDAO = new ServiceDAO();
             Service service = null;
@@ -570,11 +579,11 @@ public class StaffPaymentServlet extends HttpServlet {
             } catch (Exception e) {
                 System.err.println("Error loading service details: " + e.getMessage());
             }
-            
+
             // Calculate payment summary
             double totalPaid = 0.0;
             double remainingAmount = bill.getAmount() != null ? bill.getAmount().doubleValue() : 0.0;
-            
+
             if (installments != null && !installments.isEmpty()) {
                 for (PaymentInstallment installment : installments) {
                     if ("PAID".equals(installment.getStatus())) {
@@ -586,7 +595,7 @@ public class StaffPaymentServlet extends HttpServlet {
                 totalPaid = remainingAmount;
                 remainingAmount = 0.0;
             }
-            
+
             // Set attributes for JSP
             request.setAttribute("bill", bill);
             request.setAttribute("service", service);
@@ -594,13 +603,13 @@ public class StaffPaymentServlet extends HttpServlet {
             request.setAttribute("totalPaid", totalPaid);
             request.setAttribute("remainingAmount", remainingAmount);
             request.setAttribute("viewMode", "invoice_detail");
-            
-            System.out.println("📋 Viewing invoice: " + billId + " - Total: " + bill.getAmount() + 
+
+            System.out.println("📋 Viewing invoice: " + billId + " - Total: " + bill.getAmount() +
                     " VNĐ, Paid: " + totalPaid + " VNĐ, Remaining: " + remainingAmount + " VNĐ");
-            
+
             // Forward to invoice detail page or back to payment management with detail view
             request.getRequestDispatcher("/view/jsp/admin/staff_thanhtoan.jsp").forward(request, response);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Lỗi khi xem chi tiết hóa đơn: " + e.getMessage());
@@ -638,7 +647,8 @@ public class StaffPaymentServlet extends HttpServlet {
                     Service service = serviceDAO.getServiceById(serviceId);
                     if (service != null) {
                         totalAmount += service.getPrice();
-                        System.out.println("🔹 Added service: " + service.getServiceName() + " - " + service.getPrice() + " VNĐ");
+                        System.out.println(
+                                "🔹 Added service: " + service.getServiceName() + " - " + service.getPrice() + " VNĐ");
                     } else {
                         System.err.println("⚠️ Service not found with ID: " + serviceId);
                     }
@@ -705,7 +715,8 @@ public class StaffPaymentServlet extends HttpServlet {
                                 "Tạo hóa đơn và kế hoạch trả góp thành công! Mã HĐ: " + billId);
                         System.out.println("✅ Created bill and installment plan: " + billId);
                     } else {
-                        request.setAttribute("errorMessage", "Tạo hóa đơn thành công nhưng lỗi khi tạo kế hoạch trả góp!");
+                        request.setAttribute("errorMessage",
+                                "Tạo hóa đơn thành công nhưng lỗi khi tạo kế hoạch trả góp!");
                     }
                 } else {
                     request.setAttribute("errorMessage", "Có lỗi khi tạo hóa đơn!");
@@ -773,7 +784,8 @@ public class StaffPaymentServlet extends HttpServlet {
             PaymentInstallmentDAO installmentDAO = new PaymentInstallmentDAO();
 
             // 1. Get all bills that are installment plans
-            List<Bill> installmentBills = billDAO.getBillsByStatus("INSTALLMENT", Integer.MAX_VALUE); // Use large limit to get all
+            List<Bill> installmentBills = billDAO.getBillsByStatus("INSTALLMENT", Integer.MAX_VALUE); // Use large limit
+                                                                                                      // to get all
 
             // 2. For each bill, enrich it with details and summary
             for (Bill bill : installmentBills) {
@@ -875,7 +887,8 @@ public class StaffPaymentServlet extends HttpServlet {
                 request.setAttribute("reminders", new ArrayList<PaymentInstallment>());
                 request.getRequestDispatcher("/view/jsp/admin/staff_nhacno.jsp").forward(request, response);
             } else {
-                System.err.println("❌ Cannot forward from handleReminders - response already committed. Error: " + e.getMessage());
+                System.err.println(
+                        "❌ Cannot forward from handleReminders - response already committed. Error: " + e.getMessage());
             }
         }
     }
@@ -1005,7 +1018,8 @@ public class StaffPaymentServlet extends HttpServlet {
             }
 
             PaymentInstallmentDAO installmentDAO = new PaymentInstallmentDAO();
-            boolean success = installmentDAO.payInstallmentByBillAndPeriod(billId, period, amount, paymentMethod, transactionId, notes);
+            boolean success = installmentDAO.payInstallmentByBillAndPeriod(billId, period, amount, paymentMethod,
+                    transactionId, notes);
 
             if (success) {
                 // Tạo bill con cho kỳ trả góp này
@@ -1143,7 +1157,8 @@ public class StaffPaymentServlet extends HttpServlet {
             System.out.println("  - Payment Method: " + paymentMethod);
             System.out.println("  - Total Amount: " + totalAmount);
             System.out.println("  - Payment Amount: " + paymentAmount);
-            System.out.println("  - Selected Services: " + (selectedServices != null ? java.util.Arrays.toString(selectedServices) : "null"));
+            System.out.println("  - Selected Services: "
+                    + (selectedServices != null ? java.util.Arrays.toString(selectedServices) : "null"));
 
             // Validate dữ liệu đầu vào
             if (customerName == null || customerName.trim().isEmpty()) {
@@ -1155,7 +1170,7 @@ public class StaffPaymentServlet extends HttpServlet {
                 sendJsonResponse(response, false, "Số điện thoại không được để trống", null);
                 return;
             }
-            
+
             // Validate phone number format
             if (!customerPhone.matches("^[0-9+\\-\\s]{9,15}$")) {
                 sendJsonResponse(response, false, "Số điện thoại không hợp lệ (9-15 ký tự số)", null);
@@ -1171,13 +1186,13 @@ public class StaffPaymentServlet extends HttpServlet {
                 sendJsonResponse(response, false, "Vui lòng chọn ít nhất một dịch vụ", null);
                 return;
             }
-            
+
             // Validate amount ranges
             if (totalAmount <= 0 || totalAmount > 1000000000) { // Max 1 billion VND
                 sendJsonResponse(response, false, "Số tiền không hợp lệ (phải từ 1 đến 1 tỷ VNĐ)", null);
                 return;
             }
-            
+
             if (paymentAmount < 0 || paymentAmount > totalAmount) {
                 sendJsonResponse(response, false, "Số tiền thanh toán không hợp lệ", null);
                 return;
@@ -1214,7 +1229,8 @@ public class StaffPaymentServlet extends HttpServlet {
 
                 System.out.println("💎 Creating INSTALLMENT bill with status: " + paymentStatus);
 
-                Bill newBill = createBillObject(billId, customerName, customerPhone, totalAmount, paymentStatus, paymentMethod, notes, selectedServices[0]);
+                Bill newBill = createBillObject(billId, customerName, customerPhone, totalAmount, paymentStatus,
+                        paymentMethod, notes, selectedServices[0]);
                 String orderId = "ORDER_" + System.currentTimeMillis();
                 newBill.setOrderId(orderId);
 
@@ -1223,7 +1239,8 @@ public class StaffPaymentServlet extends HttpServlet {
 
                 if (createdBill != null) {
                     PaymentInstallmentDAO installmentDAO = new PaymentInstallmentDAO();
-                    boolean installmentPlanSuccess = installmentDAO.createInstallmentPlan(billId, totalAmount, downPayment, installmentMonths);
+                    boolean installmentPlanSuccess = installmentDAO.createInstallmentPlan(billId, totalAmount,
+                            downPayment, installmentMonths);
                     if (installmentPlanSuccess) {
                         sendJsonResponse(response, true, "Tạo hóa đơn và kế hoạch trả góp thành công!", createdBill);
                     } else {
@@ -1244,7 +1261,8 @@ public class StaffPaymentServlet extends HttpServlet {
                 // Chuyển khoản: luôn tạo bill với trạng thái PENDING
                 String paymentStatus = "PENDING";
                 System.out.println("🏦 Creating BANK TRANSFER bill with status: " + paymentStatus);
-                Bill newBill = createBillObject(billId, customerName, customerPhone, totalAmount, paymentStatus, paymentMethod, notes, selectedServices[0]);
+                Bill newBill = createBillObject(billId, customerName, customerPhone, totalAmount, paymentStatus,
+                        paymentMethod, notes, selectedServices[0]);
                 String orderId = "ORDER_" + System.currentTimeMillis();
                 newBill.setOrderId(orderId);
                 BillDAO billDAO = new BillDAO();
@@ -1274,17 +1292,21 @@ public class StaffPaymentServlet extends HttpServlet {
                                             billDetails.add(detail);
                                         }
                                     } catch (Exception ex) {
-                                        System.err.println("[DEBUG] Lỗi parse serviceId: " + selectedId + " - " + ex.getMessage());
+                                        System.err.println(
+                                                "[DEBUG] Lỗi parse serviceId: " + selectedId + " - " + ex.getMessage());
                                     }
                                 }
                                 request.setAttribute("billDetails", billDetails);
                                 // Tạo QR chuyển khoản
-                                String qrUrl = util.PayOSUtil.createPayOSPaymentRequestForStaff(createdBill, service.getServiceName());
+                                String qrUrl = util.PayOSUtil.createPayOSPaymentRequestForStaff(createdBill,
+                                        service.getServiceName());
                                 if (qrUrl == null || qrUrl.isEmpty()) {
-                                    qrUrl = "https://img.vietqr.io/image/MB-5529062004-print.png?amount=" + service.getPrice() + "&addInfo=Thanh%20toan%20hoa%20don%20" + billId;
+                                    qrUrl = "https://img.vietqr.io/image/MB-70410082004-print.png?amount="
+                                            + service.getPrice() + "&addInfo=Thanh%20toan%20hoa%20don%20" + billId;
                                 }
                                 // Log chi tiết thông tin hóa đơn (không còn thuốc mẫu)
-                                System.out.println("========== [DEBUG][StaffPaymentServlet] THÔNG TIN HÓA ĐƠN STAFF ==========");
+                                System.out.println(
+                                        "========== [DEBUG][StaffPaymentServlet] THÔNG TIN HÓA ĐƠN STAFF ==========");
                                 System.out.println("Mã HĐ: " + createdBill.getBillId());
                                 System.out.println("Khách hàng: " + createdBill.getCustomerName());
                                 System.out.println("SĐT: " + createdBill.getCustomerPhone());
@@ -1292,17 +1314,20 @@ public class StaffPaymentServlet extends HttpServlet {
                                 System.out.println("Số tiền: " + createdBill.getAmount() + " VNĐ");
                                 System.out.println("Dịch vụ: " + service.getServiceName());
                                 System.out.println("QR chuyển khoản: " + qrUrl);
-                                System.out.println("====================================================================");
+                                System.out.println(
+                                        "====================================================================");
                                 // Trả về JSON cho frontend (bao gồm billDetails)
                                 java.util.Map<String, Object> data = new java.util.HashMap<>();
                                 data.put("bill", createdBill);
                                 data.put("qrUrl", qrUrl);
                                 data.put("billDetails", billDetails); // truyền billDetails về frontend
-                                System.out.println("[DEBUG][AJAX-RESPONSE] Sắp gửi JSON cho frontend (bank_transfer)...");
+                                System.out
+                                        .println("[DEBUG][AJAX-RESPONSE] Sắp gửi JSON cho frontend (bank_transfer)...");
                                 System.out.println("[DEBUG][AJAX-RESPONSE] billId: " + createdBill.getBillId());
                                 System.out.println("[DEBUG][AJAX-RESPONSE] qrUrl: " + qrUrl);
                                 sendJsonResponse(response, true, "Tạo hóa đơn chuyển khoản thành công!", data);
-                                System.out.println("[DEBUG][AJAX-RESPONSE] ĐÃ GỬI JSON RESPONSE thành công cho frontend!");
+                                System.out.println(
+                                        "[DEBUG][AJAX-RESPONSE] ĐÃ GỬI JSON RESPONSE thành công cho frontend!");
                                 return;
                             } else {
                                 System.err.println("[DEBUG] Không tìm thấy dịch vụ với ID: " + serviceId);
@@ -1316,10 +1341,12 @@ public class StaffPaymentServlet extends HttpServlet {
                     createdBill.setAmount(new java.math.BigDecimal(totalAmount));
                     String qrUrl = util.PayOSUtil.createPayOSPaymentRequestForStaff(createdBill, "Dịch vụ nha khoa");
                     if (qrUrl == null || qrUrl.isEmpty()) {
-                        qrUrl = "https://img.vietqr.io/image/MB-5529062004-print.png?amount=" + totalAmount + "&addInfo=Thanh%20toan%20hoa%20don%20" + billId;
+                        qrUrl = "https://img.vietqr.io/image/MB-70410082004-print.png?amount=" + totalAmount
+                                + "&addInfo=Thanh%20toan%20hoa%20don%20" + billId;
                     }
                     // Log fallback
-                    System.out.println("========== [DEBUG][StaffPaymentServlet] THÔNG TIN HÓA ĐƠN STAFF (FALLBACK) ==========");
+                    System.out.println(
+                            "========== [DEBUG][StaffPaymentServlet] THÔNG TIN HÓA ĐƠN STAFF (FALLBACK) ==========");
                     System.out.println("Mã HĐ: " + createdBill.getBillId());
                     System.out.println("Khách hàng: " + createdBill.getCustomerName());
                     System.out.println("SĐT: " + createdBill.getCustomerPhone());
@@ -1349,13 +1376,15 @@ public class StaffPaymentServlet extends HttpServlet {
                     paymentStatus = "PENDING"; // Default status for standard payment
                 }
                 System.out.println("💵 Creating STANDARD bill with status: " + paymentStatus);
-                Bill newBill = createBillObject(billId, customerName, customerPhone, totalAmount, paymentStatus, paymentMethod, notes, selectedServices[0]);
+                Bill newBill = createBillObject(billId, customerName, customerPhone, totalAmount, paymentStatus,
+                        paymentMethod, notes, selectedServices[0]);
                 String orderId = "ORDER_" + System.currentTimeMillis();
                 newBill.setOrderId(orderId);
                 BillDAO billDAO = new BillDAO();
                 Bill createdBill = billDAO.createBill(newBill);
                 if (createdBill != null) {
-                    // Nếu là thanh toán tiền mặt (cash) và đã thanh toán đủ, trả về JSON có redirectToBills
+                    // Nếu là thanh toán tiền mặt (cash) và đã thanh toán đủ, trả về JSON có
+                    // redirectToBills
                     if ("cash".equals(paymentMethod) && paymentAmount >= totalAmount) {
                         java.util.Map<String, Object> data = new java.util.HashMap<>();
                         data.put("bill", createdBill);
@@ -1439,7 +1468,7 @@ public class StaffPaymentServlet extends HttpServlet {
 
         // Sanitize inputs for security
         bill.sanitizeInputs();
-        
+
         // Validate bill data
         if (!bill.isValid()) {
             System.err.println("❌ Bill validation failed:");
@@ -1541,7 +1570,8 @@ public class StaffPaymentServlet extends HttpServlet {
                 try {
                     response.reset();
                     response.setContentType("application/json;charset=UTF-8");
-                    String fallbackJson = "{\"success\":false,\"message\":\"Server error\",\"error\":\"" + escapeJson(e.getMessage()) + "\"}";
+                    String fallbackJson = "{\"success\":false,\"message\":\"Server error\",\"error\":\""
+                            + escapeJson(e.getMessage()) + "\"}";
                     response.getWriter().write(fallbackJson);
                     response.getWriter().flush();
                     System.out.println("📤 Fallback JSON sent: " + fallbackJson);

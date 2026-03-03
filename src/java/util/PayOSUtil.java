@@ -29,7 +29,8 @@ public class PayOSUtil {
             paymentData.put("description", description);
             paymentData.put("buyerName", bill.getCustomerName());
             paymentData.put("buyerPhone", bill.getCustomerPhone());
-            paymentData.put("buyerEmail", bill.getCustomerEmail() != null ? bill.getCustomerEmail() : "customer@example.com");
+            paymentData.put("buyerEmail",
+                    bill.getCustomerEmail() != null ? bill.getCustomerEmail() : "customer@example.com");
             paymentData.put("cancelUrl", CANCEL_URL);
             paymentData.put("returnUrl", SUCCESS_URL);
             paymentData.put("expiredAt", System.currentTimeMillis() / 1000 + 900); // 15 phút
@@ -37,7 +38,7 @@ public class PayOSUtil {
             item.put("name", description);
             item.put("quantity", 1);
             item.put("price", bill.getAmount().intValue());
-            paymentData.put("items", new Object[]{item});
+            paymentData.put("items", new Object[] { item });
             String jsonPayload = gson.toJson(paymentData);
             URL url = new URL(CREATE_PAYMENT_URL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -72,8 +73,7 @@ public class PayOSUtil {
         return "";
     }
 
-
-    //==========================================
+    // ==========================================
     // lớp servlet sinh ra mã qr cho staff
 
     public static String createPayOSPaymentRequestForStaff(Bill bill, String description) {
@@ -91,12 +91,14 @@ public class PayOSUtil {
             long orderCode = System.currentTimeMillis() % 1000000000L;
             paymentData.put("orderCode", orderCode);
             int amount = bill.getAmount().intValue();
-            if (amount <= 0) amount = 10000; // fallback tránh lỗi amount = 0
+            if (amount <= 0)
+                amount = 10000; // fallback tránh lỗi amount = 0
             paymentData.put("amount", amount);
             paymentData.put("description", description != null ? description : "Thanh toán dịch vụ nha khoa");
             paymentData.put("buyerName", bill.getCustomerName() != null ? bill.getCustomerName() : "Khach hang");
             paymentData.put("buyerPhone", bill.getCustomerPhone() != null ? bill.getCustomerPhone() : "0123456789");
-            paymentData.put("buyerEmail", bill.getCustomerEmail() != null ? bill.getCustomerEmail() : "customer@example.com");
+            paymentData.put("buyerEmail",
+                    bill.getCustomerEmail() != null ? bill.getCustomerEmail() : "customer@example.com");
             paymentData.put("cancelUrl", CANCEL_URL != null ? CANCEL_URL : "https://google.com");
             paymentData.put("returnUrl", SUCCESS_URL != null ? SUCCESS_URL : "https://google.com");
             paymentData.put("expiredAt", System.currentTimeMillis() / 1000 + 900); // 15 phút
@@ -104,7 +106,7 @@ public class PayOSUtil {
             item.put("name", description != null ? description : "Dịch vụ nha khoa");
             item.put("quantity", 1);
             item.put("price", amount);
-            paymentData.put("items", new Object[]{item});
+            paymentData.put("items", new Object[] { item });
             String jsonPayload = gson.toJson(paymentData);
             System.out.println("[STAFF][PayOS] Payload: " + jsonPayload);
             URL url = new URL(CREATE_PAYMENT_URL);
@@ -153,32 +155,31 @@ public class PayOSUtil {
             System.out.println("[STAFF][PayOS] Exception: " + e.getMessage());
             e.printStackTrace();
         }
-        
+
         // FALLBACK: Tạo QR VietQR/MB Bank khi PayOS API lỗi
         System.out.println("[STAFF][PayOS] PayOS API lỗi - Sử dụng QR fallback VietQR/MB Bank");
         return generateMBBankDirectQR(bill);
     }
-    
+
     /**
      * Tạo QR code cho TẤT CẢ ngân hàng Việt Nam (VietQR format) - FALLBACK
      */
     private static String generateMBBankDirectQR(Bill bill) {
         // Default account cho demo (có thể config nhiều account khác nhau)
         String defaultBankCode = "970422"; // MB Bank
-        String defaultAccountNumber = "5529062004";
-        
+        String defaultAccountNumber = "70410082004";
+
         String amount = String.valueOf(bill.getAmount().intValue());
         String description = bill.getBillId(); // Đơn giản hóa
-        
+
         // Tạo VietQR universal format (hỗ trợ tất cả ngân hàng)
         String qrUrl = String.format(
-            "https://img.vietqr.io/image/%s-%s-compact.jpg?amount=%s&addInfo=%s",
-            defaultBankCode,
-            defaultAccountNumber,
-            amount,
-            java.net.URLEncoder.encode(description, java.nio.charset.StandardCharsets.UTF_8)
-        );
-        
+                "https://img.vietqr.io/image/%s-%s-compact.jpg?amount=%s&addInfo=%s",
+                defaultBankCode,
+                defaultAccountNumber,
+                amount,
+                java.net.URLEncoder.encode(description, java.nio.charset.StandardCharsets.UTF_8));
+
         System.out.println("[STAFF][FALLBACK] === MÃ QR NGÂN HÀNG VIỆT NAM TOÀN DIỆN (VIETQR) ===");
         System.out.println("[STAFF][FALLBACK] 🏦 Ngân hàng: " + getBankName(defaultBankCode));
         System.out.println("[STAFF][FALLBACK] 📱 Mã BIN: " + defaultBankCode);
@@ -187,10 +188,10 @@ public class PayOSUtil {
         System.out.println("[STAFF][FALLBACK] 📝 Mô tả: " + description);
         System.out.println("[STAFF][FALLBACK] 🔗 URL QR: " + qrUrl);
         System.out.println("[STAFF][FALLBACK] ✅ Có thể thanh toán bằng BẤT KỲ ngân hàng nào tại Việt Nam!");
-        
+
         return qrUrl;
     }
-    
+
     /**
      * Get bank name từ BIN code
      */
@@ -208,7 +209,7 @@ public class PayOSUtil {
         bankNames.put("970423", "TPBank");
         bankNames.put("970403", "Sacombank");
         bankNames.put("970437", "HDBank");
-        
+
         return bankNames.getOrDefault(binCode, "Unknown Bank");
     }
-} 
+}

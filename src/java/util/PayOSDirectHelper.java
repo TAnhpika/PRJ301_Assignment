@@ -43,6 +43,21 @@ public class PayOSDirectHelper {
         long orderCode = System.currentTimeMillis() % 1000000000L;
         int amount = bill.getAmount().intValue();
 
+        // ---- 0. Lưu orderCode vào Bills.payos_order_id để có thể tra cứu khi session
+        // mất ----
+        try {
+            String updateSql = "UPDATE dbo.Bills SET payos_order_id = ? WHERE bill_id = ?";
+            try (java.sql.Connection conn = util.DBContext.getConnection();
+                    java.sql.PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                ps.setString(1, String.valueOf(orderCode));
+                ps.setString(2, bill.getBillId());
+                ps.executeUpdate();
+                System.out.println("[PayOS DIRECT] Saved orderCode=" + orderCode + " to bill " + bill.getBillId());
+            }
+        } catch (Exception ex) {
+            System.err.println("[PayOS DIRECT] WARNING: Could not save orderCode to bill: " + ex.getMessage());
+        }
+
         System.out.println("[PayOS DIRECT] orderCode=" + orderCode
                 + " amount=" + amount + " desc=" + description);
 

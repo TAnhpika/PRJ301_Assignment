@@ -374,8 +374,8 @@
                                 <strong>📋 CHI TIẾT GIAO DỊCH:</strong><br>
                                 • Mã GD: ${paymentInfo != null ? paymentInfo.billId : 'BILL_A5F6E8C5'}<br>
                                 • Ngân hàng: MB Bank (970422)<br>
-                                • STK: 5529062004<br>
-                                • Chủ TK: TRAN HONG PHUOC<br>
+                                • STK: 70410082004<br>
+                                • Chủ TK: NGUYEN VAN TUAN ANH<br>
                                 • Nội dung: Thanh toan ${paymentInfo != null ? paymentInfo.billId : 'BILL_A5F6E8C5'}
                             </div>
                         </div>
@@ -440,7 +440,7 @@
                     <a href="${pageContext.request.contextPath}/services" class="btn btn-success btn-action">
                         <i class="fas fa-plus me-2"></i>Đặt lịch khác
                     </a>
-                    <a href="${pageContext.request.contextPath}/index.jsp" class="btn btn-outline-secondary btn-action">
+                    <a href="${pageContext.request.contextPath}/LandingPageServlet" class="btn btn-outline-secondary btn-action">
                         <i class="fas fa-home me-2"></i>Về trang chủ
                     </a>
                 </div>
@@ -593,8 +593,8 @@
                                     <strong>📋 CHI TIẾT GIAO DỊCH:</strong><br>
                                     • Mã GD: ${billId}<br>
                                     • Ngân hàng: MB Bank (970422)<br>
-                                    • STK: 5529062004<br>
-                                    • Chủ TK: TRAN HONG PHUOC<br>
+                                    • STK: 70410082004<br>
+                                    • Chủ TK: NGUYEN VAN TUAN ANH<br>
                                     • Nội dung: Thanh toan ${billId}
                                 </div>
                                 
