@@ -98,6 +98,15 @@ public final class Env {
         return (v != null && !v.isEmpty()) ? v : defaultValue;
     }
 
+    /**
+     * Xóa cache để reload .env (hữu ích khi đổi API key khi đang chạy).
+     */
+    public static void clearCache() {
+        synchronized (LOCK) {
+            envMap = null;
+        }
+    }
+
     private Env() {
     }
 }

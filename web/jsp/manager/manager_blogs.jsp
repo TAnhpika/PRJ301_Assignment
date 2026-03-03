@@ -81,36 +81,14 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- Filters -->
+                                                <!-- Search Filter -->
                                                 <div class="dashboard-card mb-4">
                                                     <div class="row g-3 align-items-center">
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-12">
                                                             <div class="input-group">
-                                                                <span class="input-group-text bg-white"><i
-                                                                        class="fas fa-search text-muted"></i></span>
-                                                                <input type="text" class="form-control" id="searchInput"
-                                                                    placeholder="Tìm kiếm blog..."
-                                                                    onkeyup="filterTable()">
+                                                                <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                                                                <input type="text" class="form-control" id="searchInput" placeholder="Tìm kiếm blog..." onkeyup="filterTable()">
                                                             </div>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <select class="form-select" id="categoryFilter"
-                                                                onchange="filterTable()">
-                                                                <option value="">Tất cả danh mục</option>
-                                                                <option value="HEALTH_TIPS">Mẹo sức khỏe</option>
-                                                                <option value="DISEASE_INFO">Thông tin bệnh</option>
-                                                                <option value="NUTRITION">Dinh dưỡng</option>
-                                                                <option value="MEDICAL_NEWS">Tin tức y tế</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <select class="form-select" id="statusFilter"
-                                                                onchange="filterTable()">
-                                                                <option value="">Tất cả trạng thái</option>
-                                                                <option value="PENDING">Chờ duyệt</option>
-                                                                <option value="APPROVED">Đã duyệt</option>
-                                                                <option value="REJECTED">Từ chối</option>
-                                                            </select>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -124,10 +102,7 @@
                                                                     <th style="width: 50px;">ID</th>
                                                                     <th style="width: 100px;">Ảnh</th>
                                                                     <th>Tiêu đề</th>
-                                                                    <th>Tác giả</th>
-                                                                    <th>Danh mục</th>
                                                                     <th>Ngày đăng</th>
-                                                                    <th>Trạng thái</th>
                                                                     <th>Thao tác</th>
                                                                 </tr>
                                                             </thead>
@@ -141,79 +116,28 @@
                                                                                 nào</p>
                                                                         </td>
                                                                     </tr>
-                                                                    <% } else { for (Blog blog : blogs) { %>
-                                                                        <tr data-category="<%= blog.getCategory() %>"
-                                                                            data-status="<%= blog.getStatus() %>">
-                                                                            <td><span class="badge bg-secondary">#<%=
-                                                                                        blog.getId() %></span></td>
+                                                                    <% } else { for (BlogPost blog : blogs) { %>
+                                                                        <tr>
+                                                                            <td><span class="badge bg-secondary">#<%= blog.getBlogId() %></span></td>
                                                                             <td>
-                                                                                <img src="<%= blog.getImage() != null ? blog.getImage() : request.getContextPath() + "
-                                                                                    /img/default-blog.jpg" %>"
-                                                                                class="rounded" style="width: 80px;
-                                                                                height: 50px; object-fit: cover;"
-                                                                                alt="Blog Image">
+                                                                                <img src="<%= blog.getImageUrl() != null ? blog.getImageUrl() : request.getContextPath() + "/view/assets/img/default-blog.jpg" %>"
+                                                                                    class="rounded" style="width: 80px; height: 50px; object-fit: cover;"
+                                                                                    alt="Blog Image">
                                                                             </td>
                                                                             <td>
-                                                                                <strong class="d-block mb-1">
-                                                                                    <%= blog.getTitle() %>
-                                                                                </strong>
-                                                                                <small class="text-muted"
-                                                                                    style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                                                                    <%= blog.getContent() !=null ?
-                                                                                        blog.getContent().substring(0,
-                                                                                        Math.min(100,
-                                                                                        blog.getContent().length()))
-                                                                                        + "..." : "" %>
+                                                                                <strong class="d-block mb-1"><%= blog.getTitle() %></strong>
+                                                                                <small class="text-muted" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                                                    <%= blog.getContent() != null ? (blog.getContent().length() > 100 ? blog.getContent().substring(0, 100) + "..." : blog.getContent()) : "" %>
                                                                                 </small>
                                                                             </td>
+                                                                            <td><%= blog.getCreatedAt() %></td>
                                                                             <td>
-                                                                                <%= blog.getAuthor() %>
-                                                                            </td>
-                                                                            <td><span
-                                                                                    class="badge-dashboard badge-info">
-                                                                                    <%= blog.getCategory() %>
-                                                                                </span></td>
-                                                                            <td>
-                                                                                <%= blog.getCreatedAt() %>
-                                                                            </td>
-                                                                            <td>
-                                                                                <span class="badge bg-<%= "
-                                                                                    PENDING".equals(blog.getStatus())
-                                                                                    ? "warning" : "APPROVED"
-                                                                                    .equals(blog.getStatus())
-                                                                                    ? "success" : "danger" %>">
-                                                                                    <%= "PENDING"
-                                                                                        .equals(blog.getStatus())
-                                                                                        ? "Chờ duyệt" : "APPROVED"
-                                                                                        .equals(blog.getStatus())
-                                                                                        ? "Đã duyệt" : "Từ chối" %>
-                                                                                </span>
-                                                                            </td>
-                                                                            <td>
-                                                                                <button
-                                                                                    class="btn btn-sm btn-outline-info me-1"
-                                                                                    title="Xem chi tiết">
+                                                                                <button class="btn btn-sm btn-outline-info me-1" title="Xem chi tiết">
                                                                                     <i class="fas fa-eye"></i>
                                                                                 </button>
-                                                                                <% if
-                                                                                    (!"APPROVED".equals(blog.getStatus()))
-                                                                                    { %>
-                                                                                    <button
-                                                                                        class="btn btn-sm btn-outline-success me-1"
-                                                                                        title="Duyệt">
-                                                                                        <i class="fas fa-check"></i>
-                                                                                    </button>
-                                                                                    <% } %>
-                                                                                        <% if
-                                                                                            (!"REJECTED".equals(blog.getStatus()))
-                                                                                            { %>
-                                                                                            <button
-                                                                                                class="btn btn-sm btn-outline-danger"
-                                                                                                title="Từ chối">
-                                                                                                <i
-                                                                                                    class="fas fa-times"></i>
-                                                                                            </button>
-                                                                                            <% } %>
+                                                                                <button class="btn btn-sm btn-outline-danger" title="Xóa" onclick="confirmDelete(<%= blog.getBlogId() %>)">
+                                                                                    <i class="fas fa-trash"></i>
+                                                                                </button>
                                                                             </td>
                                                                         </tr>
                                                                         <% } } %>
@@ -224,6 +148,10 @@
                                             </div>
                                     </main>
                             </div>
+                            <!-- Hidden Delete Form -->
+                            <form id="deleteBlogForm" action="${pageContext.request.contextPath}/DeleteBlogServlet" method="POST" style="display: none;">
+                                <input type="hidden" name="blogId" id="deleteBlogId">
+                            </form>
 
                             <!-- Add Blog Modal -->
                             <div class="modal fade" id="addBlogModal" tabindex="-1">
@@ -278,26 +206,11 @@
                                 <script>
                                     function filterTable() {
                                         var searchInput = document.getElementById("searchInput").value.toLowerCase();
-                                        var categoryFilter = document.getElementById("categoryFilter").value;
-                                        var statusFilter = document.getElementById("statusFilter").value;
                                         var table = document.getElementById("blogsTable");
                                         var tr = table.getElementsByTagName("tr");
 
                                         for (var i = 1; i < tr.length; i++) {
-                                            var category = tr[i].getAttribute("data-category");
-                                            var status = tr[i].getAttribute("data-status");
-                                            var td = tr[i].getElementsByTagName("td");
                                             var show = true;
-
-                                            // Category filter
-                                            if (categoryFilter && category !== categoryFilter) {
-                                                show = false;
-                                            }
-
-                                            // Status filter
-                                            if (statusFilter && status !== statusFilter) {
-                                                show = false;
-                                            }
 
                                             // Search filter
                                             if (searchInput) {
@@ -308,6 +221,13 @@
                                             }
 
                                             tr[i].style.display = show ? "" : "none";
+                                        }
+                                    }
+
+                                    function confirmDelete(id) {
+                                        if (confirm('Bạn có chắc chắn muốn xóa bài viết này không?')) {
+                                            document.getElementById('deleteBlogId').value = id;
+                                            document.getElementById('deleteBlogForm').submit();
                                         }
                                     }
                                 </script>

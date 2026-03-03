@@ -4,7 +4,6 @@
  */
 package controller.treatment;
 
-
 import dao.MedicineDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,10 +25,10 @@ public class MedicalReportDetailServlet extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -48,58 +47,60 @@ public class MedicalReportDetailServlet extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the
+    // + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
-   @Override
-protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-    String appointmentIdParam = request.getParameter("appointmentId");
+        String appointmentIdParam = request.getParameter("appointmentId");
 
-    if (appointmentIdParam == null || appointmentIdParam.isEmpty()) {
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Thiếu appointmentId");
-        return;
-    }
-
-    try {
-        int appointmentId = Integer.parseInt(appointmentIdParam);
-
-        MedicalReport report = MedicineDAO.getReportByAppointmentId(appointmentId);
-        if (report == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Không tìm thấy báo cáo");
+        if (appointmentIdParam == null || appointmentIdParam.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Thiếu appointmentId");
             return;
         }
 
-        List<Prescription> prescriptions = MedicineDAO.getPrescriptionsByReportId(report.getReportId());
+        try {
+            int appointmentId = Integer.parseInt(appointmentIdParam);
 
-        request.setAttribute("report", report);
-        request.setAttribute("prescriptions", prescriptions);
+            MedicalReport report = MedicineDAO.getReportByAppointmentId(appointmentId);
+            if (report == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Không tìm thấy báo cáo");
+                return;
+            }
 
-        request.getRequestDispatcher("/view/jsp/patient/user_medicalreport.jsp").forward(request, response);
+            List<Prescription> prescriptions = MedicineDAO.getPrescriptionsByReportId(report.getReportId());
 
-    } catch (NumberFormatException e) {
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "appointmentId không hợp lệ");
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi hệ thống");
+            request.setAttribute("report", report);
+            request.setAttribute("prescriptions", prescriptions);
+
+            request.getRequestDispatcher("/view/jsp/patient/user_medicalreport.jsp").forward(request, response);
+
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "appointmentId không hợp lệ");
+        } catch (Exception e) {
+            response.setContentType("text/plain;charset=UTF-8");
+            PrintWriter out = response.getWriter();
+            out.println("Lỗi hệ thống: " + e.getMessage());
+            e.printStackTrace(out);
+        }
     }
-}
-
 
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

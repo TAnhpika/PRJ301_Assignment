@@ -63,10 +63,6 @@
                                 class="sidebar-dropdown-item">
                                 Đăng ký lịch
                             </a>
-                            <a href="${pageContext.request.contextPath}/ReexaminationServlet"
-                                class="sidebar-dropdown-item">
-                                Tái khám
-                            </a>
                         </div>
                     </div>
                 </div>

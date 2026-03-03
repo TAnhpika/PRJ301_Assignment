@@ -1,6 +1,5 @@
 package dao;
 
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +14,14 @@ import static util.DBContext.getConnection;
  * @author Home
  */
 
-
 public class MedicineDAO {
-
-
 
     public static int insertMedicalReport(int appointmentId, long doctorId, int patientId,
             String diagnosis, String treatmentPlan, String note, String sign) throws SQLException {
         String sql = "INSERT INTO MedicalReport (appointment_id, doctor_id, patient_id, diagnosis, treatment_plan, note, sign) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBContext.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setInt(1, appointmentId);
             ps.setLong(2, doctorId);
@@ -47,7 +44,8 @@ public class MedicineDAO {
     }
 
     // Thêm đơn thuốc gắn với báo cáo
-    public static void insertPrescription(int reportId, int medicineId, int quantity, String usage) throws SQLException {
+    public static void insertPrescription(int reportId, int medicineId, int quantity, String usage)
+            throws SQLException {
         String sql = "INSERT INTO Prescription (report_id, medicine_id, quantity, usage) VALUES (?, ?, ?, ?)";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -63,7 +61,9 @@ public class MedicineDAO {
         List<Medicine> list = new ArrayList<>();
         String sql = "SELECT * FROM Medicine";
 
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DBContext.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Medicine m = new Medicine();
@@ -114,107 +114,60 @@ public class MedicineDAO {
 
     public static List<MedicalReport> getMedicalReportsByPatientId(int patientId) {
         List<MedicalReport> reports = new ArrayList<>();
-        String sql = "SELECT * FROM MedicalReport WHERE patientId = ?";
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, patientId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                MedicalReport mr = new MedicalReport();
-                mr.setReportId(rs.getInt("reportId"));
-                mr.setAppointmentId(rs.getInt("appointmentId"));
-                mr.setDiagnosis(rs.getString("diagnosis"));
-                mr.setTreatmentPlan(rs.getString("treatmentPlan"));
-                mr.setNote(rs.getString("note"));
-                mr.setSign(rs.getString("sign"));
-                // Set các trường khác nếu có
-                reports.add(mr);
+        String sql = "SELECT * FROM MedicalReport WHERE patient_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            conn = DBContext.getConnection();
+            if (conn != null) {
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, patientId);
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    MedicalReport mr = new MedicalReport();
+                    mr.setReportId(rs.getInt("report_id"));
+                    mr.setAppointmentId(rs.getInt("appointment_id"));
+                    mr.setDoctorId(rs.getInt("doctor_id"));
+                    mr.setPatientId(rs.getInt("patient_id"));
+                    mr.setDiagnosis(rs.getString("diagnosis"));
+                    mr.setTreatmentPlan(rs.getString("treatment_plan"));
+                    mr.setNote(rs.getString("note"));
+                    mr.setCreatedAt(rs.getTimestamp("created_at"));
+                    mr.setSign(rs.getString("sign"));
+                    reports.add(mr);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return reports;
     }
 
- 
-
     public static MedicalReport getMedicalReportById(int reportId) {
-    MedicalReport report = null;
-    String sql = "SELECT mr.*, p.full_name AS patient_name, d.full_name AS doctor_name "
-               + "FROM MedicalReport mr "
-+ "JOIN Patients p ON mr.patient_id = p.patient_id "
-               + "JOIN Doctors d ON mr.doctor_id = d.doctor_id "
-               + "WHERE mr.report_id = ?";
-
-    try (Connection conn = DBContext.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql)) {
-
-        ps.setInt(1, reportId);
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            report = new MedicalReport();
-            report.setReportId(rs.getInt("report_id"));
-            report.setAppointmentId(rs.getInt("appointment_id"));
-            report.setDoctorId(rs.getInt("doctor_id"));
-            report.setPatientId(rs.getInt("patient_id"));
-            report.setDiagnosis(rs.getString("diagnosis"));
-            report.setTreatmentPlan(rs.getString("treatment_plan"));
-            report.setNote(rs.getString("note"));
-            report.setCreatedAt(rs.getTimestamp("created_at"));
-            report.setSign(rs.getString("sign"));
-            report.setPatientName(rs.getString("patient_name"));
-            report.setDoctorName(rs.getString("doctor_name"));
-        }
-
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-
-    return report;
-}
-
-
-    public static List<Prescription> getPrescriptionsByReportId(int reportId) {
-        List<Prescription> list = new ArrayList<>();
-        String sql = "SELECT p.prescription_id, p.report_id, p.medicine_id, m.name, p.quantity, p.usage "
-                + "FROM Prescription p "
-                + "JOIN Medicine m ON p.medicine_id = m.medicine_id "
-                + "WHERE p.report_id = ?";
-
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, reportId);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                Prescription pres = new Prescription();
-                pres.setPrescriptionId(rs.getInt("prescription_id"));
-                pres.setReportId(rs.getInt("report_id"));
-                pres.setMedicineId(rs.getInt("medicine_id"));
-                pres.setName(rs.getString("name"));
-                pres.setQuantity(rs.getInt("quantity"));
-                pres.setUsage(rs.getString("usage"));
-
-                list.add(pres);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return list;
-    }
-
-    public static MedicalReport getReportByAppointmentId(int appointmentId) {
         MedicalReport report = null;
         String sql = "SELECT mr.*, p.full_name AS patient_name, d.full_name AS doctor_name "
                 + "FROM MedicalReport mr "
                 + "JOIN Patients p ON mr.patient_id = p.patient_id "
                 + "JOIN Doctors d ON mr.doctor_id = d.doctor_id "
-                + "WHERE mr.appointment_id = ?";
+                + "WHERE mr.report_id = ?";
 
-        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, appointmentId);
-ResultSet rs = ps.executeQuery();
+            ps.setInt(1, reportId);
+            ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
                 report = new MedicalReport();
@@ -227,8 +180,8 @@ ResultSet rs = ps.executeQuery();
                 report.setNote(rs.getString("note"));
                 report.setCreatedAt(rs.getTimestamp("created_at"));
                 report.setSign(rs.getString("sign"));
-                report.setPatientName(rs.getString("patient_name")); // set tên bệnh nhân
-                report.setDoctorName(rs.getString("doctor_name"));   // set tên bác sĩ
+                report.setPatientName(rs.getString("patient_name"));
+                report.setDoctorName(rs.getString("doctor_name"));
             }
 
         } catch (Exception e) {
@@ -238,7 +191,99 @@ ResultSet rs = ps.executeQuery();
         return report;
     }
 
-     
+    public static List<Prescription> getPrescriptionsByReportId(int reportId) {
+        List<Prescription> list = new ArrayList<>();
+        String sql = "SELECT p.prescription_id, p.report_id, p.medicine_id, m.name, p.quantity, p.usage "
+                + "FROM Prescription p "
+                + "JOIN Medicine m ON p.medicine_id = m.medicine_id "
+                + "WHERE p.report_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            conn = DBContext.getConnection();
+            if (conn != null) {
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, reportId);
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    Prescription pres = new Prescription();
+                    pres.setPrescriptionId(rs.getInt("prescription_id"));
+                    pres.setReportId(rs.getInt("report_id"));
+                    pres.setMedicineId(rs.getInt("medicine_id"));
+                    pres.setName(rs.getString("name"));
+                    pres.setQuantity(rs.getInt("quantity"));
+                    pres.setUsage(rs.getString("usage"));
+                    list.add(pres);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return list;
+    }
+
+    public static MedicalReport getReportByAppointmentId(int appointmentId) {
+        MedicalReport report = null;
+        String sql = "SELECT mr.*, p.full_name AS patient_name, d.full_name AS doctor_name "
+                + "FROM MedicalReport mr "
+                + "JOIN Patients p ON mr.patient_id = p.patient_id "
+                + "JOIN Doctors d ON mr.doctor_id = d.doctor_id "
+                + "WHERE mr.appointment_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            conn = DBContext.getConnection();
+            if (conn != null) {
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, appointmentId);
+                rs = ps.executeQuery();
+
+                if (rs.next()) {
+                    report = new MedicalReport();
+                    report.setReportId(rs.getInt("report_id"));
+                    report.setAppointmentId(rs.getInt("appointment_id"));
+                    report.setDoctorId(rs.getInt("doctor_id"));
+                    report.setPatientId(rs.getInt("patient_id"));
+                    report.setDiagnosis(rs.getString("diagnosis"));
+                    report.setTreatmentPlan(rs.getString("treatment_plan"));
+                    report.setNote(rs.getString("note"));
+                    report.setCreatedAt(rs.getTimestamp("created_at"));
+                    report.setSign(rs.getString("sign"));
+                    report.setPatientName(rs.getString("patient_name")); // set tên bệnh nhân
+                    report.setDoctorName(rs.getString("doctor_name")); // set tên bác sĩ
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return report;
+    }
+
     /**
      * Xóa Medical Report và các prescription liên quan
      */
@@ -247,20 +292,20 @@ ResultSet rs = ps.executeQuery();
         try {
             conn = getConnection();
             conn.setAutoCommit(false); // Bắt đầu transaction
-            
+
             // Xóa prescriptions trước
             String deletePrescriptionsSql = "DELETE FROM Prescription WHERE report_id = ?";
             try (PreparedStatement ps1 = conn.prepareStatement(deletePrescriptionsSql)) {
                 ps1.setInt(1, reportId);
                 ps1.executeUpdate();
             }
-            
+
             // Xóa medical report
             String deleteReportSql = "DELETE FROM MedicalReport WHERE report_id = ?";
             try (PreparedStatement ps2 = conn.prepareStatement(deleteReportSql)) {
                 ps2.setInt(1, reportId);
                 int rowsAffected = ps2.executeUpdate();
-                
+
                 if (rowsAffected > 0) {
                     conn.commit(); // Commit transaction
                     return true;
@@ -307,4 +352,3 @@ ResultSet rs = ps.executeQuery();
     }
 
 }
-

@@ -92,7 +92,8 @@ public class StaffDAO {
         try {
             conn = getConnect();
             if (conn != null) {
-                ptm = conn.prepareStatement(GET_ALL);
+                String sql = "SELECT s.*, u.email FROM Staff s JOIN users u ON s.user_id = u.user_id";
+                ptm = conn.prepareStatement(sql);
                 rs = ptm.executeQuery();
                 while (rs.next()) {
                     Staff staff = new Staff();
@@ -389,17 +390,6 @@ public class StaffDAO {
 
             // Test cấu trúc bảng
             sql = "SELECT TOP 1 staff_id, user_id, full_name, phone FROM Staff";
-            ps = conn.prepareStatement(sql);
-            rs = ps.executeQuery();
-
-            if (rs.next()) {
-                System.out.println("📋 [TEST] Cấu trúc bảng Staff OK:");
-                System.out.println("   - staff_id: " + rs.getInt("staff_id"));
-                System.out.println("   - user_id: " + rs.getInt("user_id"));
-                System.out.println("   - full_name: " + rs.getString("full_name"));
-                System.out.println("   - phone: " + rs.getString("phone"));
-            }
-
             rs.close();
             ps.close();
 

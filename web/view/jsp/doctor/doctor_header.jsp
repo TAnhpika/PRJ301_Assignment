@@ -141,10 +141,6 @@
                                             <i class="fas fa-user-clock text-primary me-2"></i>
                                             Có 3 bệnh nhân đang chờ khám
                                         </a></li>
-                                    <li><a class="dropdown-item" href="#">
-                                            <i class="fas fa-calendar-check text-success me-2"></i>
-                                            Lịch tái khám mới
-                                        </a></li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>

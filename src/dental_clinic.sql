@@ -486,7 +486,7 @@ CREATE TABLE [dbo].[DoctorSchedule] (
     [slot_id]     INT           NOT NULL,
     [status] NVARCHAR(20) DEFAULT 'AVAILABLE' NOT NULL,
     CONSTRAINT CHK_DoctorSchedule_Status 
-    CHECK ([status] IN ('AVAILABLE','BOOKED','UNAVAILABLE')),
+    CHECK ([status] IN ('AVAILABLE','BOOKED','UNAVAILABLE', 'pending', 'approved', 'rejected')),
     PRIMARY KEY CLUSTERED ([schedule_id] ASC),
     FOREIGN KEY ([doctor_id]) REFERENCES [dbo].[Doctors] ([doctor_id]),
     FOREIGN KEY ([slot_id]) REFERENCES [dbo].[TimeSlot] ([slot_id]),

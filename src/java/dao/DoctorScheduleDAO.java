@@ -732,6 +732,7 @@ public class DoctorScheduleDAO {
         PreparedStatement ps = null;
         String sql = "SELECT COUNT(*) FROM DoctorSchedule WHERE doctor_id = ? AND work_date = ? AND slot_id = ?";
         try {
+            conn = DBContext.getConnection();
             ps = conn.prepareStatement(sql);
             ps.setLong(1, doctorId);
             ps.setDate(2, workDate);

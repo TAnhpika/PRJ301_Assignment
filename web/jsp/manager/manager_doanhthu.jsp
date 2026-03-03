@@ -13,9 +13,11 @@
     List<Bill> bills = billDAO.getAllBills();
     
     // Tính tổng doanh thu
-    double totalRevenue = 0;
+    java.math.BigDecimal totalRevenue = java.math.BigDecimal.ZERO;
     for (Bill bill : bills) {
-        totalRevenue += bill.getAmount();
+        if (bill.getAmount() != null) {
+            totalRevenue = totalRevenue.add(bill.getAmount());
+        }
     }
 %>
 
@@ -51,7 +53,7 @@
                             <div class="stat-card-icon">
                                 <i class="fas fa-coins"></i>
                             </div>
-                            <div class="stat-card-value"><%= String.format("%,.0f", totalRevenue) %></div>
+                            <div class="stat-card-value"><%= java.text.NumberFormat.getNumberInstance(new java.util.Locale("vi", "VN")).format(totalRevenue) %></div>
                             <div class="stat-card-label">Tổng doanh thu (VNĐ)</div>
                         </div>
                     </div>
@@ -69,7 +71,7 @@
                             <div class="stat-card-icon">
                                 <i class="fas fa-calculator"></i>
                             </div>
-                            <div class="stat-card-value"><%= bills.size() > 0 ? String.format("%,.0f", totalRevenue / bills.size()) : "0" %></div>
+                            <div class="stat-card-value"><%= bills.size() > 0 ? java.text.NumberFormat.getNumberInstance(new java.util.Locale("vi", "VN")).format(totalRevenue.divide(new java.math.BigDecimal(bills.size()), 0, java.math.RoundingMode.HALF_UP)) : "0" %></div>
                             <div class="stat-card-label">Trung bình/hóa đơn (VNĐ)</div>
                         </div>
                     </div>
@@ -115,7 +117,7 @@
                                             <span>BN#<%= bill.getPatientId() %></span>
                                         </div>
                                     </td>
-                                    <td><strong class="text-success"><%= String.format("%,.0f", bill.getAmount()) %> VNĐ</strong></td>
+                                    <td><strong class="text-success"><%= bill.getFormattedAmount() %></strong></td>
                                     <td><%= bill.getCreatedAt() %></td>
                                     <td><span class="badge bg-success">Đã thanh toán</span></td>
                                 </tr>

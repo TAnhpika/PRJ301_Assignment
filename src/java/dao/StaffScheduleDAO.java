@@ -268,7 +268,7 @@ public class StaffScheduleDAO {
                     FROM StaffSchedule ss
                     JOIN Staff s ON ss.staff_id = s.staff_id
                     LEFT JOIN TimeSlot ts ON ss.slot_id = ts.slot_id
-                    LEFT JOIN Staff approver ON ss.approved_by = approver.staff_id
+                    LEFT JOIN Staff approver ON ss.approved_by = approver.user_id
                     WHERE ss.schedule_id = ?
                 """;
 

@@ -149,15 +149,6 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="reexam_lan_2" id="reexam_lan_2" value="1"
-                                    <%= (appointment != null && appointment.getPreviousAppointmentId() > 0) ? "checked" : "" %>>
-                                <label class="form-check-label" for="reexam_lan_2">
-                                    <strong>Tái khám lần 2</strong> — Bệnh nhân đã khám lần đầu, đây là lần tái khám thứ 2
-                                </label>
-                            </div>
-                        </div>
                         
                         <div class="mb-3">
                             <label class="form-label">Chuẩn đoán <span class="text-danger">*</span></label>

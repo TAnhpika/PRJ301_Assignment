@@ -18,9 +18,11 @@
     List<Medicine> medicines = MedicineDAO.getAllMedicine();
     
     // Tính tổng doanh thu
-    double totalRevenue = 0;
+    java.math.BigDecimal totalRevenue = java.math.BigDecimal.ZERO;
     for (Bill bill : bills) {
-        totalRevenue += bill.getAmount();
+        if (bill.getAmount() != null) {
+            totalRevenue = totalRevenue.add(bill.getAmount());
+        }
     }
 %>
 
@@ -83,7 +85,7 @@
                             <div class="stat-card-icon">
                                 <i class="fas fa-coins"></i>
                             </div>
-                            <div class="stat-card-value"><%= String.format("%,.0f", totalRevenue) %></div>
+                            <div class="stat-card-value"><%= java.text.NumberFormat.getNumberInstance(new java.util.Locale("vi", "VN")).format(totalRevenue) %></div>
                             <div class="stat-card-label">Doanh thu (VNĐ)</div>
                         </div>
                     </div>
@@ -158,7 +160,7 @@
                                 <tr>
                                     <td><span class="badge bg-success">#<%= bill.getBillId() %></span></td>
                                     <td><%= bill.getPatientId() %></td>
-                                    <td><strong class="text-success"><%= String.format("%,.0f", bill.getAmount()) %> VNĐ</strong></td>
+                                    <td><strong class="text-success"><%= bill.getFormattedAmount() %></strong></td>
                                     <td><%= bill.getCreatedAt() %></td>
                                 </tr>
                                 <% } } %>

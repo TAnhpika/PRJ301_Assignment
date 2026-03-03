@@ -321,15 +321,6 @@
         <servlet-name>UserAccountServlet</servlet-name>
         <url-pattern>/UserAccountServlet</url-pattern>
     </servlet-mapping>
-    <!-- Reexamination (Tái khám) - Doctor -->
-    <servlet>
-        <servlet-name>ReexaminationServlet</servlet-name>
-        <servlet-class>controller.appointment.ReexaminationServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ReexaminationServlet</servlet-name>
-        <url-pattern>/ReexaminationServlet</url-pattern>
-    </servlet-mapping>
     <!-- Trang cá nhân bác sĩ -->
     <servlet>
         <servlet-name>DoctorProfileServlet</servlet-name>
