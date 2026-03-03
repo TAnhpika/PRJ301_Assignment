@@ -1,44 +1,32 @@
-﻿<%@page pageEncoding="UTF-8" %>
-    <%@ include file="/jsp/staff/staff_header.jsp" %>
-        <%@ include file="/jsp/staff/staff_menu.jsp" %>
-            <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-                <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-                    <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+﻿<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ page import="model.User" %>
 
-                        <!DOCTYPE html>
-                        <html lang="vi">
+<%
+    User user = (User) session.getAttribute("user");
+    if (user == null || !"STAFF".equals(user.getRole())) {
+        response.sendRedirect(request.getContextPath() + "/jsp/auth/login.jsp");
+        return;
+    }
+%>
 
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <title>Quản lý thanh toán - Dental Clinic</title>
+<!DOCTYPE html>
+<html lang="vi">
 
-                            <!-- Font Awesome và Bootstrap -->
-                            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-                                rel="stylesheet">
-                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-                                rel="stylesheet">
+<head>
+    <%@ include file="/view/layout/dashboard_head.jsp" %>
+    <title>Quản lý thanh toán - Dental Clinic</title>
 
-                            <style>
-                                * {
-                                    margin: 0;
-                                    padding: 0;
-                                    box-sizing: border-box;
-                                }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-                                body {
-                                    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-                                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                                    min-height: 100vh;
-                                }
-
-                                .main-content {
-                                    margin-left: 280px;
-                                    padding: 24px;
-                                    min-height: 100vh;
-                                }
-
-                                /* Header Section */
+        /* Header Section */
                                 .page-header {
                                     display: flex;
                                     align-items: center;
@@ -561,10 +549,18 @@
                                     align-items: center;
                                 }
                             </style>
-                        </head>
+</head>
 
-                        <body>
-                            <div class="main-content">
+<body class="bg-light">
+    <div class="dashboard-wrapper">
+        <%@ include file="/jsp/staff/staff_menu.jsp" %>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <%@ include file="/jsp/staff/staff_header.jsp" %>
+
+            <div class="dashboard-content">
+                <div class="container-fluid">
                                 <!-- Header -->
                                 <div class="page-header">
                                     <div>
@@ -1883,13 +1879,12 @@
                                             <i class="fas fa-save me-1"></i>
                                             Tạo Kế Hoạch
                                         </button>
-                                    </div>
-                                </div>
-                            </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
-                            <!-- Bootstrap JS -->
-                            <script
-                                src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-                        </body>
+    <%@ include file="/view/layout/dashboard_scripts.jsp" %>
+</body>
 
-                        </html>
+</html>

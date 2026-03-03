@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "RescheduleAppointmentServlet", urlPatterns = {"/RescheduleAppointmentServlet"})
+@WebServlet(name = "RescheduleAppointmentServlet", urlPatterns = { "/RescheduleAppointmentServlet" })
 public class RescheduleAppointmentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -41,9 +41,10 @@ public class RescheduleAppointmentServlet extends HttpServlet {
             message = "Lỗi đổi lịch: " + e.getMessage();
         }
         request.setAttribute("message", message);
+        request.setAttribute("success", success);
         // Load lại danh sách lịch hẹn
         java.util.List<model.Appointment> appointments = new dao.AppointmentDAO().getAllAppointmentsWithDetails();
         request.setAttribute("appointments", appointments);
         request.getRequestDispatcher("jsp/staff/staff_doilich.jsp").forward(request, response);
     }
-} 
+}

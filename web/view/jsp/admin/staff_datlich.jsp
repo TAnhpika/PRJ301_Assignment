@@ -251,6 +251,9 @@
                                                         <i class="fas fa-eye"></i>
                                                     </button>
                                                     <c:if test="${apt.status != 'COMPLETED' && apt.status != 'CANCELLED'}">
+                                                        <a href="${pageContext.request.contextPath}/RescheduleAppointmentServlet?appointmentId=${apt.appointmentId}" class="btn btn-sm btn-outline-warning me-1" title="Update lịch hẹn">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
                                                         <c:choose>
                                                             <c:when test="${apt.status == 'WAITING_PAYMENT'}">
                                                                 <button class="btn btn-sm btn-outline-success me-1" title="Xác nhận thanh toán" onclick="confirmAppointment('${apt.appointmentId}')">

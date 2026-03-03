@@ -2378,7 +2378,8 @@ public class AppointmentDAO {
         try {
             conn = DBContext.getConnection();
             String sql = """
-                        SELECT a.*,
+                        SELECT a.appointment_id, a.patient_id, a.doctor_id, a.slot_id, a.work_date,
+                               a.reason, a.status, a.service_id, a.previous_appointment_id,
                                p.full_name as patient_name, p.phone as patient_phone,
                                u1.email as patient_email,
                                d.full_name as doctor_name, d.specialty as doctor_specialty,

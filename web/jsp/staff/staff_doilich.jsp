@@ -66,7 +66,7 @@
                         <h4 class="mb-1"><i class="fas fa-exchange-alt me-2"></i>Đổi lịch hẹn</h4>
                         <p class="text-muted mb-0">Đổi lịch hẹn cho bệnh nhân</p>
                     </div>
-                    <a href="${pageContext.request.contextPath}/StaffAppointmentServlet" class="btn btn-outline-primary">
+                    <a href="${pageContext.request.contextPath}/StaffBookingServlet" class="btn btn-outline-primary">
                         <i class="fas fa-arrow-left me-1"></i>Quay lại
                     </a>
                 </div>
@@ -82,9 +82,12 @@
                                     <select id="appointmentId" name="appointmentId" class="form-select" required onchange="onAppointmentChange()">
                                         <option value="">-- Chọn lịch hẹn --</option>
                                         <% if (appointments != null) {
-                                            for (Appointment ap : appointments) { %>
-                                        <option value="<%= ap.getAppointmentId() %>" data-doctor-id="<%= ap.getDoctorId() %>">
-                                            [#<%= ap.getAppointmentId() %>] <%= ap.getPatientName() %> - BS: <%= ap.getDoctorName() %> - Ngày: <%= ap.getFormattedDate() %> - Ca: <%= ap.getFormattedTime() %>
+                                            String selectedId = request.getParameter("appointmentId");
+                                            for (Appointment ap : appointments) {
+                                                String selected = (selectedId != null && selectedId.equals(String.valueOf(ap.getAppointmentId()))) ? "selected" : "";
+                                        %>
+                                        <option value="<%= ap.getAppointmentId() %>" data-doctor-id="<%= ap.getDoctorId() %>" <%= selected %>>
+                                            [#<%= ap.getAppointmentId() %>] <%= ap.getPatientName() %> - <%= (ap.getDoctorName() != null && !ap.getDoctorName().isEmpty()) ? ap.getDoctorName() : "Chưa phân công" %> - <%= ap.getFormattedDate() %> <%= ap.getFormattedTime() %>
                                         </option>
                                         <% } } %>
                                     </select>
@@ -136,6 +139,7 @@
         mapBuilder.append("}");
     %>
     
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let appointmentDoctorMap = <%= mapBuilder.toString() %>;
 
@@ -145,6 +149,11 @@
             const tomorrow = new Date(today);
             tomorrow.setDate(tomorrow.getDate() + 1);
             document.getElementById('newDate').min = tomorrow.toISOString().split('T')[0];
+
+            // Auto trigger change if appointment is preselected
+            if (document.getElementById('appointmentId').value) {
+                onAppointmentChange();
+            }
         });
 
         function onAppointmentChange() {
@@ -212,6 +221,19 @@
                 return false;
             }
         });
+
+        <% if (request.getAttribute("message") != null) { %>
+            Swal.fire({
+                icon: '<%= (Boolean)request.getAttribute("success") ? "success" : "error" %>',
+                title: 'Thông báo',
+                text: '<%= request.getAttribute("message") %>',
+                confirmButtonText: 'Đóng'
+            }).then(() => {
+                <% if ((Boolean)request.getAttribute("success")) { %>
+                    window.location.href = '${pageContext.request.contextPath}/StaffBookingServlet';
+                <% } %>
+            });
+        <% } %>
     </script>
 </body>
 </html>

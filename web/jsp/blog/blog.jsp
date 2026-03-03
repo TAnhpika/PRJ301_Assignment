@@ -4,6 +4,11 @@
 
 <%
     List<BlogPost> posts = (List<BlogPost>) request.getAttribute("posts");
+    if (posts == null && !"POST".equalsIgnoreCase(request.getMethod())) {
+        response.sendRedirect(request.getContextPath() + "/blog");
+        return;
+    }
+
     String role = (String) session.getAttribute("role"); // STAFF hoặc PATIENT, MANAGER, null...
     boolean isStaff = "staff".equalsIgnoreCase(role);
 
@@ -564,6 +569,59 @@
                     -webkit-line-clamp: 6;
                 }
             }
+
+            /* Modal Styles */
+            .modal-overlay {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                justify-content: center;
+                align-items: center;
+            }
+            .modal-overlay.active {
+                display: flex;
+            }
+            .modal-container {
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                width: 90%;
+                max-width: 600px;
+                position: relative;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            .modal-close {
+                position: absolute;
+                top: 15px;
+                right: 20px;
+                font-size: 28px;
+                cursor: pointer;
+                color: #666;
+            }
+            .modal-close:hover {
+                color: #333;
+            }
+            .btn-create-post {
+                background: var(--primary-color);
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-size: 1rem;
+                cursor: pointer;
+                margin-bottom: 20px;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                transition: background 0.2s;
+                font-weight: 500;
+            }
+            .btn-create-post:hover {
+                background: var(--secondary-color);
+            }
         </style>
     </head>
     <body>
@@ -582,22 +640,33 @@
         </div>
 
         <div class="container">
-            <%-- STAFF: Hiển thị form đăng bài --%>
+            <%-- STAFF: Nút Đăng bài và Modal form --%>
             <% if (isStaff) { %>
-            <div class="post-form">
-                <h3>Đăng bài viết mới</h3>
-                <form action="${pageContext.request.contextPath}/blog" method="post" enctype="multipart/form-data">
-                    <label for="title">Tiêu đề bài viết:</label>
-                    <input type="text" id="title" name="title" placeholder="Tiêu đề chính của tin tức..." required>
+            <div style="text-align: right;">
+                <button type="button" class="btn-create-post" onclick="openPostModal()">
+                    <i class="fas fa-plus"></i> Đăng bài viết mới
+                </button>
+            </div>
 
-                    <label for="content">Nội dung:</label>
-                    <textarea id="content" name="content" placeholder="Điền nội dung chi tiết bài viết tại đây..." rows="10" required></textarea>
+            <div class="modal-overlay" id="postModal">
+                <div class="modal-container">
+                    <span class="modal-close" onclick="closePostModal()">&times;</span>
+                    <div class="post-form" style="margin-bottom: 0; padding: 0; background: none; box-shadow: none;">
+                        <h3 style="margin-top: 0; border-bottom: none; text-align: left;"><i class="fas fa-edit"></i> Đăng bài viết mới</h3>
+                        <form action="${pageContext.request.contextPath}/blog" method="post" enctype="multipart/form-data">
+                            <label for="title">Tiêu đề bài viết:</label>
+                            <input type="text" id="title" name="title" placeholder="Tiêu đề chính của tin tức..." required>
 
-                    <label for="image">Ảnh minh họa:</label>
-                    <input type="file" name="image" accept="image/*" onchange="previewImage(event)"><br>
-                    <img id="newPreview" src="#" alt="Ảnh mới"><br> <%-- Loại bỏ <br> thừa --%>
-                    <button type="submit"><i class="fas fa-paper-plane"></i> Đăng bài</button>
-                </form>
+                            <label for="content">Nội dung:</label>
+                            <textarea id="content" name="content" placeholder="Điền nội dung chi tiết bài viết tại đây..." rows="8" required></textarea>
+
+                            <label for="image">Ảnh minh họa:</label>
+                            <input type="file" name="image" accept="image/*" onchange="previewImage(event)"><br>
+                            <img id="newPreview" src="#" alt="Ảnh mới" style="margin-top: 10px;"><br>
+                            <button type="submit" style="width: 100%; margin-top: 15px;"><i class="fas fa-paper-plane"></i> Xuất bản</button>
+                        </form>
+                    </div>
+                </div>
             </div>
             <% } %>
 
@@ -669,7 +738,7 @@
                 <i class="fas fa-newspaper"></i>
                 <p>Hiện chưa có bài viết nào được đăng.</p>
                 <% if (isStaff) { %>
-                <p>Hãy là người đầu tiên đăng tin! <a href="#top-of-form">Đăng bài ngay</a></p>
+                <p>Hãy là người đầu tiên đăng tin! <a href="javascript:void(0);" onclick="openPostModal()">Đăng bài ngay</a></p>
                 <% } %>
             </div>
             <% }%>
@@ -679,6 +748,22 @@
 </html>
 
 <script>
+    function openPostModal() {
+        document.getElementById('postModal').classList.add('active');
+    }
+    
+    function closePostModal() {
+        document.getElementById('postModal').classList.remove('active');
+    }
+
+    // Đóng hộp thoại khi click ra ngoài
+    window.onclick = function(event) {
+        var modal = document.getElementById('postModal');
+        if (event.target == modal) {
+            closePostModal();
+        }
+    }
+
     function previewImage(event) {
         const file = event.target.files?.[0];
         const preview = document.getElementById("newPreview");
