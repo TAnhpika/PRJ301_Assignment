@@ -19,6 +19,7 @@ import java.util.List;
 
 /**
  * Servlet xử lý trang tổng quan cho bác sĩ
+ * 
  * @author ASUS
  */
 public class DoctorHomePageServlet extends HttpServlet {
@@ -46,28 +47,28 @@ public class DoctorHomePageServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession();
-        
+
         // Kiểm tra đăng nhập
         Doctors loggedInDoctor = (Doctors) session.getAttribute("doctor");
         User loggedInUser = (User) session.getAttribute("user");
-        
+
         if (loggedInDoctor == null || loggedInUser == null) {
             response.sendRedirect(request.getContextPath() + "/view/jsp/auth/login.jsp?error=session_expired");
             return;
         }
-        
+
         try {
             // Chuẩn bị thông tin bác sĩ
             prepareDoctorInfo(request, loggedInDoctor);
-            
+
             // Chuẩn bị dữ liệu thống kê
             prepareStatisticsData(request, loggedInDoctor, loggedInUser);
-            
+
             // Forward đến JSP để hiển thị
             request.getRequestDispatcher("/view/jsp/doctor/doctor_tongquan.jsp").forward(request, response);
-            
+
         } catch (Exception e) {
             System.err.println("Error in DoctorHomePageServlet: " + e.getMessage());
             e.printStackTrace();
@@ -75,16 +76,17 @@ public class DoctorHomePageServlet extends HttpServlet {
             request.getRequestDispatcher("/view/jsp/doctor/error_page.jsp").forward(request, response);
         }
     }
-    
+
     /**
      * Chuẩn bị thông tin cơ bản của bác sĩ
      */
     private void prepareDoctorInfo(HttpServletRequest request, Doctors loggedInDoctor) {
         // Thông tin cơ bản
         String doctorName = loggedInDoctor.getFullName() != null ? loggedInDoctor.getFullName() : "Chưa cập nhật";
-        String doctorSpecialty = loggedInDoctor.getSpecialty() != null ? loggedInDoctor.getSpecialty() : "Chưa cập nhật";
+        String doctorSpecialty = loggedInDoctor.getSpecialty() != null ? loggedInDoctor.getSpecialty()
+                : "Chưa cập nhật";
         String doctorPhone = loggedInDoctor.getPhone() != null ? loggedInDoctor.getPhone() : "Chưa cập nhật";
-        
+
         // Xử lý giới tính
         String doctorGender;
         if ("male".equals(loggedInDoctor.getGender())) {
@@ -94,17 +96,25 @@ public class DoctorHomePageServlet extends HttpServlet {
         } else {
             doctorGender = "Chưa cập nhật";
         }
-        
+
         // Xử lý avatar
-        String avatarPath = "images/logo.png";
+        String avatarPath = null;
         if (loggedInDoctor.getAvatar() != null && !loggedInDoctor.getAvatar().trim().isEmpty()) {
-            avatarPath = loggedInDoctor.getAvatar();
+            String avatar = loggedInDoctor.getAvatar().trim();
+            if (avatar.startsWith("http")) {
+                avatarPath = avatar;
+            } else if (avatar.startsWith("/")) {
+                avatarPath = request.getContextPath() + avatar;
+            } else {
+                avatarPath = request.getContextPath() + "/" + avatar;
+            }
         }
-        
+
         // Xử lý trạng thái hoạt động
         String currentStatus = loggedInDoctor.getStatus();
-        boolean isActive = "active".equals(currentStatus) || "Active".equals(currentStatus) || "Đang hoạt động".equals(currentStatus);
-        
+        boolean isActive = "active".equals(currentStatus) || "Active".equals(currentStatus)
+                || "Đang hoạt động".equals(currentStatus);
+
         // Set attributes
         request.setAttribute("doctorName", doctorName);
         request.setAttribute("doctorGender", doctorGender);
@@ -112,39 +122,41 @@ public class DoctorHomePageServlet extends HttpServlet {
         request.setAttribute("doctorPhone", doctorPhone);
         request.setAttribute("avatarPath", avatarPath);
         request.setAttribute("isActive", isActive);
-        
-        
+
     }
-    
+
     /**
      * Chuẩn bị dữ liệu thống kê và danh sách cuộc hẹn
      */
-    private void prepareStatisticsData(HttpServletRequest request, Doctors loggedInDoctor, User loggedInUser) throws Exception {
+    private void prepareStatisticsData(HttpServletRequest request, Doctors loggedInDoctor, User loggedInUser)
+            throws Exception {
         // Danh sách bệnh nhân đang chờ khám hôm nay
         List<Appointment> waitingAppointments = new ArrayList<>();
         List<Appointment> cancelledAppointments = new ArrayList<>();
-        
+
         try {
-           
-            
+
             Date currentDate = new Date();
             SimpleDateFormat debugDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             System.out.println("DEBUG: Current date is: " + debugDateFormat.format(currentDate));
-            
-            // Lấy danh sách appointment hôm nay đang chờ khám (đã cải thiện để xử lý multiple status)
+
+            // Lấy danh sách appointment hôm nay đang chờ khám (đã cải thiện để xử lý
+            // multiple status)
             waitingAppointments = AppointmentDAO.getTodayWaitingAppointmentsByDoctorId(loggedInDoctor.getDoctorId());
             System.out.println("DEBUG: Found " + waitingAppointments.size() + " waiting appointments for today");
-            
+
             // Lấy tất cả appointment để lọc lịch đã hủy
-            List<Appointment> allAppointments = AppointmentDAO.getAllAppointmentsByDoctorId(loggedInDoctor.getDoctorId());
-            System.out.println("DEBUG: Found " + (allAppointments != null ? allAppointments.size() : 0) + " total appointments for doctor ID: " + loggedInDoctor.getDoctorId());
-            
+            List<Appointment> allAppointments = AppointmentDAO
+                    .getAllAppointmentsByDoctorId(loggedInDoctor.getDoctorId());
+            System.out.println("DEBUG: Found " + (allAppointments != null ? allAppointments.size() : 0)
+                    + " total appointments for doctor ID: " + loggedInDoctor.getDoctorId());
+
             if (allAppointments != null && !allAppointments.isEmpty()) {
                 for (Appointment app : allAppointments) {
-                    if (app.getStatus() != null && 
-                        (app.getStatus().equalsIgnoreCase("Đã hủy") || 
-                         app.getStatus().equalsIgnoreCase("cancelled"))) {
-                        
+                    if (app.getStatus() != null &&
+                            (app.getStatus().equalsIgnoreCase("Đã hủy") ||
+                                    app.getStatus().equalsIgnoreCase("cancelled"))) {
+
                         // Tạo appointment object với thông tin đầy đủ
                         Appointment cancelledApp = new Appointment();
                         cancelledApp.setAppointmentId(app.getAppointmentId());
@@ -154,7 +166,7 @@ public class DoctorHomePageServlet extends HttpServlet {
                         cancelledApp.setSlotId(app.getSlotId());
                         cancelledApp.setStatus(app.getStatus());
                         cancelledApp.setReason(app.getReason());
-                        
+
                         // Lấy thông tin bệnh nhân
                         Patients patient = PatientDAO.getPatientById(app.getPatientId());
                         if (patient != null) {
@@ -163,26 +175,27 @@ public class DoctorHomePageServlet extends HttpServlet {
                             cancelledApp.setPatientDateOfBirth(patient.getDateOfBirth());
                             cancelledApp.setPatientPhone(patient.getPhone());
                         }
-                        
+
                         cancelledAppointments.add(cancelledApp);
                     }
                 }
             }
-            
-            // Nếu vẫn không có waiting appointments, thử fallback với tất cả appointment có status phù hợp
+
+            // Nếu vẫn không có waiting appointments, thử fallback với tất cả appointment có
+            // status phù hợp
             if (waitingAppointments.isEmpty() && allAppointments != null) {
                 System.out.println("DEBUG: No today appointments found, trying fallback with all appointments...");
-                
+
                 for (Appointment app : allAppointments) {
-                    System.out.println("DEBUG: Checking appointment - ID=" + app.getAppointmentId() + 
-                                     ", Status='" + app.getStatus() + 
-                                     "', Date=" + app.getWorkDate() + 
-                                     ", DoctorId=" + app.getDoctorId());
-                    
+                    System.out.println("DEBUG: Checking appointment - ID=" + app.getAppointmentId() +
+                            ", Status='" + app.getStatus() +
+                            "', Date=" + app.getWorkDate() +
+                            ", DoctorId=" + app.getDoctorId());
+
                     // Kiểm tra status phù hợp cho waiting
-                    if (app.getStatus() != null && 
-                        app.getStatus().equalsIgnoreCase("booked")) {
-                        
+                    if (app.getStatus() != null &&
+                            app.getStatus().equalsIgnoreCase("booked")) {
+
                         // Tạo appointment object với thông tin đầy đủ
                         Appointment waitingApp = new Appointment();
                         waitingApp.setAppointmentId(app.getAppointmentId());
@@ -192,7 +205,7 @@ public class DoctorHomePageServlet extends HttpServlet {
                         waitingApp.setSlotId(app.getSlotId());
                         waitingApp.setStatus(app.getStatus());
                         waitingApp.setReason(app.getReason());
-                        
+
                         // Lấy thông tin bệnh nhân
                         Patients patient = PatientDAO.getPatientById(app.getPatientId());
                         if (patient != null) {
@@ -200,15 +213,16 @@ public class DoctorHomePageServlet extends HttpServlet {
                             waitingApp.setPatientGender(patient.getGender());
                             waitingApp.setPatientDateOfBirth(patient.getDateOfBirth());
                             waitingApp.setPatientPhone(patient.getPhone());
-                            
-                            System.out.println("DEBUG: Added fallback appointment with patient: " + patient.getFullName());
+
+                            System.out.println(
+                                    "DEBUG: Added fallback appointment with patient: " + patient.getFullName());
                         }
-                        
+
                         waitingAppointments.add(waitingApp);
                     }
                 }
             }
-            
+
         } catch (Exception e) {
             System.err.println("Error getting appointments: " + e.getMessage());
             e.printStackTrace();
@@ -216,45 +230,51 @@ public class DoctorHomePageServlet extends HttpServlet {
             waitingAppointments = new ArrayList<>();
             cancelledAppointments = new ArrayList<>();
         }
-        
+
         // Set attributes cho JSP
         request.setAttribute("waitingAppointments", waitingAppointments);
         request.setAttribute("waitingCount", waitingAppointments.size());
         request.setAttribute("cancelledAppointments", cancelledAppointments);
         request.setAttribute("cancelledCount", cancelledAppointments.size());
-        
+
         // Debug log
         System.out.println("DEBUG: Statistics prepared - Final Results:");
         System.out.println("Waiting appointments: " + waitingAppointments.size());
         System.out.println("Cancelled appointments: " + cancelledAppointments.size());
-        
+
         // In ra chi tiết các waiting appointments
         for (int i = 0; i < waitingAppointments.size() && i < 3; i++) {
             Appointment app = waitingAppointments.get(i);
-            System.out.println("DEBUG: Waiting App " + (i+1) + ": " + 
-                             "ID=" + app.getAppointmentId() + 
-                             ", Patient=" + app.getPatientName() + 
-                             ", Status=" + app.getStatus() + 
-                             ", Date=" + app.getWorkDate());
+            System.out.println("DEBUG: Waiting App " + (i + 1) + ": " +
+                    "ID=" + app.getAppointmentId() +
+                    ", Patient=" + app.getPatientName() +
+                    ", Status=" + app.getStatus() +
+                    ", Date=" + app.getWorkDate());
         }
     }
-    
+
     /**
      * Helper method để lấy time slot string
      */
     public static String getTimeSlot(int slotId) {
         switch (slotId) {
-            case 1: return "08:00 - 08:30";
-            case 2: return "08:30 - 09:00";
-            case 3: return "09:00 - 09:30";
-            case 4: return "09:30 - 10:00";
-            case 5: return "10:00 - 10:30";
-            default: return "N/A";
+            case 1:
+                return "08:00 - 08:30";
+            case 2:
+                return "08:30 - 09:00";
+            case 3:
+                return "09:00 - 09:30";
+            case 4:
+                return "09:30 - 10:00";
+            case 5:
+                return "10:00 - 10:30";
+            default:
+                return "N/A";
         }
     }
-    
+
     @Override
     public String getServletInfo() {
         return "Servlet xử lý trang tổng quan cho bác sĩ";
     }
-} 
+}

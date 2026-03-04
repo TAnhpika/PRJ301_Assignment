@@ -93,13 +93,14 @@
         .msg-row.me { flex-direction:row-reverse; }
         .msg-avatar-s { width:32px; height:32px; border-radius:50%; object-fit:cover; flex-shrink:0; }
         .bubble {
-            max-width:66%; padding:10px 16px; border-radius:18px;
-            font-size:14px; line-height:1.55; white-space:pre-wrap; word-break:break-word;
-            box-shadow:0 1px 4px rgba(0,0,0,0.06);
+            width: fit-content; max-width: 100%;
+            padding: 10px 16px; border-radius: 18px;
+            font-size: 14px; line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
         }
         .msg-row.me    .bubble { background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:white; border-bottom-right-radius:4px; }
         .msg-row.other .bubble { background:white; color:#1e293b; border:1px solid #e8eef5; border-bottom-left-radius:4px; }
-        .msg-col { display:flex; flex-direction:column; }
+        .msg-col { display:flex; flex-direction:column; max-width: 75%; }
         .msg-row.me   .msg-col { align-items:flex-end; }
         .msg-row.other .msg-col { align-items:flex-start; }
         .msg-time { font-size:10.5px; color:#94a3b8; margin-top:3px; }
@@ -306,15 +307,14 @@
             d.className = 'doc-item' + (id === chatPartnerId ? ' active' : '');
             d.dataset.userId = id;
             const badge = unreadMap.get(id) || 0;
-            d.innerHTML = `
-                <img src="${CTX}/view/assets/img/default-avatar.png" class="doc-avatar" alt="avatar">
-                <div class="doc-info">
-                    <div class="doc-name">BS. ${esc(info.name)}</div>
-                    <div class="doc-spec"><i class="fas fa-stethoscope me-1"></i>Bác sĩ</div>
-                </div>
-                <div class="online-dot"></div>
-                ${badge > 0 ? `<span style="background:#ef4444;color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px">${badge}</span>` : ''}
-            `;
+            d.innerHTML =
+                '<img src="' + CTX + '/view/assets/img/default-avatar.png" class="doc-avatar" alt="avatar">' +
+                '<div class="doc-info">' +
+                    '<div class="doc-name">BS. ' + esc(info.name) + '</div>' +
+                    '<div class="doc-spec"><i class="fas fa-stethoscope me-1"></i>Bác sĩ</div>' +
+                '</div>' +
+                '<div class="online-dot"></div>' +
+                (badge > 0 ? '<span style="background:#ef4444;color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px">' + badge + '</span>' : '');
             d.onclick = () => selectDoctor(id, info.name);
             doctorListEl.appendChild(d);
         });
@@ -327,7 +327,7 @@
         renderDoctorList();
 
         document.getElementById('cpName').textContent = 'BS. ' + name;
-        document.getElementById('cpSub').innerHTML = `<span style="color:#22c55e">● Online</span>`;
+        document.getElementById('cpSub').innerHTML = '<span style="color:#22c55e">● Online</span>';
 
         chatBox.innerHTML = '';
         if (emptyState) emptyState.style.display = 'none';
@@ -335,7 +335,7 @@
         sendBtn.disabled  = false;
         inputMsg.focus();
 
-        addSys(`Đang tải lịch sử trò chuyện với BS. ${name}...`);
+        addSys('Đang tải lịch sử trò chuyện với BS. ' + name + '...');
         if (ws && ws.readyState === WebSocket.OPEN) ws.send("HISTORY_REQUEST|" + id);
     }
 
@@ -354,9 +354,11 @@
         const now = new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
         const row = document.createElement('div');
         row.className = 'msg-row ' + side;
-        const img = `<img src="${CTX}/view/assets/img/default-avatar.png" class="msg-avatar-s">`;
-        const bubble = `<div class="msg-col"><div class="bubble">${esc(text)}</div><div class="msg-time">${side==='other'?esc(name)+' · ':''}${now}</div></div>`;
-        row.innerHTML = side === 'me' ? bubble + img : img + bubble;
+        if (side === 'other') {
+            row.innerHTML = '<div class="msg-col"><div class="bubble">' + esc(text) + '</div><div class="msg-time">' + esc(name) + ' · ' + now + '</div></div>';
+        } else {
+            row.innerHTML = '<div class="msg-col"><div class="bubble">' + esc(text) + '</div><div class="msg-time">' + now + '</div></div>';
+        }
         chatBox.appendChild(row);
         chatBox.scrollTop = chatBox.scrollHeight;
     }
@@ -364,7 +366,7 @@
     function addSys(text) {
         const d = document.createElement('div');
         d.className = 'sys-msg';
-        d.innerHTML = `<span>${esc(text)}</span>`;
+        d.innerHTML = '<span>' + esc(text) + '</span>';
         chatBox.appendChild(d);
         chatBox.scrollTop = chatBox.scrollHeight;
     }

@@ -18,17 +18,17 @@ import model.User;
  *
  * @author Home
  */
-@WebServlet(name = "ChatServlet", urlPatterns = {"/ChatServlet"})
+@WebServlet(name = "ChatServlet", urlPatterns = { "/ChatServlet" })
 public class ChatServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -47,40 +47,40 @@ public class ChatServlet extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the
+    // + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
-protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-    HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession(false);
 
-    // Kiểm tra nếu người dùng chưa đăng nhập
-    User user = (session != null) ? (User) session.getAttribute("user") : null;
-    if (user == null) {
-        response.sendRedirect(request.getContextPath() + "/view/jsp/auth/login.jsp");
-        return;
+        // Kiểm tra nếu người dùng chưa đăng nhập
+        User user = (session != null) ? (User) session.getAttribute("user") : null;
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/view/jsp/auth/login.jsp");
+            return;
+        }
+
+        // Nếu đã đăng nhập, chuyển đến trang chat của bệnh nhân
+        request.getRequestDispatcher("/view/jsp/patient/patient_chat.jsp").forward(request, response);
     }
-
-    // Nếu đã đăng nhập, chuyển đến trang chat của bệnh nhân
-    request.getRequestDispatcher("/jsp/patient/chat.jsp").forward(request, response);
-}
-
 
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

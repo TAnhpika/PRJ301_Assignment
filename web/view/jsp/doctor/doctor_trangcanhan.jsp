@@ -18,10 +18,10 @@
 </head>
 <body>
     <div class="dashboard-wrapper">
-        <%@ include file="/jsp/doctor/doctor_menu.jsp" %>
+        <%@ include file="/view/jsp/doctor/doctor_menu.jsp" %>
         
         <main class="dashboard-main">
-            <%@ include file="/jsp/doctor/doctor_header.jsp" %>
+            <%@ include file="/view/jsp/doctor/doctor_header.jsp" %>
             
             <div class="dashboard-content">
                 <!-- Page Header -->
@@ -58,8 +58,18 @@
                     <!-- Avatar Card -->
                     <div class="col-lg-4">
                         <div class="dashboard-card text-center">
-                            <% if (doc.getAvatar() != null && !doc.getAvatar().isEmpty()) { %>
-                            <img src="<%= doc.getAvatar() %>" alt="Avatar" class="rounded-circle mb-3"
+                            <% 
+                                String avatarUrl = doc.getAvatar();
+                                if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                                    if (!avatarUrl.startsWith("http") && !avatarUrl.startsWith(request.getContextPath())) {
+                                        if (avatarUrl.startsWith("/")) {
+                                            avatarUrl = request.getContextPath() + avatarUrl;
+                                        } else {
+                                            avatarUrl = request.getContextPath() + "/" + avatarUrl;
+                                        }
+                                    }
+                            %>
+                            <img src="<%= avatarUrl %>" alt="Avatar" class="rounded-circle mb-3"
                                  style="width: 150px; height: 150px; object-fit: cover; border: 4px solid var(--primary-color);">
                             <% } else { %>
                             <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"

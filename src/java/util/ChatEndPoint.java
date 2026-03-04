@@ -280,6 +280,8 @@ public class ChatEndPoint {
             } else if ("patient".equalsIgnoreCase(role)) {
                 patientSessions.remove(userId);
                 LOGGER.info("Bệnh nhân " + username + " đã ngắt kết nối.");
+                // Notify all doctors that patient list has changed
+                sendPatientListToAllDoctors();
             }
             LOGGER.info("Người dùng " + username + " (" + role + ") đã ngắt kết nối. Session ID: " + session.getId());
         } else {

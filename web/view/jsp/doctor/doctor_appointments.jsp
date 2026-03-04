@@ -52,10 +52,10 @@
 </head>
 <body>
     <div class="dashboard-wrapper">
-        <%@ include file="/jsp/doctor/doctor_menu.jsp" %>
+        <%@ include file="/view/jsp/doctor/doctor_menu.jsp" %>
         
         <main class="dashboard-main">
-            <%@ include file="/jsp/doctor/doctor_header.jsp" %>
+            <%@ include file="/view/jsp/doctor/doctor_header.jsp" %>
             
             <div class="dashboard-content">
                 <!-- Page Header -->

@@ -133,7 +133,8 @@
         .msg-row.me { flex-direction: row-reverse; }
         .msg-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
         .msg-bubble {
-            max-width: 66%; padding: 10px 16px;
+            width: fit-content; max-width: 100%;
+            padding: 10px 16px;
             border-radius: 18px; font-size: 14px; line-height: 1.55;
             white-space: pre-wrap; word-break: break-word;
             box-shadow: 0 1px 4px rgba(0,0,0,0.06);
@@ -143,7 +144,7 @@
         .msg-time { font-size: 10.5px; color: #94a3b8; margin-top: 4px; }
         .msg-row.me   .msg-col { align-items: flex-end; }
         .msg-row.other .msg-col { align-items: flex-start; }
-        .msg-col { display: flex; flex-direction: column; }
+        .msg-col { display: flex; flex-direction: column; max-width: 75%; }
 
         .system-msg {
             text-align: center; font-size: 12px; color: #94a3b8;
@@ -378,15 +379,15 @@
             div.className = 'patient-item' + (id === chatPartnerId ? ' active' : '');
             div.dataset.userId = id;
             const badgeCount = unreadCount.get(id) || 0;
-            div.innerHTML = `
-                <img src="${CTX}/view/assets/img/default-avatar.png" class="patient-avatar" alt="avatar">
-                <div class="pi-info">
-                    <div class="pi-name">${escHtml(info.name)}</div>
-                    <div class="pi-role"><i class="fas fa-user me-1"></i>Bệnh nhân</div>
-                </div>
-                <div class="online-dot"></div>
-                ${badgeCount > 0 ? `<span class="unread-badge">${badgeCount}</span>` : ''}
-            `;
+            div.innerHTML =
+                '<img src="' + CTX + '/view/assets/img/default-avatar.png" class="patient-avatar" alt="avatar">' +
+                '<div class="pi-info">' +
+                    '<div class="pi-name">' + escHtml(info.name) + '</div>' +
+                    '<div class="pi-role"><i class="fas fa-user me-1"></i>Bệnh nhân</div>' +
+                '</div>' +
+                '<div class="online-dot"></div>' +
+                (badgeCount > 0 ? '<span class="unread-badge">' + badgeCount + '</span>' : '');
+
             div.onclick = () => selectPatient(id, info.name);
             patientListEl.appendChild(div);
         });
@@ -409,7 +410,7 @@
         renderPatientList();
 
         document.getElementById('cpName').textContent = name;
-        document.getElementById('cpSub').innerHTML = `<span style="color:#22c55e">● Online</span> · Bệnh nhân`;
+        document.getElementById('cpSub').innerHTML = '<span style="color:#22c55e">● Online</span> · Bệnh nhân';
 
         chatBox.innerHTML = '';
         emptyState.style.display = 'none';
@@ -417,7 +418,7 @@
         sendBtn.disabled = false;
         inputMsg.focus();
 
-        addSystemMsg(`Đang tải lịch sử trò chuyện với ${name}...`);
+        addSystemMsg('Đang tải lịch sử trò chuyện với ' + name + '...');
         if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send("HISTORY_REQUEST|" + id);
         }
@@ -442,22 +443,19 @@
         if (emptyState) emptyState.style.display = 'none';
         const timeStr = date.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
         const row = document.createElement('div');
-        row.className = `msg-row ${side}`;
-        const avatarSrc = `${CTX}/view/assets/img/default-avatar.png`;
+        row.className = 'msg-row ' + side;
         if (side === 'other') {
-            row.innerHTML = `
-                <img src="${avatarSrc}" class="msg-avatar" alt="avatar">
-                <div class="msg-col">
-                    <div class="msg-bubble">${escHtml(text)}</div>
-                    <div class="msg-time">${escHtml(name)} · ${timeStr}</div>
-                </div>`;
+            row.innerHTML =
+                '<div class="msg-col">' +
+                    '<div class="msg-bubble">' + escHtml(text) + '</div>' +
+                    '<div class="msg-time">' + escHtml(name) + ' · ' + timeStr + '</div>' +
+                '</div>';
         } else {
-            row.innerHTML = `
-                <div class="msg-col">
-                    <div class="msg-bubble">${escHtml(text)}</div>
-                    <div class="msg-time">${timeStr}</div>
-                </div>
-                <img src="${avatarSrc}" class="msg-avatar" alt="avatar">`;
+            row.innerHTML =
+                '<div class="msg-col">' +
+                    '<div class="msg-bubble">' + escHtml(text) + '</div>' +
+                    '<div class="msg-time">' + timeStr + '</div>' +
+                '</div>';
         }
         chatBox.appendChild(row);
         chatBox.scrollTop = chatBox.scrollHeight;
@@ -466,13 +464,13 @@
     function addSystemMsg(text) {
         const div = document.createElement('div');
         div.className = 'system-msg';
-        div.innerHTML = `<span>${escHtml(text)}</span>`;
+        div.innerHTML = '<span>' + escHtml(text) + '</span>';
         chatBox.appendChild(div);
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     function setConnBadge(state) {
-        connBadge.className = `conn-badge ${state}`;
+        connBadge.className = 'conn-badge ' + state;
         const labels = { connected: '● Đã kết nối', connecting: '◌ Đang kết nối...', disconnected: '✕ Mất kết nối' };
         connBadge.innerHTML = labels[state] || state;
     }

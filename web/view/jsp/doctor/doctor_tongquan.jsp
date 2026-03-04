@@ -55,12 +55,12 @@
     <body>
     <div class="dashboard-wrapper">
         <!-- Sidebar Menu -->
-        <%@ include file="/jsp/doctor/doctor_menu.jsp" %>
+        <%@ include file="/view/jsp/doctor/doctor_menu.jsp" %>
         
         <!-- Main Content -->
         <main class="dashboard-main">
             <!-- Header -->
-            <%@ include file="/jsp/doctor/doctor_header.jsp" %>
+            <%@ include file="/view/jsp/doctor/doctor_header.jsp" %>
             
             <!-- Page Content -->
             <div class="dashboard-content">

@@ -10,9 +10,9 @@
 </head>
 <body>
     <div class="dashboard-wrapper">
-        <%@ include file="/jsp/doctor/doctor_menu.jsp" %>
+        <%@ include file="/view/jsp/doctor/doctor_menu.jsp" %>
         <main class="dashboard-main">
-            <%@ include file="/jsp/doctor/doctor_header.jsp" %>
+            <%@ include file="/view/jsp/doctor/doctor_header.jsp" %>
             <div class="dashboard-content">
                 <!-- Page Header -->
                 <div class="doctor-page-header mb-4">
@@ -38,12 +38,37 @@
                                 <form action="${pageContext.request.contextPath}/EditDoctorServlet" method="post">
                                     <input type="hidden" name="user_id" value="<c:out value='${doctor.user_id}'/>">
 
-                                    <c:if test="${not empty doctor.avatar}">
-                                        <img src="<c:out value='${doctor.avatar}'/>" alt="Avatar" class="avatar-img">
-                                    </c:if>
-                                    <c:if test="${empty doctor.avatar}">
-                                        <p class="text-muted small mb-2">Chưa có ảnh đại diện</p>
-                                    </c:if>
+                                    <% 
+                                        model.Doctors docObj = (model.Doctors) request.getAttribute("doctor");
+                                        if (docObj == null) docObj = (model.Doctors) session.getAttribute("doctor");
+                                        String formattedAvatar = null;
+                                        if (docObj != null && docObj.getAvatar() != null && !docObj.getAvatar().trim().isEmpty()) {
+                                            String a = docObj.getAvatar().trim();
+                                            if (a.startsWith("http")) {
+                                                formattedAvatar = a;
+                                            } else if (a.startsWith("/")) {
+                                                formattedAvatar = request.getContextPath() + a;
+                                            } else {
+                                                formattedAvatar = request.getContextPath() + "/" + a;
+                                            }
+                                        }
+                                        request.setAttribute("formattedAvatar", formattedAvatar);
+                                    %>
+                                    <c:choose>
+                                        <c:when test="${not empty formattedAvatar}">
+                                            <div class="text-center mb-4">
+                                                <img src="${formattedAvatar}" alt="Avatar" class="avatar-img rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid var(--primary-color);">
+                                            </div>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <div class="text-center mb-4">
+                                                <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                                                     style="width: 120px; height: 120px; background: #f0f9ff; border: 3px solid var(--primary-color);">
+                                                    <i class="fas fa-user-md text-primary" style="font-size: 50px;"></i>
+                                                </div>
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
 
                                     <label for="doctorId">ID Bác Sĩ</label>
                                     <input type="text" id="doctorId" name="doctorId" value="<c:out value='${doctor.doctorId}'/>" readonly>
