@@ -58,15 +58,20 @@ public class DoctorHaveAppointmentServlet extends HttpServlet {
         System.out.println("DEBUG: doctor in session = " + doctor);
         if (doctor == null) {
             request.setAttribute("errorMessage", "Bạn cần đăng nhập với vai trò bác sĩ");
-            request.getRequestDispatcher(request.getContextPath() + "/view/jsp/auth/login.jsp").forward(request, response);
+            request.getRequestDispatcher(request.getContextPath() + "/view/jsp/auth/login.jsp").forward(request,
+                    response);
             return;
         }
 
         int doctorId = (int) doctor.getDoctorId();
-        List<DoctorSchedule> schedules = doctorScheduleDAO.getSchedulesByDoctorId(doctorId);
+        List<DoctorSchedule> allSchedules = doctorScheduleDAO.getSchedulesByDoctorId(doctorId);
+
+        // Optimized: 1 day only 1 slot
+        List<DoctorSchedule> optimizedSchedules = optimizeSchedules(allSchedules);
+
         List<Doctors> doctors = doctorScheduleDAO.getAllDoctors();
 
-        request.setAttribute("schedules", schedules);
+        request.setAttribute("schedules", optimizedSchedules);
         request.setAttribute("doctors", doctors);
         request.setAttribute("selectedDoctorId", doctorId);
         request.setAttribute("pageTitle", "Lịch Làm Việc Của Bạn");
@@ -88,7 +93,8 @@ public class DoctorHaveAppointmentServlet extends HttpServlet {
         Doctors doctor = (Doctors) request.getSession().getAttribute("doctor");
         if (doctor == null) {
             request.setAttribute("errorMessage", "Bạn cần đăng nhập với vai trò bác sĩ");
-            request.getRequestDispatcher(request.getContextPath() + "/view/jsp/auth/login.jsp").forward(request, response);
+            request.getRequestDispatcher(request.getContextPath() + "/view/jsp/auth/login.jsp").forward(request,
+                    response);
             return;
         }
 
@@ -106,9 +112,12 @@ public class DoctorHaveAppointmentServlet extends HttpServlet {
             java.sql.Date sqlDate = java.sql.Date.valueOf(localDate);
 
             List<DoctorSchedule> allSchedules = doctorScheduleDAO.getSchedulesByDoctorId(doctorId);
-            List<DoctorSchedule> schedules = allSchedules.stream()
+            List<DoctorSchedule> daySchedules = allSchedules.stream()
                     .filter(schedule -> schedule.getWorkDate() != null && schedule.getWorkDate().equals(sqlDate))
                     .collect(Collectors.toList());
+
+            // Optimized: 1 day only 1 slot
+            List<DoctorSchedule> schedules = optimizeSchedules(daySchedules);
 
             List<Doctors> doctors = doctorScheduleDAO.getAllDoctors();
 
@@ -118,7 +127,8 @@ public class DoctorHaveAppointmentServlet extends HttpServlet {
             request.setAttribute("selectedDate", dateParam);
             request.setAttribute("selectedDateDisplay", localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             request.setAttribute("isToday", localDate.equals(LocalDate.now()));
-            request.setAttribute("pageTitle", "Lịch Làm Việc Ngày " + localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            request.setAttribute("pageTitle",
+                    "Lịch Làm Việc Ngày " + localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             request.setAttribute("filterByDate", true);
 
             request.getRequestDispatcher("/view/jsp/doctor/doctor_trongtuan.jsp").forward(request, response);
@@ -126,6 +136,34 @@ public class DoctorHaveAppointmentServlet extends HttpServlet {
             request.setAttribute("errorMessage", "Ngày không hợp lệ. Vui lòng sử dụng định dạng yyyy-MM-dd");
             showPersonalSchedule(request, response);
         }
+    }
+
+    private List<DoctorSchedule> optimizeSchedules(List<DoctorSchedule> schedules) {
+        if (schedules == null || schedules.isEmpty())
+            return schedules;
+
+        java.util.Map<java.sql.Date, DoctorSchedule> scheduleMap = new java.util.LinkedHashMap<>();
+
+        for (DoctorSchedule s : schedules) {
+            java.sql.Date date = s.getWorkDate();
+            if (date == null)
+                continue;
+
+            if (!scheduleMap.containsKey(date)) {
+                scheduleMap.put(date, s);
+            } else {
+                // If already has a slot, check priority: Slot 3 (Cả ngày) is highest
+                DoctorSchedule existing = scheduleMap.get(date);
+                if (s.getSlotId() != null && s.getSlotId() == 3) {
+                    scheduleMap.put(date, s);
+                } else if (existing.getSlotId() != null && existing.getSlotId() != 3) {
+                    // If existing is not Slot 3, we can keep either 1 or 2,
+                    // but the goal is "1 day 1 slot", so we just keep the first one unless a 3
+                    // comes along.
+                }
+            }
+        }
+        return new java.util.ArrayList<>(scheduleMap.values());
     }
 
     @Override

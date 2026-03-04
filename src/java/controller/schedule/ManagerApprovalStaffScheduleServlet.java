@@ -50,32 +50,9 @@ public class ManagerApprovalStaffScheduleServlet extends HttpServlet {
             return;
         }
         try {
-            // Xử lý flash messages
-            if (session != null) {
-                if (session.getAttribute("flash_message") != null) {
-                    request.setAttribute("message", session.getAttribute("flash_message"));
-                    session.removeAttribute("flash_message");
-                }
-                if (session.getAttribute("flash_error") != null) {
-                    request.setAttribute("error", session.getAttribute("flash_error"));
-                    session.removeAttribute("flash_error");
-                }
-            }
             // Lấy danh sách staff requests chờ phê duyệt
+            List<StaffSchedule> pendingStaffRequests = StaffScheduleDAO.getPendingRequests();
 
-            // Xử lý flash messages
-            if (session != null) {
-                if (session.getAttribute("flash_message") != null) {
-                    request.setAttribute("message", session.getAttribute("flash_message"));
-                    session.removeAttribute("flash_message");
-                }
-                if (session.getAttribute("flash_error") != null) {
-                    request.setAttribute("error", session.getAttribute("flash_error"));
-                    session.removeAttribute("flash_error");
-                }
-            }
-
-            List<StaffSchedule> pendingStaffRequests = staffScheduleDAO.getPendingRequests(); // lấy ra từ danh sách DAO
             // Đảm bảo mỗi StaffSchedule có employmentType và slotId
             for (StaffSchedule s : pendingStaffRequests) {
                 if (s.getEmploymentType() == null || s.getEmploymentType().isEmpty()) {
@@ -87,7 +64,7 @@ public class ManagerApprovalStaffScheduleServlet extends HttpServlet {
                 }
             }
             // Lấy danh sách doctor schedules chờ phê duyệt (nếu có)
-            List<DoctorSchedule> pendingDoctorSchedules = doctorScheduleDAO.getAllPendingSchedules();
+            List<DoctorSchedule> pendingDoctorSchedules = DoctorScheduleDAO.getAllPendingSchedules();
             // Set attributes
             request.setAttribute("pendingStaffRequests", pendingStaffRequests);
             request.setAttribute("pendingDoctorSchedules", pendingDoctorSchedules);
@@ -109,7 +86,7 @@ public class ManagerApprovalStaffScheduleServlet extends HttpServlet {
         HttpSession session = request.getSession(false); // Không tạo session mới
         String role = (session != null) ? (String) session.getAttribute("role") : null;
         Integer managerId = (session != null) ? (Integer) session.getAttribute("userId") : null;
-        System.out.println("[DEBUG] POST /StaffScheduleApprovalServlet - role=" + role + ", managerId=" + managerId);
+        System.out.println("[DEBUG] POST /ManagerProcessApprovalServlet - role=" + role + ", managerId=" + managerId);
 
         // check phân quyền
         if (!"MANAGER".equals(role) || managerId == null) {
@@ -148,6 +125,7 @@ public class ManagerApprovalStaffScheduleServlet extends HttpServlet {
         }
 
         // Luôn redirect về trang phê duyệt
+        // Luôn redirect về trang phê duyệt chính
         response.sendRedirect(request.getContextPath() + "/ScheduleApprovalServlet");
     }
 

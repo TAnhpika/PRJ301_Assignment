@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import model.DoctorSchedule;
+import model.Doctors;
 
 /**
  *
@@ -60,18 +61,26 @@ public class DoctorRegisterScheduleServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setAttribute("shifts", SHIFTS);
 
-        String doctorIdParam = request.getParameter("doctor_id");
         HttpSession session = request.getSession();
         Long doctorId = null;
-        if (doctorIdParam != null && !doctorIdParam.isEmpty()) {
-            doctorId = Long.parseLong(doctorIdParam);
+
+        // Ưu tiên lấy từ đối tượng doctor trong session (đã set khi login)
+        Doctors doc = (Doctors) session.getAttribute("doctor");
+        if (doc != null) {
+            doctorId = (long) doc.getDoctorId();
             session.setAttribute("doctor_id", doctorId);
         } else {
-            Object doctorIdObj = session.getAttribute("doctor_id");
-            if (doctorIdObj instanceof Integer) {
-                doctorId = ((Integer) doctorIdObj).longValue();
-            } else if (doctorIdObj instanceof Long) {
-                doctorId = (Long) doctorIdObj;
+            String doctorIdParam = request.getParameter("doctor_id");
+            if (doctorIdParam != null && !doctorIdParam.isEmpty()) {
+                doctorId = Long.parseLong(doctorIdParam);
+                session.setAttribute("doctor_id", doctorId);
+            } else {
+                Object doctorIdObj = session.getAttribute("doctor_id");
+                if (doctorIdObj instanceof Integer) {
+                    doctorId = ((Integer) doctorIdObj).longValue();
+                } else if (doctorIdObj instanceof Long) {
+                    doctorId = (Long) doctorIdObj;
+                }
             }
         }
         System.out.println("doctor_id in session: " + doctorId);
@@ -89,7 +98,10 @@ public class DoctorRegisterScheduleServlet extends HttpServlet {
         List<DoctorSchedule> leaveApproved = new ArrayList<>();
         List<DoctorSchedule> leaveRejected = new ArrayList<>();
         if (doctorId != null) {
-            schedules = scheduleDAO.getSchedulesByDoctorId(doctorId);
+            List<DoctorSchedule> rawSchedules = scheduleDAO.getSchedulesByDoctorId(doctorId);
+            // Optimized: 1 day only 1 slot
+            schedules = optimizeSchedules(rawSchedules);
+
             approvedSchedules = scheduleDAO.getApprovedSchedulesByDoctorId(doctorId);
             approvedSchedules.sort(
                     Comparator.comparing(DoctorSchedule::getWorkDate, Comparator.nullsLast(Comparator.naturalOrder())));
@@ -151,7 +163,24 @@ public class DoctorRegisterScheduleServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        long doctorId = Long.parseLong(request.getParameter("doctor_id"));
+        Long doctorId = null;
+        HttpSession session = request.getSession();
+        Doctors doc = (Doctors) session.getAttribute("doctor");
+
+        if (doc != null) {
+            doctorId = (long) doc.getDoctorId();
+        } else {
+            String doctorIdParam = request.getParameter("doctor_id");
+            if (doctorIdParam != null)
+                doctorId = Long.parseLong(doctorIdParam);
+        }
+
+        if (doctorId == null) {
+            request.setAttribute("errorMessage", "Không nhận diện được bác sĩ. Vui lòng đăng nhập lại.");
+            doGet(request, response);
+            return;
+        }
+
         Date workDate = Date.valueOf(request.getParameter("work_date"));
         String requestType = request.getParameter("request_type");
 
@@ -162,6 +191,10 @@ public class DoctorRegisterScheduleServlet extends HttpServlet {
         DoctorSchedule schedule = new DoctorSchedule();
         schedule.setDoctorId(doctorId);
         schedule.setWorkDate(workDate);
+
+        // ✅ TỐI ƯU: 1 ngày chỉ 1 bản ghi (Dù là nghỉ hay làm)
+        // Xóa sạch các bản ghi cũ trong ngày này của bác sĩ trước khi thêm yêu cầu mới
+        DoctorScheduleDAO.deleteAllSchedulesByDate(doctorId, workDate);
 
         if ("leave".equals(requestType)) {
             // Đăng ký nghỉ phép cho bác sĩ fulltime
@@ -180,12 +213,43 @@ public class DoctorRegisterScheduleServlet extends HttpServlet {
                 schedule.setSlotId((Integer) null);
             }
             schedule.setStatus("pending");
+
             System.out.println("[DEBUG] Đăng ký ca làm cho doctorId=" + doctorId + ", workDate=" + workDate
                     + ", slotId=" + schedule.getSlotId());
         }
-        scheduleDAO.addSchedule(schedule);
+
+        boolean success = scheduleDAO.addSchedule(schedule);
+        if (success) {
+            session.setAttribute("successMessage", "Đăng ký " + ("leave".equals(requestType) ? "nghỉ" : "lịch làm")
+                    + " thành công cho ngày " + workDate);
+        } else {
+            session.setAttribute("errorMessage", "Đăng ký thất bại. Có thể do lỗi cơ sở dữ liệu hoặc lịch đã tồn tại.");
+        }
+
         // Sau khi đăng ký xong, chuyển hướng về lại trang đăng ký và truyền doctor_id
         // để hiển thị lịch vừa đăng ký
         response.sendRedirect(request.getContextPath() + "/DoctorRegisterScheduleServlet?doctor_id=" + doctorId);
+    }
+
+    private List<DoctorSchedule> optimizeSchedules(List<DoctorSchedule> schedules) {
+        if (schedules == null || schedules.isEmpty())
+            return schedules;
+        Map<java.sql.Date, DoctorSchedule> map = new java.util.LinkedHashMap<>();
+        for (DoctorSchedule s : schedules) {
+            java.sql.Date date = s.getWorkDate();
+            if (date == null)
+                continue;
+            if (!map.containsKey(date)) {
+                map.put(date, s);
+            } else {
+                DoctorSchedule existing = map.get(date);
+                if (s.getSlotId() != null && s.getSlotId() == 3) {
+                    map.put(date, s);
+                } else if (existing.getSlotId() == null && s.getSlotId() != null) {
+                    map.put(date, s);
+                }
+            }
+        }
+        return new ArrayList<>(map.values());
     }
 }

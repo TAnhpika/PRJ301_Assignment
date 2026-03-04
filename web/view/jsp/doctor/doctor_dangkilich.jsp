@@ -37,6 +37,30 @@
                 </div>
                 
                 <div class="row g-4">
+                    <%-- Alert Messages --%>
+                    <div class="col-12">
+                        <c:if test="${not empty sessionScope.successMessage}">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>${sessionScope.successMessage}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            <% session.removeAttribute("successMessage"); %>
+                        </c:if>
+                        <c:if test="${not empty sessionScope.errorMessage}">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>${sessionScope.errorMessage}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            <% session.removeAttribute("errorMessage"); %>
+                        </c:if>
+                        <c:if test="${not empty requestScope.errorMessage}">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>${requestScope.errorMessage}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </c:if>
+                    </div>
+
                     <!-- Register Form -->
                     <div class="col-lg-6">
                         <div class="dashboard-card">

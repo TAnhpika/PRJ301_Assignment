@@ -201,6 +201,58 @@ public class DoctorScheduleDAO {
         return false;
     }
 
+    /**
+     * ✅ HÀM MỚI: Xóa tất cả các ca LÀM VIỆC (slot_id không null)
+     * của bác sĩ trong 1 ngày cụ thể.
+     */
+    public static boolean deleteWorkSchedulesByDate(long doctorId, java.sql.Date workDate) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        String sql = "DELETE FROM DoctorSchedule WHERE doctor_id = ? AND work_date = ? AND slot_id IS NOT NULL";
+        try {
+            conn = DBContext.getConnection();
+            if (conn != null) {
+                ps = conn.prepareStatement(sql);
+                ps.setLong(1, doctorId);
+                ps.setDate(2, workDate);
+                int result = ps.executeUpdate();
+                System.out.println("Deleted " + result + " work slots for doctor " + doctorId + " on " + workDate);
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBContext.closeConnection(conn, ps, null);
+        }
+        return false;
+    }
+
+    /**
+     * ✅ HÀM MỚI: Xóa TẤT CẢ các bản ghi (cả nghỉ và làm)
+     * của bác sĩ trong 1 ngày cụ thể.
+     */
+    public static boolean deleteAllSchedulesByDate(long doctorId, java.sql.Date workDate) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        String sql = "DELETE FROM DoctorSchedule WHERE doctor_id = ? AND work_date = ?";
+        try {
+            conn = DBContext.getConnection();
+            if (conn != null) {
+                ps = conn.prepareStatement(sql);
+                ps.setLong(1, doctorId);
+                ps.setDate(2, workDate);
+                int result = ps.executeUpdate();
+                System.out.println("Deleted all " + result + " records for doctor " + doctorId + " on " + workDate);
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBContext.closeConnection(conn, ps, null);
+        }
+        return false;
+    }
+
     // Search và Filter Methods
     public static List<DoctorSchedule> getSchedulesByDoctorId(long doctorId) {
         Connection conn = null;

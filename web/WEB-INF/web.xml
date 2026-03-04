@@ -279,6 +279,10 @@
         <servlet-name>ManagerApprovalStaffScheduleServlet</servlet-name>
         <url-pattern>/ManagerApprovalStaffScheduleServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManagerApprovalStaffScheduleServlet</servlet-name>
+        <url-pattern>/ManagerProcessApprovalServlet</url-pattern>
+    </servlet-mapping>
     <!-- Doctor Have Appointment Servlet -->
     <servlet>
         <servlet-name>DoctorHaveAppointmentServlet</servlet-name>
