@@ -321,7 +321,7 @@ public class BillDAO {
                     SELECT TOP (?) b.*, s.service_name, s.description as service_description
                     FROM dbo.Bills b
                     LEFT JOIN dbo.Services s ON b.service_id = s.service_id
-                    WHERE b.payment_status = ? AND b.is_deleted = 0
+                    WHERE UPPER(b.payment_status) = UPPER(?) AND b.is_deleted = 0
                     ORDER BY b.created_at DESC
                 """;
 

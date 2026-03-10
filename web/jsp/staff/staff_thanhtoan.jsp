@@ -69,6 +69,7 @@
                                     align-items: center;
                                     gap: 8px;
                                     transition: all 0.2s;
+                                    cursor: pointer;
                                 }
 
                                 .btn-primary-custom:hover {
@@ -571,7 +572,9 @@
                                         <h1 class="page-title">Quản lý thanh toán</h1>
                                         <p class="page-subtitle">Theo dõi hóa đơn và thanh toán</p>
                                     </div>
-                                    <button onclick="openCreateModal()" class="btn-primary-custom">
+                                    <button onclick="openCreateModal()" 
+                                            class="btn-primary-custom" 
+                                            style="cursor: pointer; z-index: 9999; position: relative; pointer-events: auto !important;">
                                         <i class="fas fa-plus"></i>
                                         <span>Tạo hóa đơn</span>
                                     </button>
@@ -881,8 +884,29 @@
 
                                     <form id="createInvoiceForm" action="StaffPaymentServlet" method="post">
                                         <input type="hidden" name="action" value="createBill">
+                                        <input type="hidden" name="appointmentId" id="selectedAppointmentId" value="">
+                                        <input type="hidden" name="doctorId" id="selectedDoctorId" value="1">
 
                                         <div class="modal-body">
+                                            <!-- Completed Appointment Selection -->
+                                            <div class="mb-4" style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                                                <h6 class="text-primary mb-2" style="font-weight: 600;">
+                                                    <i class="fas fa-calendar-check me-2"></i>Chọn bệnh nhân từ lịch hẹn đã khám xong (Tùy chọn)
+                                                </h6>
+                                                <select id="completedAppointmentSelect" class="form-select border-primary" style="margin-bottom: 8px;" onchange="autoFillPatientInfo()">
+                                                    <option value="">-- Tính năng chọn nhanh bệnh nhân --</option>
+                                                    <c:forEach var="app" items="${unbilledAppointments}">
+                                                        <option value="${app.appointmentId}" 
+                                                                data-name="${fn:escapeXml(app.patientName)}" 
+                                                                data-phone="${fn:escapeXml(app.patientPhone)}"
+                                                                data-service-id="${app.serviceId}"
+                                                                data-doctor-id="${app.doctorId}">
+                                                            ${app.patientName} - ĐT: ${app.patientPhone} (Ngày: ${app.formattedDate}) - Dịch vụ: ${app.serviceName}
+                                                        </option>
+                                                    </c:forEach>
+                                                </select>
+                                                <small class="text-muted"><i class="fas fa-info-circle me-1"></i>Hệ thống sẽ tự động điền Tên, SĐT và chọn Dịch vụ đã khám.</small>
+                                            </div>
                                             <!-- Customer Information -->
                                             <div class="mb-4">
                                                 <h6 class="text-primary mb-3">
@@ -1131,9 +1155,58 @@
                             </div>
 
                             <script>
-                                // Variables
+                                // Top-level functions to ensure they are available to onclick
+                                window.openCreateModal = function() {
+                                    console.log('🔘 openCreateModal called');
+                                    try {
+                                        const modal = document.getElementById('createInvoiceModal');
+                                        if (!modal) {
+                                            console.error('❌ Element not found: createInvoiceModal');
+                                            alert('❌ Lỗi: Không tìm thấy modal có ID: createInvoiceModal');
+                                            return;
+                                        }
+
+                                        // Hiển thị modal
+                                        modal.classList.remove('hidden');
+                                        modal.style.display = 'flex'; // Force display if hidden class fails
+                                        
+                                        // 1. Reset form
+                                        const form = document.getElementById('createInvoiceForm');
+                                        if (form) form.reset();
+
+                                        // 2. Clear old service rows if any (keep first)
+                                        const serviceRows = document.querySelectorAll('.service-row');
+                                        serviceRows.forEach((row, index) => {
+                                            if (index > 0) row.remove();
+                                        });
+
+                                        // 3. Initialize calculations
+                                        if (typeof calculateTotal === 'function') {
+                                            calculateTotal();
+                                        } else {
+                                            console.warn('⚠️ calculateTotal function not found');
+                                        }
+
+                                        // 4. Initialize installment display
+                                        const installmentOptions = document.getElementById('installmentOptions');
+                                        if (installmentOptions) installmentOptions.style.display = 'none';
+
+                                        console.log('✅ Modal opened and initialized successfully');
+                                    } catch (err) {
+                                        console.error('❌ openCreateModal Error:', err);
+                                        alert('❌ Lỗi JS trong openCreateModal: ' + err.message);
+                                    }
+                                };
+
+                                window.closeCreateModal = function() {
+                                    document.getElementById('createInvoiceModal').classList.add('hidden');
+                                    document.getElementById('createInvoiceModal').style.display = 'none';
+                                };
+
+                                console.log('✅ Staff Payment Scripts Starting...');
+
                                 let billsCurrentPage = 1, billsTotalPages = 1, billsItemsPerPage = 5;
-                                let billsTotalItems = <c:out value="${totalBills}" />;
+                                let billsTotalItems = parseInt('<c:out value="${totalBills}" default="0" />') || 0;
                                 let discountApplied = false;
                                 let discountValue = 50000;
 
@@ -1632,18 +1705,20 @@
                                     const paymentMethod = form.paymentMethod.value;
                                     const paymentAmount = form.paymentAmount.value;
                                     const notes = form.notes.value;
-                                    // Lấy dịch vụ đầu tiên (nếu có)
-                                    let serviceId = '';
+                                    // Lấy tất cả dịch vụ đã chọn
+                                    const params = new URLSearchParams();
                                     const checked = form.querySelectorAll('input[name="selectedServices"]:checked');
-                                    if (checked.length > 0) serviceId = checked[0].value;
-                                    // Lấy tổng tiền dịch vụ đã chọn
                                     let totalAmount = 0;
                                     checked.forEach(cb => {
                                         const price = parseFloat(cb.dataset.price || 0);
                                         totalAmount += price;
+                                        // Gửi mỗi checkbox đã chọn vào mảng serviceIds
+                                        params.append('selectedServices[]', cb.value);
+                                        // Thêm fallback name cũng cho chắc
+                                        params.append('selectedServices', cb.value);
                                     });
+
                                     // Build urlencoded body
-                                    const params = new URLSearchParams();
                                     params.append('action', 'createBill');
                                     params.append('isStaff', 'true');
                                     params.append('customerName', customerName);
@@ -1652,7 +1727,7 @@
                                     params.append('paymentAmount', paymentAmount);
                                     params.append('totalAmount', totalAmount);
                                     params.append('notes', notes);
-                                    params.append('selectedServices', serviceId);
+
                                     // Nếu là trả góp thì gửi thêm downPayment và installmentMonths
                                     if (paymentMethod === 'installment') {
                                         const downPayment = form.downPayment.value;
@@ -1660,6 +1735,12 @@
                                         params.append('downPayment', downPayment);
                                         params.append('installmentMonths', installmentMonths);
                                     }
+
+                                    // Gửi thêm appointmentId và doctorId nếu có
+                                    const apptId = document.getElementById('selectedAppointmentId').value;
+                                    const drId = document.getElementById('selectedDoctorId').value;
+                                    if (apptId) params.append('appointmentId', apptId);
+                                    if (drId) params.append('doctorId', drId);
                                     // Gửi AJAX
                                     fetch('StaffPaymentServlet', {
                                         method: 'POST',
@@ -1701,8 +1782,8 @@
                                                 } else {
                                                     console.warn('[DEBUG][staff_thanhtoan.jsp] Không có billDetails trong JSON trả về!');
                                                 }
-                                                console.log('[DEBUG][staff_thanhtoan.jsp] Redirecting to payment.jsp...');
-                                                window.location.href = '${pageContext.request.contextPath}/payment/payment.jsp?billId=' + encodeURIComponent(billId) + '&isStaff=true';
+                                                console.log('[DEBUG][staff_thanhtoan.jsp] Redirecting to payments list...');
+                                                window.location.href = '${pageContext.request.contextPath}/StaffPaymentServlet?action=payments';
                                             } else {
                                                 alert('Lỗi tạo hóa đơn: ' + (json.message || 'Không rõ nguyên nhân'));
                                             }
@@ -1713,51 +1794,6 @@
                                 }
 
                                 // Modal functions
-                                function openCreateModal() {
-                                    const modal = document.getElementById('createInvoiceModal');
-                                    if (modal) {
-                                        modal.classList.remove('hidden');
-
-                                        // Calculate total first
-                                        calculateTotal();
-
-                                        // Initialize installment section
-                                        const minDownPayment = Math.ceil(totalInvoiceAmount * 0.3);
-                                        const minDownPaymentDisplay = document.getElementById('minDownPayment');
-                                        const downPaymentInput = document.getElementById('downPayment');
-
-                                        if (minDownPaymentDisplay) {
-                                            minDownPaymentDisplay.textContent = minDownPayment.toLocaleString();
-                                        }
-
-                                        if (downPaymentInput) {
-                                            downPaymentInput.min = minDownPayment;
-                                            downPaymentInput.value = minDownPayment;
-                                        }
-
-                                        // Reset payment method
-                                        const paymentMethodSelect = document.querySelector('select[name="paymentMethod"]');
-                                        if (paymentMethodSelect) {
-                                            paymentMethodSelect.value = '';
-                                        }
-
-                                        // Hide installment options by default
-                                        const installmentOptions = document.getElementById('installmentOptions');
-                                        if (installmentOptions) {
-                                            installmentOptions.style.display = 'none';
-                                        }
-
-                                        console.log('📋 Modal opened with total amount:', totalInvoiceAmount);
-                                        console.log('📋 Min down payment set to:', minDownPayment);
-                                        console.log('📋 Elements found:', {
-                                            modal: !!modal,
-                                            minDownPaymentDisplay: !!minDownPaymentDisplay,
-                                            downPaymentInput: !!downPaymentInput,
-                                            paymentMethodSelect: !!paymentMethodSelect,
-                                            installmentOptions: !!installmentOptions
-                                        });
-                                    }
-                                }
 
                                 function closeCreateModal() {
                                     const modal = document.getElementById('createInvoiceModal');
@@ -1807,6 +1843,49 @@
                                 }
                                 function closeQRModal() {
                                     document.getElementById('qrModal').classList.add('hidden');
+                                }
+                                function autoFillPatientInfo() {
+                                    const select = document.getElementById('completedAppointmentSelect');
+                                    if (!select || select.value === "") {
+                                        // Reset fields when no appointment is selected
+                                        const form = document.getElementById('createInvoiceForm');
+                                        if (form) {
+                                            form.customerName.value = "";
+                                            form.customerPhone.value = "";
+                                            calculateTotal();
+                                        }
+                                        document.getElementById('selectedAppointmentId').value = "";
+                                        document.getElementById('selectedDoctorId').value = "1";
+                                        return;
+                                    }
+                                    
+                                    const selectedOption = select.options[select.selectedIndex];
+                                    if (!selectedOption) return;
+                                    const patientName = selectedOption.getAttribute('data-name');
+                                    const patientPhone = selectedOption.getAttribute('data-phone');
+                                    const serviceId = selectedOption.getAttribute('data-service-id');
+                                    
+                                    const form = document.getElementById('createInvoiceForm');
+                                    if (form) {
+                                        if (patientName) form.customerName.value = patientName;
+                                        if (patientPhone) form.customerPhone.value = patientPhone;
+                                        
+                                        if (serviceId) {
+                                            const checkboxes = form.querySelectorAll('input[name="selectedServices"]');
+                                            checkboxes.forEach(cb => {
+                                                if (cb.value === serviceId) {
+                                                    cb.checked = true;
+                                                } else {
+                                                    cb.checked = false;
+                                                }
+                                            });
+                                            calculateTotal();
+                                        }
+
+                                        // Set hidden fields
+                                        document.getElementById('selectedAppointmentId').value = select.value;
+                                        document.getElementById('selectedDoctorId').value = selectedOption.getAttribute('data-doctor-id') || "1";
+                                    }
                                 }
                             </script>
 

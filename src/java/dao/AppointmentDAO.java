@@ -2556,4 +2556,68 @@ public class AppointmentDAO {
         }
     }
 
+    /**
+     * Lấy danh sách các cuộc hẹn đã khám xong nhưng chưa được tạo hóa đơn
+     */
+    public static List<Appointment> getUnbilledCompletedAppointments() {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Appointment> appointments = new ArrayList<>();
+        try {
+            conn = DBContext.getConnection();
+            if (conn != null) {
+                String sql = """
+                            SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, a.slot_id, a.status, a.reason,
+                                   p.full_name as patient_name,
+                                   p.phone as patient_phone,
+                                   up.email as patient_email,
+                                   d.full_name as doctor_name,
+                                   d.specialty as doctor_specialty,
+                                   u.email as doctor_email,
+                                   ts.start_time,
+                                   ts.end_time,
+                                   s.service_id,
+                                   s.service_name,
+                                   s.price as service_price
+                            FROM Appointment a
+                            LEFT JOIN Patients p ON a.patient_id = p.patient_id
+                            LEFT JOIN Users up ON p.user_id = up.user_id
+                            LEFT JOIN Doctors d ON a.doctor_id = d.doctor_id
+                            LEFT JOIN Users u ON d.user_id = u.user_id
+                            LEFT JOIN TimeSlot ts ON a.slot_id = ts.slot_id
+                            LEFT JOIN Services s ON a.service_id = s.service_id
+                            LEFT JOIN Bills b ON b.patient_id = a.patient_id
+                                             AND b.appointment_date = a.work_date
+                                             AND b.is_deleted = 0
+                            WHERE a.status = 'COMPLETED'
+                              AND b.bill_id IS NULL
+                            ORDER BY a.work_date DESC, ts.start_time DESC
+                        """;
+
+                ps = conn.prepareStatement(sql);
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    Appointment appointment = mapResultSetToAppointmentWithDetails(rs);
+                    // Set thêm các thông tin phụ
+                    appointment.setPatientPhone(rs.getString("patient_phone"));
+                    appointment.setPatientEmail(rs.getString("patient_email"));
+                    appointment.setDoctorEmail(rs.getString("doctor_email"));
+                    appointment.setDoctorSpecialty(rs.getString("doctor_specialty"));
+                    // Set service info directly from the query
+                    appointment.setServiceId(rs.getInt("service_id"));
+                    appointment.setServiceName(
+                            rs.getString("service_name") != null ? rs.getString("service_name") : "Chưa có dịch vụ");
+
+                    appointments.add(appointment);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            util.DBContext.close(rs, ps, conn);
+        }
+        return appointments;
+    }
+
 }
