@@ -106,7 +106,7 @@
                                     </select>
 
                                     <div class="form-group text-center mt-3">
-                                        <a href="${pageContext.request.contextPath}/doctor_changepassword.jsp" class="btn btn-warning">
+                                        <a href="${pageContext.request.contextPath}/DoctorChangePasswordServlet" class="btn btn-warning">
                                             <i class="fas fa-key me-1"></i> Đổi mật khẩu
                                         </a>
                                     </div>

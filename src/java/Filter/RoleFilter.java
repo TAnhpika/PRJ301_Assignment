@@ -90,6 +90,8 @@ public class RoleFilter implements Filter {
             "/AvatarServlet",
             "/UpdateStaffInfoServlet",
             "/ChangePasswordServlet",
+            "/DoctorChangePasswordServlet",
+            "/doctor_changepassword.jsp",
             "/LogoutServlet"
         )));
         

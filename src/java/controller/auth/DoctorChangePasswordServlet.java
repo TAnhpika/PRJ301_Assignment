@@ -16,7 +16,7 @@ import model.User;
 /**
  * Servlet xử lý đổi mật khẩu cho Bác sĩ
  */
-@WebServlet("/DoctorChangePasswordServlet")
+@WebServlet(name = "DoctorChangePasswordServlet", urlPatterns = {"/DoctorChangePasswordServlet", "/doctor_changepassword.jsp"})
 public class DoctorChangePasswordServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(DoctorChangePasswordServlet.class.getName());
@@ -86,13 +86,13 @@ public class DoctorChangePasswordServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/view/jsp/auth/login.jsp");
             return;
         }
-        request.getRequestDispatcher("/doctor_changepassword.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/jsp/doctor/doctor_changepassword.jsp").forward(request, response);
     }
 
     private void redirect(HttpServletResponse response, HttpServletRequest request,
             String type, String msg) throws IOException {
         String encoded = java.net.URLEncoder.encode(msg, "UTF-8");
         response.sendRedirect(request.getContextPath() +
-                "/doctor_changepassword.jsp?" + type + "=" + encoded);
+                "/DoctorChangePasswordServlet?" + type + "=" + encoded);
     }
 }
