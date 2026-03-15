@@ -152,11 +152,17 @@
                                 %>
                                 <div class="col-12 col-md-6">
                                     <div class="d-flex align-items-center p-3 bg-light rounded">
-                                        <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png" 
+                                        <img src="${pageContext.request.contextPath}/view/assets/img/bacsi<%= count %>.png" 
                                              class="rounded-circle me-3" 
                                              style="width: 50px; height: 50px; object-fit: cover;">
                                         <div class="flex-grow-1">
-                                            <h6 class="mb-1">BS. <%= doc.getFull_name() %></h6>
+                                            <h6 class="mb-1">
+                                                <% String docName = doc.getFull_name(); 
+                                                   if (docName != null && !docName.toUpperCase().startsWith("BS.") && !docName.toUpperCase().startsWith("BÁC SĨ")) {
+                                                       out.print("BS. ");
+                                                   }
+                                                %><%= docName %>
+                                            </h6>
                                             <small class="text-muted"><%= doc.getSpecialty() %></small>
                                         </div>
                                         <span class="badge bg-success">

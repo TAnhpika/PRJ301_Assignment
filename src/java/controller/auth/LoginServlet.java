@@ -72,10 +72,10 @@ public class LoginServlet extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -99,10 +99,10 @@ public class LoginServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -198,7 +198,7 @@ public class LoginServlet extends HttpServlet {
                     int serverPort = request.getServerPort();
                     String contextPath = request.getContextPath();
                     String dynamicRedirectUri = scheme + "://" + serverName + ":" + serverPort + contextPath + "/LoginGG/LoginGoogleHandler";
-                    
+
                     System.out.println("[DEBUG] Starting token request with redirect_uri: " + dynamicRedirectUri);
                     // Lấy access token từ code
                     GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
@@ -268,10 +268,10 @@ public class LoginServlet extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -283,7 +283,6 @@ public class LoginServlet extends HttpServlet {
         // System.out.println("Email: " + email);
         // System.out.println("Password (plain): " + password);
         // System.out.println("Password (hashed): " + UserDAO.hashPassword(password));
-
         // Use loginUser which handles hashing internally
         User user = UserDAO.loginUser(email, password);
         // System.out.println("User found: " + (user != null));
@@ -362,7 +361,7 @@ public class LoginServlet extends HttpServlet {
                 System.out.println("Invalid role: " + role);
                 response.sendRedirect(
                         request.getContextPath() + "/view/jsp/auth/login.jsp?error="
-                                + java.net.URLEncoder.encode("invalid_role", "UTF-8"));
+                        + java.net.URLEncoder.encode("invalid_role", "UTF-8"));
             }
         } else {
             System.out.println("Login failed - User not found");

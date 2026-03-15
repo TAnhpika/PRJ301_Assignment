@@ -6,6 +6,10 @@
             <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/controller/schedule/DoctorRegisterScheduleServlet.java</file>
             <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/web/index.html</file>
             <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/web/STRUCTURE.md</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/web/jsp/auth/login.jsp</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/controller/auth/LoginServlet.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/dao/UserDAO.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/dao/PatientDAO.java</file>
         </group>
     </open-files>
 </project-private>

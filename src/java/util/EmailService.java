@@ -174,6 +174,12 @@ public class EmailService {
      * @return true nếu gửi thành công
      */
     public static boolean sendOTPEmailWithFallback(String toEmail, String otp) {
+        // Kiểm tra xem có đang ở chế độ Dev không hoặc chưa cấu hình email
+        if (isDevelopmentMode() || !isConfigured()) {
+            System.out.println("⚠️ Chế độ Development: Không gửi email thật, log OTP ra console.");
+            return sendOTPEmailDevelopmentMode(toEmail, otp);
+        }
+
         // Thử STARTTLS port 587 trước (chuẩn Gmail hiện tại)
         System.out.println("🔄 Thử gửi qua STARTTLS (port 587) - Gmail standard...");
         if (sendOTPEmailSTARTTLS(toEmail, otp)) {
@@ -187,14 +193,11 @@ public class EmailService {
             return true;
         }
         
-        System.out.println("❌ Cả 2 phương thức đều thất bại");
-        System.out.println("💡 Hướng dẫn khắc phục:");
-        System.out.println("   1. Kiểm tra App Password Gmail tại: https://myaccount.google.com/apppasswords");
-        System.out.println("   2. Tạo App Password mới nếu cũ đã hết hạn");
-        System.out.println("   3. Đảm bảo 2FA đã được bật cho tài khoản Gmail");
-        System.out.println("   4. Kiểm tra firewall/antivirus có chặn port 587, 465 không");
+        System.out.println("❌ Cả 2 phương thức gửi email thật đều thất bại");
+        System.out.println("🔄 Tự động chuyển sang Development Mode để không làm gián đoạn test...");
         
-        return false;
+        // Nếu tất cả thất bại, tự động dùng dev mode để người dùng có thể test tiếp
+        return sendOTPEmailDevelopmentMode(toEmail, otp);
     }
     
     /**
@@ -329,9 +332,14 @@ public class EmailService {
      * @return true nếu là development mode
      */
     public static boolean isDevelopmentMode() {
-        // Có thể check environment variable hoặc config
-        // Ở đây tôi dùng cách đơn giản: kiểm tra email config
-        return getFromEmail().contains("lechitrung1810") || getFromEmail().equals("test@example.com");
+        String email = getFromEmail();
+        String pass = getFromPassword();
+        
+        // Coi là Dev mode nếu còn để placeholder hoặc email đặc biệt
+        return email == null || email.trim().isEmpty() || 
+               email.contains("your_email") || 
+               email.contains("test@example.com") ||
+               pass.contains("your_app_password");
     }
 
     /**

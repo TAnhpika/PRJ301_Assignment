@@ -7,13 +7,28 @@
                 <% User currentUser=(User) session.getAttribute("user"); Patients currentPatient=(Patients)
                     session.getAttribute("patient"); String userName=currentPatient !=null ?
                     currentPatient.getFullName() : (currentUser !=null ? currentUser.getUsername() : "Khách" ); String
-                    userAvatar=currentUser !=null && currentUser.getAvatar() !=null ? currentUser.getAvatar() :
-                    request.getContextPath() + "/view/assets/img/default-user-avatar.png" ; %>
+                    userAvatar=currentUser !=null && currentUser.getAvatar() !=null && !currentUser.getAvatar().contains("default-avatar.png") ? currentUser.getAvatar() : null ; %>
 
                     <!-- Sidebar Toggle Button (Mobile) -->
                     <button class="sidebar-toggle" onclick="toggleSidebar()">
                         <i class="fas fa-bars"></i>
                     </button>
+
+                    <style>
+                        .header-user-initial {
+                            width: 36px;
+                            height: 36px;
+                            border-radius: 50%;
+                            background-color: #4E80EE;
+                            color: #ffffff;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: 600;
+                            font-size: 14px;
+                            border: 2px solid #dee2e6;
+                        }
+                    </style>
 
                     <!-- Dashboard Header -->
                     <header class="dashboard-header">
@@ -46,7 +61,13 @@
                             <!-- User Profile -->
                             <% if (currentUser !=null) { %>
                                 <div class="header-user" onclick="toggleUserDropdown(event)">
-                                    <img src="<%= userAvatar %>" alt="Avatar">
+                                    <% if (userAvatar != null) { %>
+                                        <img src="<%= userAvatar %>" alt="Avatar">
+                                    <% } else { %>
+                                        <div class="header-user-initial">
+                                            <%= userName.substring(0, 1).toUpperCase() %>
+                                        </div>
+                                    <% } %>
                                     <div class="header-user-info">
                                         <span class="header-user-name">
                                             <%= userName %>

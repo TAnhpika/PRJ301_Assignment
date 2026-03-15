@@ -4,7 +4,6 @@
  */
 package controller.auth;
 
-
 import dao.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -72,7 +71,7 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-// Lấy userId từ session
+        // Lấy userId từ session
         HttpSession session = request.getSession(false);
         Integer id = (session != null) ? (Integer) session.getAttribute("id") : null;
 

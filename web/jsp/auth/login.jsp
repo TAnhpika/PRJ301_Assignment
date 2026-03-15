@@ -294,12 +294,11 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Password</label>
-                    <!-- type phải là password mới đúng chuẩn HTML -->
                     <input type="password" name="password_hash" class="form-control" placeholder="Your Password"
                            required>
                 </div>
 
-                
+
                 <% if (request.getParameter("error") != null) {
                         String error = request.getParameter("error");
                         String errorMessage = "";
@@ -318,19 +317,19 @@
                                 break;
                             default:
                                 errorMessage = "Đăng nhập thất bại!";
-                        } %>
+                        }%>
                 <div class="alert alert-danger">
                     <%= errorMessage%>
                 </div>
-                <% } %>
+                <% }%>
                 <button type="submit" class="btn btn-primary w-100">Login</button>
                 <div style="margin-top: 20px">
-                                <a class="google-btn w-100 text-decoration-none"
-                                    href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile&redirect_uri=http://localhost:8080<%=request.getContextPath()%>/LoginGG/LoginGoogleHandler&response_type=code&client_id=575367778465-qi40pug5jl4ht8rsplcumo2kfpun0p5a.apps.googleusercontent.com&approval_prompt=force">
-                                    <img src="https://www.google.com/favicon.ico" alt="Google">
-                                    Sign in with Google
-                                </a>
-                            </div>
+                    <a class="google-btn w-100 text-decoration-none"
+                       href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile&redirect_uri=http://localhost:8080<%=request.getContextPath()%>/LoginGG/LoginGoogleHandler&response_type=code&client_id=575367778465-qi40pug5jl4ht8rsplcumo2kfpun0p5a.apps.googleusercontent.com&approval_prompt=force">
+                        <img src="https://www.google.com/favicon.ico" alt="Google">
+                        Sign in with Google
+                    </a>
+                </div>
                 <p class="text-center mt-3">
                     <a href="<%= request.getContextPath()%>/jsp/auth/register.jsp">Sign up</a> |  <a href="${pageContext.request.contextPath}/ResetPasswordServlet?action=forgot-password">Quên mật khẩu?</a>
                 </p>
@@ -345,17 +344,17 @@
             </form>
 
         </div>
-                
+
         <!-- Script Bootstrap đúng đường dẫn -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-            <!-- Ghi chú: Script kiểm tra form trước khi gửi -->
+        <!-- Ghi chú: Script kiểm tra form trước khi gửi -->
         <script>
             document.querySelector("form").addEventListener("submit", function (e) {
                 const password = document.querySelector("input[name='password_hash']").value;
                 // Ghi chú: Có thể thêm logic kiểm tra mật khẩu nếu cần
             });
-        </script>  
-    
+        </script>
+
     </body>
 
 </html>
