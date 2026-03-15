@@ -685,10 +685,13 @@ public class UserDAO {
     public static int addUserGoogle(String email, String name) {
         int userId = -1;
         try (Connection conn = DBContext.getConnection()) {
-            String sql = "INSERT INTO users (email, password_hash, role, avatar) VALUES (?, NULL, ?, NULL)";
+            String sql = "INSERT INTO users (email, password_hash, role, avatar) VALUES (?, ?, ?, NULL)";
             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, email);
-            ps.setString(2, "PATIENT");
+            // Tạo mật khẩu ngẫu nhiên để tránh lỗi NULL trong DB
+            String randomPass = "GOOGLE_USER_" + System.currentTimeMillis();
+            ps.setString(2, hashBCrypt(randomPass));
+            ps.setString(3, "PATIENT");
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {

@@ -326,7 +326,7 @@
                 <button type="submit" class="btn btn-primary w-100">Login</button>
                 <div style="margin-top: 20px">
                                 <a class="google-btn w-100 text-decoration-none"
-                                    href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile&redirect_uri=http://localhost:8080/TestFull/LoginGG/LoginGoogleHandler&response_type=code&client_id=560611814939-bfrj1rtiahhq41h0d6fd3lcg876ic3ve.apps.googleusercontent.com&approval_prompt=force">
+                                    href="https://accounts.google.com/o/oauth2/auth?scope=email%20profile&redirect_uri=http://localhost:8080<%=request.getContextPath()%>/LoginGG/LoginGoogleHandler&response_type=code&client_id=575367778465-qi40pug5jl4ht8rsplcumo2kfpun0p5a.apps.googleusercontent.com&approval_prompt=force">
                                     <img src="https://www.google.com/favicon.ico" alt="Google">
                                     Sign in with Google
                                 </a>

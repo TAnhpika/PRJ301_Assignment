@@ -65,15 +65,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        // Get the context path dynamically
-        String contextPath = "/TestFull"; // Hardcode context path
-        REDIRECT_URI = "http://localhost:8080" + contextPath + "/LoginGG/LoginGoogleHandler";
-        // System.out.println("[DEBUG] REDIRECT_URI initialized: " + REDIRECT_URI);
-        // System.out.println("[DEBUG] CLIENT_ID: " + getGoogleClientId());
-        String secret = getGoogleClientSecret();
-        // System.out.println("[DEBUG] CLIENT_SECRET (first 4 chars): "
-        // + (secret != null && secret.length() >= 4 ? secret.substring(0, 4) + "****" :
-        // "****"));
+        // REDIRECT_URI will be constructed dynamically in doGet/doPost if needed
     }
 
     /**
@@ -200,7 +192,14 @@ public class LoginServlet extends HttpServlet {
 
             if (code != null) {
                 try {
-                    System.out.println("[DEBUG] Starting token request...");
+                    // Xây dựng REDIRECT_URI động
+                    String scheme = request.getScheme();
+                    String serverName = request.getServerName();
+                    int serverPort = request.getServerPort();
+                    String contextPath = request.getContextPath();
+                    String dynamicRedirectUri = scheme + "://" + serverName + ":" + serverPort + contextPath + "/LoginGG/LoginGoogleHandler";
+                    
+                    System.out.println("[DEBUG] Starting token request with redirect_uri: " + dynamicRedirectUri);
                     // Lấy access token từ code
                     GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
                             HTTP_TRANSPORT,
@@ -208,7 +207,7 @@ public class LoginServlet extends HttpServlet {
                             getGoogleClientId(),
                             getGoogleClientSecret(),
                             code,
-                            REDIRECT_URI)
+                            dynamicRedirectUri)
                             .execute();
 
                     String accessToken = tokenResponse.getAccessToken();

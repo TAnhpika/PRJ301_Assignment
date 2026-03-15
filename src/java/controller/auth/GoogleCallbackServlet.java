@@ -37,25 +37,19 @@ public class GoogleCallbackServlet extends HttpServlet {
         return util.Env.get("GOOGLE_CLIENT_SECRET");
     }
 
-    private String REDIRECT_URI;
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        String contextPath = "/TestFull";
-        REDIRECT_URI = "http://localhost:8080" + contextPath + "/LoginGG/LoginGoogleHandler"; // REDIRECT_URI – tức là
-                                                                                              // URL mà Google sẽ
-                                                                                              // redirect người dùng về
-                                                                                              // sau khi đăng nhập thành
-                                                                                              // công.
-        System.out.println("[DEBUG] GoogleCallbackServlet REDIRECT_URI initialized: " + REDIRECT_URI);
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String code = request.getParameter("code"); // Lấy mã code mà Google trả về sau khi người dùng đồng ý đăng nhập
+        // Tự động xây dựng REDIRECT_URI dựa trên request thực tế
+        String scheme = request.getScheme();             // http
+        String serverName = request.getServerName();     // localhost
+        int serverPort = request.getServerPort();        // 8080
+        String contextPath = request.getContextPath();   // /PRJ301_Project hoặc tương đương
+
+        String REDIRECT_URI = scheme + "://" + serverName + ":" + serverPort + contextPath + "/LoginGG/LoginGoogleHandler";
+
+        String code = request.getParameter("code"); // Lấy mã code mà Google trả về
         System.out.println("[DEBUG] GoogleCallbackServlet received code: " + code);
 
         if (code != null) { // Nếu có code -> tức là đăng nhập thành công bên Google
