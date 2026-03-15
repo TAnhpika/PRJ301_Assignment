@@ -96,7 +96,15 @@
                                                                         <tr>
                                                                             <td><span class="badge bg-secondary">#<%= blog.getBlogId() %></span></td>
                                                                              <td>
-                                                                                 <img src="<%= blog.getImageUrl() != null && !blog.getImageUrl().isEmpty() ? blog.getImageUrl() : request.getContextPath() + "/view/assets/img/default_blog.jpg" %>"
+                                                                                 <% 
+                                                                                     String imgUrl = blog.getImageUrl();
+                                                                                     if (imgUrl == null || imgUrl.isEmpty()) {
+                                                                                         imgUrl = request.getContextPath() + "/view/assets/img/default_blog.jpg";
+                                                                                     } else if (!imgUrl.startsWith("http") && !imgUrl.startsWith("https") && !imgUrl.startsWith("/")) {
+                                                                                         imgUrl = request.getContextPath() + "/" + imgUrl;
+                                                                                     }
+                                                                                 %>
+                                                                                 <img src="<%= imgUrl %>"
                                                                                      class="rounded" style="width: 80px; height: 50px; object-fit: cover;"
                                                                                      alt="Blog Image"
                                                                                      onerror="this.onerror=null;this.src='<%= request.getContextPath() %>/view/assets/img/default_blog.jpg';">

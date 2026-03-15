@@ -253,9 +253,18 @@
                                     if (blogCount++ >= 2) break;
                             %>
                             <div class="d-flex mb-3 pb-3 border-bottom">
-                                <img src="${pageContext.request.contextPath}/<%= blog.getImageUrl() %>" 
+                                <% 
+                                    String blogImg = blog.getImageUrl();
+                                    if (blogImg == null || blogImg.isEmpty()) {
+                                        blogImg = request.getContextPath() + "/view/assets/img/default_blog.jpg";
+                                    } else if (!blogImg.startsWith("http") && !blogImg.startsWith("https") && !blogImg.startsWith("/")) {
+                                        blogImg = request.getContextPath() + "/" + blogImg;
+                                    }
+                                %>
+                                <img src="<%= blogImg %>" 
                                      class="rounded me-3" 
-                                     style="width: 60px; height: 60px; object-fit: cover;">
+                                     style="width: 60px; height: 60px; object-fit: cover;"
+                                     onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/view/assets/img/default_blog.jpg';">
                                 <div>
                                     <h6 class="mb-1 small"><%= blog.getTitle() %></h6>
                                     <small class="text-muted"><%= blog.getCreatedAt().toString().substring(0, 10) %></small>
