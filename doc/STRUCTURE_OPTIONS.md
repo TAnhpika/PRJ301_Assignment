@@ -26,7 +26,7 @@ src/java/
 │   │   ├── ChangePasswordServlet.java
 │   │   ├── ResetPasswordServlet.java
 │   │   ├── UpdatePasswordServlet.java
-│   │   ├── FaceIdLoginServlet.java
+
 │   │   └── GoogleCallbackServlet.java
 │   │
 │   ├── appointment/             # Quản lý lịch hẹn
@@ -181,7 +181,7 @@ src/java/
 │   │   ├── SpecialtyDAOImpl.java
 │   │   ├── RelativesDAOImpl.java
 │   │   ├── RelativesAppointmentDAOImpl.java
-│   │   └── FaceImageDAOImpl.java
+
 │   │
 │   └── interfaces/              # DAO Interfaces (Tạo sau)
 │       ├── IUserDAO.java

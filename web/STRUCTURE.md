@@ -69,7 +69,7 @@ src/java/dao/
 ├── NotificationDAO.java
 ├── NotificationTemplateDAO.java
 ├── BlogDAO.java
-├── FaceImageDAO.java
+├── RelativesDAO.java
 ├── RelativesDAO.java
 └── RelativesAppointmentDAO.java
 ```
@@ -91,7 +91,7 @@ src/java/controller/
 │   ├── ChangePasswordServlet.java
 │   ├── ResetPasswordServlet.java
 │   ├── UpdatePasswordServlet.java
-│   ├── FaceIdLoginServlet.java
+
 │   └── GoogleCallbackServlet.java
 │
 ├── appointment/                # Appointment management (16 servlets)
