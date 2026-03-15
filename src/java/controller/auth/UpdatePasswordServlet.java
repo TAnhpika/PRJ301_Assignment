@@ -15,7 +15,7 @@ import java.io.IOException;
  * Servlet chuyên dụng để cập nhật mật khẩu bằng email
  * @author ASUS
  */
-
+@WebServlet(name = "UpdatePasswordServlet", urlPatterns = {"/UpdatePasswordServlet"})
 public class UpdatePasswordServlet extends HttpServlet {
     
     @Override
@@ -45,40 +45,40 @@ public class UpdatePasswordServlet extends HttpServlet {
         // Validate input
         if (newPassword == null || newPassword.trim().isEmpty()) {
             request.setAttribute("error", "Vui lòng nhập mật khẩu mới.");
-            request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
             return;
         }
         
         if (confirmPassword == null || !newPassword.equals(confirmPassword)) {
             request.setAttribute("error", "Xác nhận mật khẩu không khớp.");
-            request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
             return;
         }
         
         if (newPassword.length() < 6) {
             request.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự.");
-            request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
             return;
         }
         
         // Kiểm tra mật khẩu có chữ cái và số
         if (!newPassword.matches(".*[a-zA-Z].*") || !newPassword.matches(".*\\d.*")) {
             request.setAttribute("error", "Mật khẩu phải bao gồm cả chữ cái và số.");
-            request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
             return;
         }
         
         try {
             // Kiểm tra email tồn tại
-            User user =UserDAO.getUserByEmail(email);
+            User user = UserDAO.getUserByEmail(email);
             if (user == null) {
                 request.setAttribute("error", "Email không tồn tại trong hệ thống.");
                 request.getRequestDispatcher("/view/jsp/auth/forgot-password.jsp").forward(request, response);
                 return;
             }
             
-            // ⚠️ CẢNH BÁO: Cập nhật mật khẩu KHÔNG mã hóa - CHỈ DÙNG ĐỂ TEST!
-            boolean updated =UserDAO.updatePasswordPlainText(email, newPassword);
+            // Cập nhật mật khẩu 
+            boolean updated = UserDAO.updatePasswordByEmail(email, newPassword);
             
             if (updated) {
                 // Xóa thông tin session
@@ -88,11 +88,11 @@ public class UpdatePasswordServlet extends HttpServlet {
                 
                 // Thông báo thành công
                 request.setAttribute("success", "🎉 Đặt lại mật khẩu thành công! Bạn có thể đăng nhập với mật khẩu mới.");
-                request.getRequestDispatcher(request.getContextPath() + "/view/jsp/auth/login.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/jsp/auth/login.jsp").forward(request, response);
                 
             } else {
                 request.setAttribute("error", "Không thể cập nhật mật khẩu. Vui lòng thử lại.");
-                request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
             }
             
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public class UpdatePasswordServlet extends HttpServlet {
             e.printStackTrace();
             
             request.setAttribute("error", "Có lỗi hệ thống xảy ra. Vui lòng thử lại sau.");
-            request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
         }
     }
     
@@ -118,6 +118,6 @@ public class UpdatePasswordServlet extends HttpServlet {
             return;
         }
         
-        request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+        request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
     }
-} 
+}

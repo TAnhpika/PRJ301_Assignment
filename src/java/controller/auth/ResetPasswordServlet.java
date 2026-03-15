@@ -45,7 +45,7 @@ public class ResetPasswordServlet extends HttpServlet {
             // Đặt email từ user hiện tại và chuyển đến verify OTP
             request.setAttribute("email", user.getEmail());
             request.setAttribute("from_profile", true); // Đánh dấu từ trang profile
-            request.getRequestDispatcher("/auth/change-password-profile.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/change-password-profile.jsp").forward(request, response);
             
         } else if ("verify-otp".equals(action)) {
             // Hiển thị form nhập OTP
@@ -73,7 +73,7 @@ public class ResetPasswordServlet extends HttpServlet {
             Boolean fromProfile = (Boolean) session.getAttribute("from_profile");
             request.setAttribute("from_profile", fromProfile);
             
-            request.getRequestDispatcher("/auth/verify-otp.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/verify-otp.jsp").forward(request, response);
             
         } else if ("reset-password".equals(action)) {
             // Hiển thị form đặt lại mật khẩu
@@ -97,7 +97,7 @@ public class ResetPasswordServlet extends HttpServlet {
             Boolean fromProfile = (Boolean) session.getAttribute("from_profile");
             request.setAttribute("from_profile", fromProfile);
             
-            request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
             
         } else {
             // Mặc định hiển thị form forgot password
@@ -164,15 +164,13 @@ public class ResetPasswordServlet extends HttpServlet {
             String successMessage = "Mã OTP đã được gửi đến email: " + email;
             
             // Thử gửi email
-            if (EmailService.isConfigured()) {
-                System.out.println("🔄 Đang thử gửi email từ profile...");
-                emailSent = EmailService.sendOTPEmailWithFallback(email, otp);
-                
-                if (emailSent) {
-                    System.out.println("✅ Gửi email từ profile thành công!");
+            if (emailSent) {
+                if (EmailService.isDevelopmentMode()) {
+                    successMessage = "Hệ thống đang ở chế độ TEST. Mã OTP của bạn là: " + otp;
                 } else {
-                    System.out.println("❌ Không thể gửi email từ profile.");
+                    successMessage = "Mã OTP đã được gửi đến email: " + email;
                 }
+                System.out.println("✅ Xử lý gửi OTP profile hoàn hệ: " + (EmailService.isDevelopmentMode() ? "DEV MODE" : "REAL EMAIL"));
             }
             
             if (emailSent) {
@@ -235,19 +233,16 @@ public class ResetPasswordServlet extends HttpServlet {
             boolean emailSent = false;
             String successMessage = "";
             
-            // Thử gửi email thật trước với multiple configs
-            if (EmailService.isConfigured()) {
-                System.out.println("🔄 Đang thử gửi email thật với fallback configs...");
-                emailSent = EmailService.sendOTPEmailWithFallback(email, otp);
-                
-                if (emailSent) {
-                    successMessage = "Mã OTP đã được gửi đến email " + email + ". Vui lòng kiểm tra hộp thư của bạn.";
-                    System.out.println("✅ Gửi email thật thành công!");
+            // Thử gửi email với cơ chế fallback tự động sang Dev Mode
+            emailSent = EmailService.sendOTPEmailWithFallback(email, otp);
+            
+            if (emailSent) {
+                if (EmailService.isDevelopmentMode()) {
+                    successMessage = "Hệ thống đang ở chế độ TEST. Mã OTP của bạn là: " + otp + " (Hãy dùng mã này để tiếp tục).";
                 } else {
-                    System.out.println("❌ Không thể gửi email qua tất cả phương thức.");
+                    successMessage = "Mã OTP đã được gửi đến email " + email + ". Vui lòng kiểm tra hộp thư của bạn.";
                 }
-            } else {
-                System.out.println("❌ Email chưa được cấu hình đúng!");
+                System.out.println("✅ Xử lý gửi OTP hoàn hệ: " + (EmailService.isDevelopmentMode() ? "DEV MODE" : "REAL EMAIL"));
             }
             
             if (emailSent) {
@@ -297,7 +292,7 @@ public class ResetPasswordServlet extends HttpServlet {
                 request.setAttribute("remainingSeconds", remainingSeconds);
                 request.setAttribute("email", otpData.getEmail());
             }
-            request.getRequestDispatcher("/auth/verify-otp.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/verify-otp.jsp").forward(request, response);
             return;
         }
         
@@ -342,7 +337,7 @@ public class ResetPasswordServlet extends HttpServlet {
                 long remainingSeconds = OTPService.getRemainingSeconds(otpData);
                 request.setAttribute("remainingSeconds", remainingSeconds);
                 request.setAttribute("email", otpData.getEmail());
-                request.getRequestDispatcher("/auth/verify-otp.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/jsp/auth/verify-otp.jsp").forward(request, response);
             }
         }
     }
@@ -387,21 +382,21 @@ public class ResetPasswordServlet extends HttpServlet {
         if (newPassword == null || newPassword.trim().isEmpty()) {
             System.err.println("❌ Mật khẩu mới trống");
             request.setAttribute("error", "Vui lòng nhập mật khẩu mới.");
-            request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
             return;
         }
         
         if (confirmPassword == null || !newPassword.equals(confirmPassword)) {
             System.err.println("❌ Mật khẩu xác nhận không khớp");
             request.setAttribute("error", "Xác nhận mật khẩu không khớp.");
-            request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
             return;
         }
         
         if (newPassword.length() < 6) {
             System.err.println("❌ Mật khẩu quá ngắn: " + newPassword.length() + " ký tự");
             request.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự.");
-            request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
             return;
         }
         
@@ -409,7 +404,7 @@ public class ResetPasswordServlet extends HttpServlet {
         if (!newPassword.matches(".*[a-zA-Z].*") || !newPassword.matches(".*\\d.*")) {
             System.err.println("❌ Mật khẩu không đáp ứng yêu cầu");
             request.setAttribute("error", "Mật khẩu phải bao gồm cả chữ cái và số.");
-            request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
             return;
         }
         
@@ -465,19 +460,19 @@ public class ResetPasswordServlet extends HttpServlet {
                     } else {
                         // Từ quên mật khẩu - về trang login
                         request.setAttribute("success", "🎉 Đặt lại mật khẩu thành công! Bạn có thể đăng nhập với mật khẩu mới.");
-                        request.getRequestDispatcher(request.getContextPath() + "/view/jsp/auth/login.jsp").forward(request, response);
+                        request.getRequestDispatcher("/view/jsp/auth/login.jsp").forward(request, response);
                     }
                     
                 } else {
                     System.err.println("❌ Không thể đăng nhập với mật khẩu mới - có lỗi xảy ra");
                     request.setAttribute("error", "Có lỗi xảy ra khi cập nhật mật khẩu. Vui lòng thử lại.");
-                    request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+                    request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
                 }
                 
             } else {
                 System.err.println("❌ Cập nhật mật khẩu thất bại trong database");
                 request.setAttribute("error", "Không thể cập nhật mật khẩu trong database. Vui lòng thử lại.");
-                request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+                request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
             }
             
         } catch (Exception e) {
@@ -487,7 +482,7 @@ public class ResetPasswordServlet extends HttpServlet {
             e.printStackTrace();
             
             request.setAttribute("error", "Có lỗi hệ thống xảy ra: " + e.getMessage());
-            request.getRequestDispatcher("/auth/reset-password.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/jsp/auth/reset-password.jsp").forward(request, response);
         }
     }
 } 
