@@ -182,7 +182,8 @@
                                 <img src="${pageContext.request.contextPath}<%= patientAvatar %>" 
                                      alt="Avatar" 
                                      class="rounded-circle mb-3"
-                                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);">
+                                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);"
+                                     onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/view/assets/img/default-avatar.png'">
                                 <% } else { %>
                                 <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
                                      style="width: 80px; height: 80px; font-size: 32px;">
@@ -249,7 +250,8 @@
                             <div class="d-flex mb-3 pb-3 border-bottom">
                                 <img src="${pageContext.request.contextPath}/<%= blog.getImageUrl() %>" 
                                      class="rounded me-3" 
-                                     style="width: 60px; height: 60px; object-fit: cover;">
+                                     style="width: 60px; height: 60px; object-fit: cover;"
+                                     onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/view/assets/img/default_blog.jpg'">
                                 <div>
                                     <h6 class="mb-1 small"><%= blog.getTitle() %></h6>
                                     <small class="text-muted"><%= blog.getCreatedAt().toString().substring(0, 10) %></small>

@@ -253,7 +253,7 @@
                             <div class="d-flex gap-2">
                                 <form action="${pageContext.request.contextPath}/ExportMedicalReportServlet" method="get">
                                     <input type="hidden" name="reportId" value="<%= report.getReportId() %>">
-                                    <button type="submit" class="btn-action btn-pdf">
+                                    <button type="submit" class="btn-action btn-pdf" disabled style="opacity: 0.6; cursor: not-allowed;" title="Tính năng này hiện đang được bảo trì">
                                         <i class="fas fa-file-pdf"></i> Tải PDF
                                     </button>
                                 </form>

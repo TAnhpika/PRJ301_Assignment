@@ -133,7 +133,7 @@
                     <div class="row mb-4">
                         <div class="col-12">
                             <h2 class="h4 fw-bold text-dark"><i class="fas fa-calendar-alt me-2 text-primary"></i>Lịch khám bệnh</h2>
-                            <p class="text-muted small mb-0">Theo dõi và quản lý các lịch hẹn khám nha khoa của bạn và người thân.</p>
+                            <p class="text-muted small mb-0">Theo dõi và quản lý các lịch hẹn khám nha khoa của bạn.</p>
                         </div>
                     </div>
 
@@ -312,126 +312,6 @@
                         </div>
                     </div>
 
-                    <%-- Relative Appointments --%>
-                    <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                            <h3 class="h5 fw-bold mb-0 text-dark"><i class="fas fa-users me-2 text-primary"></i>Lịch khám của người thân</h3>
-                            <% if (relativeAppointments != null && !relativeAppointments.isEmpty()) { %>
-                                <span class="badge bg-light text-dark border"><%= relativeAppointments.size() %> cuộc hẹn</span>
-                            <% } %>
-                        </div>
-                        <div class="card-body p-0">
-                        <% 
-                            int relativePage = 1;
-                            String relativePageParam = request.getParameter("relativePage");
-                            if (relativePageParam != null && !relativePageParam.isEmpty()) {
-                                try {
-                                    relativePage = Integer.parseInt(relativePageParam);
-                                } catch (NumberFormatException e) {
-                                    relativePage = 1;
-                                }
-                            }
-
-                            if (relativeAppointments != null && !relativeAppointments.isEmpty()) {
-                                int relativeTotalItems = relativeAppointments.size();
-                                int relativeTotalPages = (int) Math.ceil((double) relativeTotalItems / itemsPerPage);
-                                int relativeStartIndex = (relativePage - 1) * itemsPerPage;
-                                int relativeEndIndex = Math.min(relativeStartIndex + itemsPerPage, relativeTotalItems);
-                                List<Appointment> pageRelativeAppointments = relativeAppointments.subList(relativeStartIndex, relativeEndIndex);
-                        %>
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Người khám</th>
-                                            <th>Bác sĩ</th>
-                                            <th>Ngày khám</th>
-                                            <th>Thời gian</th>
-                                            <th>Trạng thái</th>
-                                            <th class="text-end">Hành động</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% for (Appointment ap : pageRelativeAppointments) {
-                                            String status = ap.getStatus() != null ? ap.getStatus().toUpperCase() : "";
-                                            String statusBadgeClass = "bg-secondary";
-                                            String statusLabel = ap.getStatus() != null ? ap.getStatus() : "Không xác định";
-                                            
-                                            if (status.contains("BOOKED") || status.contains("PENDING")) { 
-                                                statusBadgeClass = "bg-primary-subtle text-primary border border-primary-subtle"; 
-                                                statusLabel = "Đã đặt"; 
-                                            } else if (status.contains("COMPLETED") || status.contains("DONE")) { 
-                                                statusBadgeClass = "bg-success-subtle text-success border border-success-subtle"; 
-                                                statusLabel = "Hoàn thành"; 
-                                            } else if (status.contains("CANCEL")) { 
-                                                statusBadgeClass = "bg-danger-subtle text-danger border border-danger-subtle"; 
-                                                statusLabel = "Đã hủy"; 
-                                            }
-                                        %>
-                                            <tr>
-                                                <td class="fw-bold text-primary"><%= ap.getPatientName() != null ? ap.getPatientName() : "Chưa có thông tin" %></td>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="avatar-xs bg-light rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
-                                                            <i class="fas fa-user-md text-muted small"></i>
-                                                        </div>
-                                                        <%= ap.getDoctorName() != null ? ap.getDoctorName() : "Chưa có thông tin" %>
-                                                    </div>
-                                                </td>
-                                                <td><%= ap.getFormattedWorkDate() %></td>
-                                                <td><%= ap.getFormattedTimeRange() %></td>
-                                                <td><span class="badge rounded-pill status-badge <%= statusBadgeClass %>"><%= statusLabel %></span></td>
-                                                <td class="text-end">
-                                                    <% if (status.contains("COMPLETED") || status.contains("DONE")) { %>
-                                                        <a href="${pageContext.request.contextPath}/MedicalReportDetailServlet?appointmentId=<%= ap.getAppointmentId() %>" class="btn btn-outline-primary btn-sm btn-action">
-                                                            <i class="fas fa-file-medical-alt"></i> Báo cáo
-                                                        </a>
-                                                    <% } else { %>
-                                                        <span class="text-muted small italic">Chưa có báo cáo</span>
-                                                    <% } %>
-                                                </td>
-                                            </tr>
-                                        <% } %>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <% if (relativeTotalPages > 1) { %>
-                                <div class="card-footer bg-white py-3">
-                                    <nav aria-label="Relative Page navigation">
-                                        <ul class="pagination pagination-sm justify-content-center mb-0">
-                                            <li class="page-item <%= relativePage == 1 ? "disabled" : "" %>">
-                                                <a class="page-link" href="?relativePage=<%= relativePage - 1 %>&page=<%= currentPage %>" tabindex="-1">Trước</a>
-                                            </li>
-                                            <% 
-                                                int relativeStartPage = Math.max(1, relativePage - 2);
-                                                int relativeEndPage = Math.min(relativeTotalPages, relativePage + 2);
-                                                for (int i = relativeStartPage; i <= relativeEndPage; i++) {
-                                            %>
-                                                <li class="page-item <%= i == relativePage ? "active" : "" %>">
-                                                    <a class="page-link" href="?relativePage=<%= i %>&page=<%= currentPage %>"><%= i %></a>
-                                                </li>
-                                            <% } %>
-                                            <li class="page-item <%= relativePage == relativeTotalPages ? "disabled" : "" %>">
-                                                <a class="page-link" href="?relativePage=<%= relativePage + 1 %>&page=<%= currentPage %>">Sau</a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                    <div class="text-center mt-2">
-                                        <small class="text-muted">Trang <%= relativePage %> / <%= relativeTotalPages %> (Hiển thị <%= relativeStartIndex + 1 %>-<%= relativeEndIndex %> / <%= relativeTotalItems %>)</small>
-                                    </div>
-                                </div>
-                            <% } %>
-
-                        <% } else { %>
-                            <div class="empty-state">
-                                <i class="fas fa-users-slash"></i>
-                                <h4 class="h5 text-muted">Chưa có lịch khám cho người thân</h4>
-                                <p class="text-muted small">Thông tin các lịch hẹn bạn đặt hộ người thân sẽ xuất hiện tại đây.</p>
-                            </div>
-                        <% } %>
-                        </div>
-                    </div>
                 </div>
             </div>
         </main>
