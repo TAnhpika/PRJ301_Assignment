@@ -63,7 +63,7 @@
         case "away": statusColor = "bg-warning"; break;
     }
     
-    String defaultAvatar = request.getContextPath() + "/view/assets/img/default-avatar.png";
+    String defaultAvatar = request.getContextPath() + "/view/assets/img/default-user-avatar.png";
     String imgSrc = (src != null && !src.isEmpty()) ? src : defaultAvatar;
 %>
 

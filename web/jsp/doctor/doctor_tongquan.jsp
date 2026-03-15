@@ -124,7 +124,7 @@
                     <div class="col-12 col-lg-4">
                         <div class="dashboard-card">
                             <div class="text-center mb-4">
-                                <img src="<%= avatarPath != null ? avatarPath : request.getContextPath() + "/view/assets/img/default-avatar.png" %>" 
+                                <img src="<%= avatarPath != null ? avatarPath : request.getContextPath() + "/view/assets/img/default-user-avatar.png" %>" 
                                      alt="Avatar" 
                                      class="rounded-circle mb-3"
                                      style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);">
@@ -217,7 +217,7 @@
                                     }
                             %>
                             <div class="d-flex align-items-center p-3 border-bottom">
-                                <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
+                                <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png" 
                                      class="rounded-circle me-3" 
                                      style="width: 48px; height: 48px; object-fit: cover;">
                                 <div class="flex-grow-1">
@@ -263,7 +263,7 @@
                                     ? cancelledApp.getWorkDate().format(dateFormatter) : "N/A";
                 %>
                             <div class="d-flex align-items-center p-3 border-bottom">
-                                <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
+                                <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png" 
                                      class="rounded-circle me-3" 
                                      style="width: 40px; height: 40px; object-fit: cover;">
                                 <div class="flex-grow-1">

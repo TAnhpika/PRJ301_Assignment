@@ -1,4 +1,4 @@
-﻿<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -569,8 +569,7 @@
                                         <p class="page-subtitle">Theo dõi hóa đơn và thanh toán</p>
                                     </div>
                                     <button onclick="openCreateModal()" 
-                                            class="btn-primary-custom" 
-                                            style="cursor: pointer; z-index: 9999; position: relative; pointer-events: auto !important;">
+                                            class="btn-primary-custom">
                                         <i class="fas fa-plus"></i>
                                         <span>Tạo hóa đơn</span>
                                     </button>

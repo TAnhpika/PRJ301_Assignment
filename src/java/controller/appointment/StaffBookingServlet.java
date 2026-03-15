@@ -195,10 +195,20 @@ public class StaffBookingServlet extends HttpServlet {
             String searchPatientName = request.getParameter("patientName");
             String searchAppointmentDate = request.getParameter("appointmentDate");
             String searchStatus = request.getParameter("status");
+            String showAll = request.getParameter("showAll");
+
+            // Mặc định là ngày hôm nay nếu không có tìm kiếm cụ thể và không phải yêu cầu "Hiện tất cả"
+            if ((searchAppointmentDate == null || searchAppointmentDate.isEmpty()) 
+                && (searchPatientName == null || searchPatientName.isEmpty()) 
+                && (searchStatus == null || searchStatus.isEmpty())
+                && !"true".equals(showAll)) {
+                searchAppointmentDate = java.time.LocalDate.now().toString();
+            }
 
             request.setAttribute("searchPatientName", searchPatientName);
             request.setAttribute("searchAppointmentDate", searchAppointmentDate);
             request.setAttribute("searchStatus", searchStatus);
+            request.setAttribute("showAll", showAll);
 
             List<Appointment> displayedAppointments = new ArrayList<>();
             try {

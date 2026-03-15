@@ -8,7 +8,7 @@
                     session.getAttribute("staff"); String userName=currentStaff !=null ? currentStaff.getFullName() :
                     (currentUser !=null ? currentUser.getUsername() : "Nhân viên" ); String userAvatar=currentUser
                     !=null && currentUser.getAvatar() !=null ? request.getContextPath() + currentUser.getAvatar() : request.getContextPath()
-                    + "/view/assets/img/default-avatar.png" ; %>
+                    + "/view/assets/img/default-user-avatar.png" ; %>
 
                     <style>
                         /* Đẩy toàn bộ nội dung header lên trên cùng */

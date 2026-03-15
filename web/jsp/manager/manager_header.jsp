@@ -5,7 +5,7 @@
 
             <% User currentUser=(User) session.getAttribute("user"); String userName=currentUser !=null ?
                 currentUser.getUsername() : "Manager" ; String userAvatar=currentUser !=null && currentUser.getAvatar()
-                !=null ? currentUser.getAvatar() : request.getContextPath() + "/view/assets/img/default-avatar.png" ; %>
+                !=null ? currentUser.getAvatar() : request.getContextPath() + "/view/assets/img/default-user-avatar.png" ; %>
 
                 <!-- Sidebar Toggle Button (Mobile) -->
                 <button class="sidebar-toggle" onclick="toggleSidebar()">

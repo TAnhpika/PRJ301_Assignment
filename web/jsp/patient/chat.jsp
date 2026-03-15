@@ -108,7 +108,7 @@
                     <div class="chat-header">
                         <div class="chat-partner-info">
                             <div class="doctor-avatar-wrapper me-3" id="chatPartnerAvatarWrapper" style="display: none;">
-                                <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="doctor-avatar" alt="Doctor avatar">
+                                <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png" class="doctor-avatar" alt="Doctor avatar">
                                 <div class="status-dot"></div>
                             </div>
                             <div>
@@ -336,7 +336,7 @@
                         
                         userItem.innerHTML = `
                             <div class="doctor-avatar-wrapper">
-                                <img src="<%= "$" %>{contextPath}/view/assets/img/default-avatar.png" class="doctor-avatar" alt="Avatar">
+                                <img src="<%= "$" %>{contextPath}/view/assets/img/default-user-avatar.png" class="doctor-avatar" alt="Avatar">
                                 <div class="status-dot"></div>
                             </div>
                             <div class="flex-grow-1 overflow-hidden">

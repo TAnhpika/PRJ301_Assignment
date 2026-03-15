@@ -152,7 +152,7 @@
                                 %>
                                 <div class="col-12 col-md-6">
                                     <div class="d-flex align-items-center p-3 bg-light rounded">
-                                        <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
+                                        <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png" 
                                              class="rounded-circle me-3" 
                                              style="width: 50px; height: 50px; object-fit: cover;">
                                         <div class="flex-grow-1">
@@ -183,7 +183,7 @@
                                      alt="Avatar" 
                                      class="rounded-circle mb-3"
                                      style="width: 80px; height: 80px; object-fit: cover; border: 3px solid var(--primary-color);"
-                                     onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/view/assets/img/default-avatar.png'">
+                                     onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png'">
                                 <% } else { %>
                                 <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
                                      style="width: 80px; height: 80px; font-size: 32px;">

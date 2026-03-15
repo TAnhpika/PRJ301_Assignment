@@ -66,7 +66,7 @@
                     <div class="col-lg-4">
                         <div class="dashboard-card text-center py-4">
                             <div class="position-relative d-inline-block mx-auto mb-3">
-                                <img src="<%= user.getAvatar() != null ? user.getAvatar() : request.getContextPath() + "/view/assets/img/default-avatar.png" %>" 
+                                <img src="<%= user.getAvatar() != null ? user.getAvatar() : request.getContextPath() + "/view/assets/img/default-user-avatar.png" %>" 
                                      alt="Avatar" class="rounded-circle shadow-sm" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #eee;">
                             </div>
                             <h5 class="mb-1"><%= manager.getFullName() %></h5>

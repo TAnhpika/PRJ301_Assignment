@@ -141,7 +141,7 @@
                                     <td><span class="badge bg-secondary">#<%= patient.getPatientId() %></span></td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="patient-avatar me-3" alt="Avatar">
+                                            <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png" class="patient-avatar me-3" alt="Avatar">
                                             <div>
                                                 <strong><%= patient.getFullName() %></strong>
                                                 <small class="text-muted d-block">ID: <%= patient.getId() %></small>

@@ -62,7 +62,7 @@
             statusIcon = "fa-circle";
     }
     
-    String defaultAvatar = request.getContextPath() + "/view/assets/img/default-avatar.png";
+    String defaultAvatar = request.getContextPath() + "/view/assets/img/default-user-avatar.png";
     String avatarSrc = (patientAvatar != null && !patientAvatar.isEmpty()) ? patientAvatar : defaultAvatar;
 %>
 

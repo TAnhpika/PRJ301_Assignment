@@ -113,7 +113,7 @@
                                                     <tr>
                                                         <td>
                                                             <div class="d-flex align-items-center">
-                                                                <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="rounded-circle me-2" style="width: 36px; height: 36px;">
+                                                                <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png" class="rounded-circle me-2" style="width: 36px; height: 36px;">
                                                                 <span>BS ID: ${schedule.doctorId}</span>
                                                                     </div>
                                                                 </td>
@@ -173,7 +173,7 @@
                                                     <tr>
                                                         <td>
                                                             <div class="d-flex align-items-center">
-                                                                <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="rounded-circle me-2" style="width: 36px; height: 36px;">
+                                                                <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png" class="rounded-circle me-2" style="width: 36px; height: 36px;">
                                                                 <div>
                                                                     <strong>${request.staffName}</strong>
                                                                     <br>

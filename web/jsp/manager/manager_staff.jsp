@@ -160,7 +160,7 @@
                                 <tr data-department="<%= staff.getDepartment() %>" data-status="<%= staff.getStatus() %>">
                                     <td><span class="badge bg-secondary">#<%= staff.getUserId() %></span></td>
                                     <td>
-                                        <img src="<%= staff.getAvatar() != null ? staff.getAvatar() : request.getContextPath() + "/view/assets/img/default-avatar.png" %>" 
+                                        <img src="<%= staff.getAvatar() != null ? staff.getAvatar() : request.getContextPath() + "/view/assets/img/default-user-avatar.png" %>" 
                                              class="staff-avatar" alt="Staff Avatar">
                                     </td>
                                     <td><strong><%= staff.getName() %></strong></td>

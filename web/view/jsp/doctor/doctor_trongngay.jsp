@@ -198,7 +198,7 @@
                                         </div>
                                         
                                         <div class="d-flex align-items-center mb-3">
-                                            <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="patient-avatar me-3" alt="Patient">
+                                            <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png" class="patient-avatar me-3" alt="Patient">
                                             <div>
                                                 <h5 class="mb-1 fw-bold text-dark"><%= app.getPatientName() %></h5>
                                                 <p class="mb-0 text-muted small">Mã BN: #<%= app.getPatientId() %> | Mã LH: #<%= app.getAppointmentId() %></p>
@@ -271,7 +271,7 @@
                                         </div>
                                         
                                         <div class="d-flex align-items-center mb-3">
-                                            <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" class="patient-avatar me-3" alt="Patient">
+                                            <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png" class="patient-avatar me-3" alt="Patient">
                                             <div>
                                                 <h5 class="mb-1 fw-bold text-dark text-decoration-line-through"><%= app.getPatientName() %></h5>
                                                 <p class="mb-0 text-muted small">Mã BN: #<%= app.getPatientId() %> | Mã LH: #<%= app.getAppointmentId() %></p>

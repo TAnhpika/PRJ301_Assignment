@@ -17,7 +17,7 @@
     String staffName = staff != null ? staff.getFullName() : (user != null ? user.getUsername() : "Nhân viên");
     String staffAvatar = user != null && user.getAvatar() != null
             ? request.getContextPath() + user.getAvatar()
-            : request.getContextPath() + "/view/assets/img/default-avatar.png";
+            : request.getContextPath() + "/view/assets/img/default-user-avatar.png";
 
     // Lấy danh sách lịch hẹn hôm nay
     LocalDate today = LocalDate.now();
@@ -181,7 +181,7 @@
                                             <tr>
                                                 <td>
                                                     <div class="d-flex align-items-center">
-                                                        <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
+                                                        <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png" 
                                                              class="rounded-circle me-2" 
                                                              style="width: 32px; height: 32px; object-fit: cover;">
                                                         <span><%= apt.getPatientName() != null ? apt.getPatientName() : "N/A" %></span>
@@ -216,7 +216,7 @@
                                 </div>
                                 <div class="list-group list-group-flush">
                                     <div class="list-group-item d-flex align-items-start px-0 py-3">
-                                        <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png"
+                                        <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png"
                                              class="rounded-circle me-3"
                                              style="width: 48px; height: 48px; object-fit: cover;">
                                         <div class="flex-grow-1">
@@ -233,7 +233,7 @@
                                         </div>
                                     </div>
                                     <div class="list-group-item d-flex align-items-start px-0 py-3">
-                                        <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png"
+                                        <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png"
                                              class="rounded-circle me-3"
                                              style="width: 48px; height: 48px; object-fit: cover;">
                                         <div class="flex-grow-1">

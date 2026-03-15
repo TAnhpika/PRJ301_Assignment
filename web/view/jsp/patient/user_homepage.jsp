@@ -152,7 +152,7 @@
                                 %>
                                 <div class="col-12 col-md-6">
                                     <div class="d-flex align-items-center p-3 bg-light rounded">
-                                        <img src="${pageContext.request.contextPath}/view/assets/img/default-avatar.png" 
+                                        <img src="${pageContext.request.contextPath}/view/assets/img/default-user-avatar.png" 
                                              class="rounded-circle me-3" 
                                              style="width: 50px; height: 50px; object-fit: cover;">
                                         <div class="flex-grow-1">

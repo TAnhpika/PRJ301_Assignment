@@ -25,7 +25,7 @@
     if (userRole == null) userRole = "User";
     if (logoutUrl == null) logoutUrl = "/LogoutServlet";
     
-    String defaultAvatar = request.getContextPath() + "/view/assets/img/default-avatar.png";
+    String defaultAvatar = request.getContextPath() + "/view/assets/img/default-user-avatar.png";
     String avatarSrc = (userAvatar != null && !userAvatar.isEmpty()) ? userAvatar : defaultAvatar;
 %>
 

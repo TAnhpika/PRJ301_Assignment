@@ -7,7 +7,7 @@
     String userName = currentDoctor != null ? currentDoctor.getFullName() : (currentUser != null ? currentUser.getUsername() : "Bác sĩ"); 
     String userAvatar = (currentUser != null && currentUser.getAvatar() != null && !currentUser.getAvatar().isEmpty()) 
         ? (currentUser.getAvatar().startsWith("http") ? currentUser.getAvatar() : request.getContextPath() + currentUser.getAvatar()) 
-        : request.getContextPath() + "/view/assets/img/default-avatar.png"; 
+        : request.getContextPath() + "/view/assets/img/default-user-avatar.png"; 
 %>
 
 <!-- Sidebar Toggle Button (Mobile) -->

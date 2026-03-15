@@ -140,7 +140,7 @@
                                 <i class="fas fa-calendar-check"></i>
                             </div>
                             <div class="stat-card-value">${fn:length(todayAppointments) != null ? fn:length(todayAppointments) : '0'}</div>
-                            <div class="stat-card-label">Hôm nay</div>
+                            <div class="stat-card-label">Số lịch hẹn</div>
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-xl-3">
@@ -192,10 +192,13 @@
                                     <option value="WAITING_PAYMENT" ${searchStatus == 'WAITING_PAYMENT' ? 'selected' : ''}>Chờ thanh toán</option>
                                                                 </select>
                                                             </div>
-                                                            <div class="col-md-3">
-                                <button type="submit" class="btn-dashboard btn-dashboard-primary w-100">
-                                    <i class="fas fa-search"></i> Tìm kiếm
+                                                            <div class="col-md-3 d-flex gap-2">
+                                                                <button type="submit" class="btn-dashboard btn-dashboard-primary flex-grow-1">
+                                                                    <i class="fas fa-search"></i> Tìm kiếm
                                                                 </button>
+                                                                <a href="${pageContext.request.contextPath}/StaffBookingServlet?showAll=true" class="btn btn-outline-secondary d-flex align-items-center" title="Hiện tất cả lịch hẹn">
+                                                                    <i class="fas fa-list-ul"></i>
+                                                                </a>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -408,6 +411,20 @@
                 dateFormat: "Y-m-d",
                 minDate: "today"
             });
+
+            // Tự động mở modal nếu có tham số openModal=true
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('openModal') === 'true') {
+                const modalEl = document.getElementById('newAppointmentModal');
+                if (modalEl) {
+                    const modal = new bootstrap.Modal(modalEl);
+                    modal.show();
+                    
+                    // Xóa tham số trên URL sau khi mở để tránh mở lại khi reload
+                    const newUrl = window.location.pathname;
+                    window.history.replaceState({}, document.title, newUrl);
+                }
+            }
         });
 
         function nextStep() {

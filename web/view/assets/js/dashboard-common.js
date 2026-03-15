@@ -54,34 +54,8 @@ function toggleUserDropdown(event) {
 // Active Menu Highlighting
 // ========================================
 function highlightActiveMenu() {
-    const currentPath = window.location.pathname;
-    const currentPage = currentPath.split('/').pop();
-    
-    // Highlight main menu items
-    document.querySelectorAll('.sidebar-item').forEach(item => {
-        const link = item.getAttribute('href') || item.querySelector('a')?.getAttribute('href');
-        if (link) {
-            const linkPage = link.split('/').pop();
-            if (linkPage === currentPage || currentPath.includes(link)) {
-                item.classList.add('active');
-            }
-        }
-    });
-    
-    // Highlight dropdown items and open parent
-    document.querySelectorAll('.sidebar-dropdown-item').forEach(item => {
-        const link = item.getAttribute('href');
-        if (link) {
-            const linkPage = link.split('/').pop();
-            if (linkPage === currentPage || currentPath.includes(link)) {
-                item.classList.add('active');
-                const dropdownParent = item.closest('.sidebar-dropdown');
-                if (dropdownParent) {
-                    dropdownParent.classList.add('open');
-                }
-            }
-        }
-    });
+    // Để cho dashboard-simple.js xử lý để tránh xung đột
+    return;
 }
 
 // ========================================

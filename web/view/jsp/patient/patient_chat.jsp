@@ -308,7 +308,7 @@
             d.dataset.userId = id;
             const badge = unreadMap.get(id) || 0;
             d.innerHTML =
-                '<img src="' + CTX + '/view/assets/img/default-avatar.png" class="doc-avatar" alt="avatar">' +
+                '<img src="' + CTX + '/view/assets/img/default-user-avatar.png" class="doc-avatar" alt="avatar">' +
                 '<div class="doc-info">' +
                     '<div class="doc-name">BS. ' + esc(info.name) + '</div>' +
                     '<div class="doc-spec"><i class="fas fa-stethoscope me-1"></i>Bác sĩ</div>' +

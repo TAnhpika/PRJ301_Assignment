@@ -58,7 +58,7 @@
                                 <input type="file" id="avatarInput" name="avatar" accept="image/*" style="display: none;">
                                 <input type="hidden" name="userId" value="<%= staffUser.getId() %>">
                             </form>
-                            <img id="avatarImg" src="<%= staff.getAvatar() != null ? staff.getAvatar() : request.getContextPath() + "/view/assets/img/default-avatar.png" %>" 
+                            <img id="avatarImg" src="<%= staff.getAvatar() != null ? staff.getAvatar() : request.getContextPath() + "/view/assets/img/default-user-avatar.png" %>" 
                                  alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #e9ecef; cursor: pointer;" 
                                  onclick="document.getElementById('avatarInput').click()">
                             <p class="text-muted mt-2 mb-0"><small>Nhấn vào ảnh để đổi</small></p>

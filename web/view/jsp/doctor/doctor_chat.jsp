@@ -380,7 +380,7 @@
             div.dataset.userId = id;
             const badgeCount = unreadCount.get(id) || 0;
             div.innerHTML =
-                '<img src="' + CTX + '/view/assets/img/default-avatar.png" class="patient-avatar" alt="avatar">' +
+                '<img src="' + CTX + '/view/assets/img/default-user-avatar.png" class="patient-avatar" alt="avatar">' +
                 '<div class="pi-info">' +
                     '<div class="pi-name">' + escHtml(info.name) + '</div>' +
                     '<div class="pi-role"><i class="fas fa-user me-1"></i>Bệnh nhân</div>' +
