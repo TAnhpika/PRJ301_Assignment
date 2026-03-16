@@ -348,8 +348,10 @@ public class StaffPaymentServlet extends HttpServlet {
                     if (bill.getPaymentStatus() != null && "INSTALLMENT".equalsIgnoreCase(bill.getPaymentStatus())) {
                         PaymentInstallment summary = installmentDAO.getInstallmentSummary(bill.getBillId());
                         if (summary != null) {
+                            bill.setInstallmentSummary(summary); // Lưu tóm tắt vào bill
                             bill.setTotalRemaining(summary.getTotalRemaining());
-                            System.out.println("[DEBUG] Bill trả góp: " + bill.getBillId() + " | totalRemaining: "
+                            System.out.println("[DEBUG] Bill trả góp: " + bill.getBillId() + " | totalPaid: "
+                                    + summary.getTotalPaid() + " | totalRemaining: "
                                     + summary.getTotalRemaining());
                         }
                     }

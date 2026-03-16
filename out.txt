@@ -1,3 +1,0 @@
-([status]='WAITING_PAYMENT' OR [status]='CANCELLED' OR [status]='COMPLETED' OR [status]='BOOKED')
-
-(1 rows affected)

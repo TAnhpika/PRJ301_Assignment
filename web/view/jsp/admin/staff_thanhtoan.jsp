@@ -754,7 +754,7 @@
                                                                                         value="${bill.totalAmount * 0.5}"
                                                                                         type="number" />
                                                                                 </c:when>
-                                                                                <c:otherwise>0</c:otherwise>
+<c:when test="${upperStatus == 'INSTALLMENT'}"><fmt:formatNumber value="${bill.amount - bill.totalRemaining}" type="number" /></c:when><c:otherwise>0</c:otherwise>
                                                                             </c:choose>
                                                                         </div>
                                                                     </div>
@@ -782,7 +782,6 @@
                                                                 </div>
 
                                                                 <div class="action-buttons">
-                                                                    <c:set var="upperStatus" value="${fn:toUpperCase(bill.paymentStatus)}" />
                                                                     <c:if
                                                                         test="${upperStatus == 'PENDING' || upperStatus == 'CHỜ THANH TOÁN'}">
                                                                         <button class="btn-action success"
@@ -1040,6 +1039,7 @@
                                                                 <option value="bank_transfer">Chuyển khoản</option>
                                                                 <option value="card">Thẻ tín dụng</option>
                                                                 <option value="installment">Trả góp</option>
+
                                                             </select>
                                                         </div>
                                                     </div>
