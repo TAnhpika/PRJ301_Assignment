@@ -689,7 +689,6 @@ public class PatientDAO {
     }
 
     // =================================================================
-    // CODE CỦA BẢO CHÂU
 
     /* Lấy tất cả bệnh nhân với phân trang */
     public static List<Patients> getAllPatientsWithPagination(int offset, int limit) {

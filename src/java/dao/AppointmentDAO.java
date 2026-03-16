@@ -27,7 +27,7 @@ import dao.TimeSlotDAO;
 /**
  * AppointmentDAO - Data Access Object for Appointment table
  *
- * @author tranhongphuoc
+ * @author tuananh
  */
 public class AppointmentDAO {
 

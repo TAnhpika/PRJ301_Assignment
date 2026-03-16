@@ -3,7 +3,7 @@ package util;
 /**
  * PayOS Configuration
  * 
- * @author TranHongPhuoc
+ * @author tuananh
  */
 public class PayOSConfig {
 

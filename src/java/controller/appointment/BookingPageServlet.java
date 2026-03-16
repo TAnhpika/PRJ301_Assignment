@@ -44,10 +44,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.time.LocalTime;
 
-/**
- *
- * @author Home & TranHongPhuoc
- */
 // @WebServlet annotation removed - using web.xml mapping instead
 public class BookingPageServlet extends HttpServlet {
 

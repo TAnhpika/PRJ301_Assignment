@@ -6,9 +6,8 @@ package util;
 
 /**
  *
- * @author tranhongphuoc
+ * @author tuananh
  */
-
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -24,36 +23,37 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 
 public class GoogleCalendarUtil {
-    private static final String APPLICATION_NAME = "Dental Clinic API";
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String CREDENTIALS_FILE_PATH = "src/java/calendar.json";
+        private static final String APPLICATION_NAME = "Dental Clinic API";
+        private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+        private static final String CREDENTIALS_FILE_PATH = "src/java/calendar.json";
 
-    public static Calendar getCalendarService() throws IOException, GeneralSecurityException {
-        GoogleCredential credential = GoogleCredential.fromStream(new FileInputStream(CREDENTIALS_FILE_PATH))
-                .createScoped(Collections.singleton("https://www.googleapis.com/auth/calendar"));
-        return new Calendar.Builder(GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, credential)
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-    }
+        public static Calendar getCalendarService() throws IOException, GeneralSecurityException {
+                GoogleCredential credential = GoogleCredential.fromStream(new FileInputStream(CREDENTIALS_FILE_PATH))
+                                .createScoped(Collections.singleton("https://www.googleapis.com/auth/calendar"));
+                return new Calendar.Builder(GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, credential)
+                                .setApplicationName(APPLICATION_NAME)
+                                .build();
+        }
 
-    public static String createEvent(String summary, String description, String startDateTime, String endDateTime) throws Exception {
-        Calendar service = getCalendarService();
+        public static String createEvent(String summary, String description, String startDateTime, String endDateTime)
+                        throws Exception {
+                Calendar service = getCalendarService();
 
-        Event event = new Event()
-                .setSummary(summary)
-                .setDescription(description);
+                Event event = new Event()
+                                .setSummary(summary)
+                                .setDescription(description);
 
-        EventDateTime start = new EventDateTime()
-                .setDateTime(new com.google.api.client.util.DateTime(startDateTime))
-                .setTimeZone("Asia/Ho_Chi_Minh");
-        event.setStart(start);
+                EventDateTime start = new EventDateTime()
+                                .setDateTime(new com.google.api.client.util.DateTime(startDateTime))
+                                .setTimeZone("Asia/Ho_Chi_Minh");
+                event.setStart(start);
 
-        EventDateTime end = new EventDateTime()
-                .setDateTime(new com.google.api.client.util.DateTime(endDateTime))
-                .setTimeZone("Asia/Ho_Chi_Minh");
-        event.setEnd(end);
+                EventDateTime end = new EventDateTime()
+                                .setDateTime(new com.google.api.client.util.DateTime(endDateTime))
+                                .setTimeZone("Asia/Ho_Chi_Minh");
+                event.setEnd(end);
 
-        event = service.events().insert("primary", event).execute();
-        return event.getHtmlLink();
-    }
+                event = service.events().insert("primary", event).execute();
+                return event.getHtmlLink();
+        }
 }

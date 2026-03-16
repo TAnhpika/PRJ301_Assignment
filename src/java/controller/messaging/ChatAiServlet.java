@@ -13,9 +13,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import util.GeminiAiService;
+
 /**
  *
- * @author tranhongphuoc
+ * @author tuananh
  */
 
 @WebServlet("/ChatAiServlet")
@@ -24,12 +25,12 @@ public class ChatAiServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         response.setContentType("text/html;charset=UTF-8");
         String userMessage = request.getParameter("message");
-        
+
         System.out.println("User message received: " + userMessage);
-        
+
         try {
             System.out.println("Calling AI Service...");
             // Gọi AI Service để lấy phản hồi
@@ -44,4 +45,4 @@ public class ChatAiServlet extends HttpServlet {
             response.getWriter().write("Xin lỗi, đã có lỗi xảy ra khi xử lý câu hỏi của bạn. Vui lòng thử lại sau.");
         }
     }
-} 
+}

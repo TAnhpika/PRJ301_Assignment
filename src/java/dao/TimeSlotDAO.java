@@ -17,7 +17,7 @@ import util.DBContext;
 
 /**
  *
- * @author tranhongphuoc
+ * @author tuananh
  */
 public class TimeSlotDAO {
 
@@ -155,7 +155,8 @@ public class TimeSlotDAO {
      * Ca 3: 08:00-17:00 (cả ngày)
      */
     public static List<TimeSlot> getSlotsByShift(int shift) {
-        // FIX: Không hardcode slot_id kiểu 3002..3019 vì DB thật có thể là 97..117 (như ảnh bạn gửi).
+        // FIX: Không hardcode slot_id kiểu 3002..3019 vì DB thật có thể là 97..117 (như
+        // ảnh bạn gửi).
         // Map theo time range để render khung giờ luôn đúng.
         List<Integer> ids = getTimeSlotIdsForShift(shift);
         return getTimeSlotsByIds(ids);
@@ -197,9 +198,9 @@ public class TimeSlotDAO {
         // Lưu ý: cột start_time trong DB đang là DATETIME nên cần CAST về TIME
         // để tránh lỗi "time and datetime are incompatible".
         String sql = "SELECT slot_id FROM TimeSlot " +
-                     "WHERE CAST(start_time AS time) >= CAST(? AS time) " +
-                     "AND   CAST(start_time AS time) <  CAST(? AS time) " +
-                     "ORDER BY start_time ASC";
+                "WHERE CAST(start_time AS time) >= CAST(? AS time) " +
+                "AND   CAST(start_time AS time) <  CAST(? AS time) " +
+                "ORDER BY start_time ASC";
         try (Connection conn = DBContext.getConnection();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setTime(1, Time.valueOf(from));

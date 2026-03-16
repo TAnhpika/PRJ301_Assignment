@@ -1813,7 +1813,6 @@ public class DoctorDAO {
     }
 
     // =================================================================================================================
-    // CODE của Bảo Châu
 
     public static void addDoctor(Doctors doctor, String password) throws SQLException {
         PreparedStatement ps = null;

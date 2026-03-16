@@ -4,8 +4,10 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
- * Model class for Staff Schedule - Quản lý lịch làm việc và nghỉ phép của nhân viên
- * @author TranHongPhuoc
+ * Model class for Staff Schedule - Quản lý lịch làm việc và nghỉ phép của nhân
+ * viên
+ * 
+ * @author tuananh
  */
 public class StaffSchedule {
     private int scheduleId;
@@ -17,28 +19,28 @@ public class StaffSchedule {
     private Timestamp approvedAt;
     private Timestamp createdAt;
     private String reason;
-    
+
     // Additional fields from JOIN
     private String staffName;
     private String slotName;
     private String employmentType;
     private String approverName;
-    
+
     // Thời gian ca làm việc (ví dụ: 08:00 - 12:00), dùng cho hiển thị
     private String slotTime;
-    
+
     // Constants for status
     public static final String STATUS_PENDING = "pending";
     public static final String STATUS_APPROVED = "approved";
     public static final String STATUS_REJECTED = "rejected";
-    
+
     // Constants for employment types
     public static final String EMPLOYMENT_FULLTIME = "fulltime";
     public static final String EMPLOYMENT_PARTTIME = "parttime";
-    
+
     // Business constants
     public static final int MAX_LEAVE_DAYS_PER_MONTH = 6;
-    
+
     // Constructors
     public StaffSchedule() {
         this.status = STATUS_PENDING;
@@ -177,12 +179,12 @@ public class StaffSchedule {
         if (staffId <= 0) {
             return false;
         }
-        
+
         // Kiểm tra workDate
         if (workDate == null) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -221,7 +223,7 @@ public class StaffSchedule {
             return "Nghỉ phép";
         }
     }
-    
+
     /**
      * Lấy tên hiển thị cho trạng thái
      */
@@ -237,7 +239,7 @@ public class StaffSchedule {
                 return status;
         }
     }
-    
+
     /**
      * Lấy CSS class cho trạng thái (để styling)
      */
@@ -253,7 +255,7 @@ public class StaffSchedule {
                 return "badge-secondary";
         }
     }
-    
+
     /**
      * Lấy CSS class cho loại yêu cầu (để styling)
      */
@@ -280,4 +282,4 @@ public class StaffSchedule {
                 ", employmentType='" + employmentType + '\'' +
                 '}';
     }
-} 
+}

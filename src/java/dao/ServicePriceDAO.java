@@ -8,11 +8,6 @@ import java.math.BigDecimal;
 import model.Service;
 import util.DBContext;
 
-/**
- * DAO riêng để xử lý giá dịch vụ cố định 50,000 VNĐ
- * Tác giả: TranHongPhuoc
- * Ngày tạo: 2025-01-02
- */
 public class ServicePriceDAO {
 
     private static final String GET_SERVICE_WITH_FIXED_PRICE = "SELECT service_id, service_name, description, status, category, image FROM Services WHERE service_id = ? AND status = 'active'";

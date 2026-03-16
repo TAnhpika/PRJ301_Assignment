@@ -9,11 +9,7 @@ import java.util.List;
 import model.Service;
 import util.DBContext;
 
-/**
- * DAO cho bảng Services
- * Quản lý CRUD operations cho dịch vụ y tế
- * @author: TranHongPhuoc
- */
+
 
 public class ServiceDAO {
     

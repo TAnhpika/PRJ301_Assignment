@@ -16,7 +16,7 @@ import java.util.List;
  * Class StaffDAO chứa các phương thức thao tác với database liên quan đến nhân
  * viên
  * 
- * @author TranHongPhuoc
+ * @author tuananh
  */
 public class StaffDAO {
 

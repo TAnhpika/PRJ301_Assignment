@@ -13,7 +13,7 @@ import org.apache.http.util.EntityUtils;
 
 /**
  *
- * @author tranhongphuoc
+ * @author tuananh
  */
 
 public class GeminiAiService {

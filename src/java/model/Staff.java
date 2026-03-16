@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Model Staff đại diện cho thông tin của nhân viên
  * 
- * @author TranHongPhuoc && B.Chou
+ * @author tuananh && B.Chou
  */
 public class Staff {
     private long staffId; // ID của nhân viên (IDENTITY)

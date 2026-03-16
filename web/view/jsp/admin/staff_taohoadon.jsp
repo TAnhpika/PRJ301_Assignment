@@ -1,8 +1,3 @@
-<%-- 
-    Document   : staff_taohoadon
-    Created on : 12 thg 7, 2025, 14:50:17
-    Author     : tranhongphuoc
---%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>

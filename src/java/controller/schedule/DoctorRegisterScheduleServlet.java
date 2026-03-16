@@ -24,7 +24,7 @@ import model.Doctors;
 
 /**
  *
- * @author tranhongphuoc
+ * @author tuananh
  * 
  */
 // @WebServlet(name = "DoctorRegisterScheduleServlet", urlPatterns =
