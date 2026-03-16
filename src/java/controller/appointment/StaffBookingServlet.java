@@ -386,7 +386,6 @@ public class StaffBookingServlet extends HttpServlet {
                 json.append("}");
             }
             json.append("]");
-
             System.out.println("JSON response: " + json.toString());
             response.getWriter().write(json.toString());
 
@@ -487,9 +486,9 @@ public class StaffBookingServlet extends HttpServlet {
             json.append("\"patientPhone\": \"")
                     .append(appointment.getPatientPhone() != null ? appointment.getPatientPhone() : "").append("\",");
             json.append("\"doctorName\": \"")
-                    .append(appointment.getDoctorName() != null ? appointment.getDoctorName() : "").append("\",");
+                    .append(appointment.getDoctorName() != null ? appointment.getDoctorName().replace("\"", "\\\"") : "Chưa có bác sĩ").append("\",");
             json.append("\"serviceName\": \"")
-                    .append(appointment.getServiceName() != null ? appointment.getServiceName() : "Chưa có")
+                    .append(appointment.getServiceName() != null ? appointment.getServiceName().replace("\"", "\\\"") : "Chưa có dịch vụ")
                     .append("\",");
             json.append("\"workDate\": \"")
                     .append(appointment.getWorkDate() != null ? appointment.getWorkDate().toString() : "")

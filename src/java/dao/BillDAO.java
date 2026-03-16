@@ -386,9 +386,9 @@ public class BillDAO {
         String sql = """
                     UPDATE dbo.Bills
                     SET payment_status = CASE
-                            WHEN ? >= amount THEN 'paid'
+                            WHEN ? >= amount THEN 'PAID'
                             WHEN ? > 0 THEN 'PARTIAL'
-                            ELSE 'pending'
+                            ELSE 'PENDING'
                         END,
                         payment_method = ?,
                         notes = ?,
@@ -427,7 +427,7 @@ public class BillDAO {
                         SUM(b.amount) as total_revenue,
                         AVG(b.amount) as avg_bill_amount
                     FROM dbo.Bills b
-                    WHERE b.payment_status = 'success'
+                    WHERE (UPPER(b.payment_status) = 'SUCCESS' OR UPPER(b.payment_status) = 'PAID')
                         AND b.is_deleted = 0
                         AND CAST(b.created_at AS DATE) BETWEEN ? AND ?
                     GROUP BY CAST(b.created_at AS DATE)
@@ -470,7 +470,7 @@ public class BillDAO {
                         AVG(b.amount) as avg_bill_amount
                     FROM dbo.Services s
                     LEFT JOIN dbo.Bills b ON s.service_id = b.service_id
-                        AND b.payment_status = 'success'
+                        AND (UPPER(b.payment_status) = 'SUCCESS' OR UPPER(b.payment_status) = 'PAID')
                         AND b.is_deleted = 0
                     GROUP BY s.service_id, s.service_name, s.category
                     ORDER BY total_revenue DESC

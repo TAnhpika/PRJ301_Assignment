@@ -1316,7 +1316,7 @@ public class StaffPaymentServlet extends HttpServlet {
 
             } else if ("bank_transfer".equals(paymentMethod)) {
                 // Chuyển khoản: nếu trả đủ thì đánh dấu paid luôn (giống tiền mặt/thẻ tín dụng)
-                String paymentStatus = (paymentAmount >= totalAmount) ? "paid" : "pending";
+                String paymentStatus = (paymentAmount >= totalAmount) ? "PAID" : "PENDING";
                 System.out.println("🏦 Creating BANK TRANSFER bill with status: " + paymentStatus);
                 Bill newBill = createBillObject(billId, customerName, customerPhone, totalAmount, paymentStatus,
                         paymentMethod, notes, selectedServices[0], doctorId, appointment);
@@ -1384,7 +1384,7 @@ public class StaffPaymentServlet extends HttpServlet {
                     java.util.Map<String, Object> data = new java.util.HashMap<>();
                     data.put("bill", createdBill);
                     data.put("qrUrl", qrUrl);
-                    if ("paid".equalsIgnoreCase(createdBill.getPaymentStatus())) {
+                    if ("PAID".equalsIgnoreCase(createdBill.getPaymentStatus())) {
                         data.put("redirectToBills", true);
                     }
                     sendJsonResponse(response, true, "Tạo hóa đơn chuyển khoản thành công!", data);
@@ -1394,17 +1394,24 @@ public class StaffPaymentServlet extends HttpServlet {
                 }
             } else {
                 // Standard Payment (Cash, Credit Card, etc.)
-                String paymentStatus = (paymentAmount >= totalAmount) ? "paid" : "pending";
-                System.out.println("💵 Creating STANDARD bill with status: " + paymentStatus);
+                String paymentStatus = (paymentAmount >= totalAmount) ? "PAID" : "PENDING";
+                
+                // For card payment, we ensure it's recorded correctly as PAID
+                if ("card".equalsIgnoreCase(paymentMethod) || "bank_transfer".equalsIgnoreCase(paymentMethod)) {
+                    paymentStatus = "PAID";
+                }
+
                 Bill newBill = createBillObject(billId, customerName, customerPhone, totalAmount, paymentStatus,
                         paymentMethod, notes, selectedServices[0], doctorId, appointment);
                 String orderId = "ORDER_" + System.currentTimeMillis();
                 newBill.setOrderId(orderId);
+
                 BillDAO billDAO = new BillDAO();
                 Bill createdBill = BillDAO.createBill(newBill);
+
                 if (createdBill != null) {
-                    // Nếu đã thanh toán đủ, trả về JSON có redirectToBills để frontend reload trang list
-                    if (paymentAmount >= totalAmount) {
+                    // Nếu đã thanh toán đủ hoặc là thẻ, trả về JSON có redirectToBills để frontend reload trang list
+                    if (paymentAmount >= totalAmount || "card".equalsIgnoreCase(paymentMethod) || "bank_transfer".equalsIgnoreCase(paymentMethod)) {
                         java.util.Map<String, Object> data = new java.util.HashMap<>();
                         data.put("bill", createdBill);
                         data.put("redirectToBills", true);

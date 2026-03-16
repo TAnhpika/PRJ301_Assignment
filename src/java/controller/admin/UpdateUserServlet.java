@@ -201,8 +201,14 @@ public class UpdateUserServlet extends HttpServlet {
                     sqlDate = new java.sql.Date(utilDate.getTime());
                 }
 
+                // 1. Đồng bộ currentPatient từ DB nếu session đang NULL (để tránh lỗi trùng user_id)
+                if (currentPatient == null) {
+                    currentPatient = UserDAO.getPatientByUserId(currentUser.getId());
+                }
+
                 if (currentPatient == null) {
                     // Thêm bệnh nhân mới
+                    System.out.println("➕ Adding NEW patient for user_id: " + currentUser.getId());
                     Patients newPatient = new Patients();
                     newPatient.setId(currentUser.getId());
                     newPatient.setFullName(fullName);
@@ -217,32 +223,16 @@ public class UpdateUserServlet extends HttpServlet {
                     if (inserted) {
                         Patients fetched = UserDAO.getPatientByUserId(currentUser.getId());
                         session.setAttribute("patient", fetched);
-                        request.setAttribute("success", "Đã lưu thông tin bệnh nhân.");
+                        request.setAttribute("success", "Đã khởi tạo thông tin bệnh nhân thành công.");
                     } else {
-                        request.setAttribute("error", "Lưu thông tin thất bại.");
+                        System.err.println("❌ Failed to insert patient for user " + currentUser.getId());
+                        request.setAttribute("error", "Lưu thông tin thất bại. Có thể do lỗi cơ sở dữ liệu.");
                     }
                 } else {
                     // Cập nhật bệnh nhân hiện có
-                    String patientIdStr = request.getParameter("patientId");
-                    if (patientIdStr == null || patientIdStr.trim().isEmpty()) {
-                        request.setAttribute("error", "Không tìm thấy ID bệnh nhân");
-                        request.getRequestDispatcher(RETURN_URL).forward(request, response);
-                        return;
-                    }
-                    int patientId;
-                    try {
-                        patientId = Integer.parseInt(patientIdStr);
-                        if (patientId != currentPatient.getPatientId()) {
-                            request.setAttribute("error", "ID bệnh nhân không khớp");
-                            request.getRequestDispatcher(RETURN_URL).forward(request, response);
-                            return;
-                        }
-                    } catch (NumberFormatException e) {
-                        request.setAttribute("error", "ID bệnh nhân không hợp lệ");
-                        request.getRequestDispatcher(RETURN_URL).forward(request, response);
-                        return;
-                    }
-
+                    System.out.println("🔄 Updating EXISTING patient: " + currentPatient.getPatientId());
+                    
+                    // Cập nhật các trường
                     currentPatient.setFullName(fullName);
                     currentPatient.setPhone(phone != null && !phone.trim().isEmpty() ? phone : null);
                     currentPatient.setDateOfBirth(sqlDate);
@@ -254,8 +244,9 @@ public class UpdateUserServlet extends HttpServlet {
                     boolean updated = PatientDAO.updatePatientInfo(currentPatient);
                     if (updated) {
                         session.setAttribute("patient", currentPatient);
-                        request.setAttribute("success", "Cập nhật thông tin thành công.");
+                        request.setAttribute("success", "Đã cập nhật thông tin cá nhân thành công.");
                     } else {
+                        System.err.println("❌ Failed to update patient info for ID: " + currentPatient.getPatientId());
                         request.setAttribute("error", "Cập nhật thất bại.");
                     }
                 }

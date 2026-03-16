@@ -266,7 +266,42 @@ sequenceDiagram
 
 ### 3. Luồng NHÂN VIÊN (STAFF)
 
-#### A. Thanh toán Trả góp (Installment)
+#### A. Đặt lịch hẹn hộ Bệnh nhân (Staff Booking)
+```mermaid
+sequenceDiagram
+    participant ST as Nhân viên
+    participant SV as StaffBookingServlet
+    participant DB as Database
+
+    ST->>SV: Tìm kiếm BN qua SĐT/Tên (AJAX)
+    SV->>DB: PatientDAO.searchByPhone/Name
+    DB-->>SV: Trả về danh sách bệnh nhân
+    ST->>SV: Chọn Bác sĩ & Ngày khám (staff_datlich.jsp)
+    SV->>DB: Lấy slots dựa trên lịch trực bác sĩ
+    DB-->>SV: Trả về TimeSlots trống
+    ST->>SV: Xác nhận Đặt lịch (POST)
+    SV->>DB: AppointmentDAO.createAppointment(Status: BOOKED)
+    DB-->>SV: Thành công
+    SV-->>ST: Hiển thị thông báo & Reload Dashboard
+```
+
+#### B. Đổi lịch hẹn cho bệnh nhân (Reschedule Appointment)
+```mermaid
+sequenceDiagram
+    participant ST as Nhân viên
+    participant SR as RescheduleAppointmentServlet
+    participant DB as Database
+
+    ST->>SR: Truy cập trang đổi lịch (staff_doilich.jsp)
+    SR->>DB: Lấy danh sách lịch hẹn hiện tại
+    DB-->>SR: Trả về danh sách appointments
+    ST->>SR: Chọn Lịch hẹn & Ngày/Giờ mới (POST)
+    SR->>DB: AppointmentDAO.updateAppointmentForReschedule()
+    DB-->>SR: Thành công
+    SR-->>ST: Hiển thị thông báo thành công & Reload danh sách
+```
+
+#### C. Thanh toán Trả góp (Installment)
 ```mermaid
 sequenceDiagram
     ST as Nhân viên
@@ -280,7 +315,7 @@ sequenceDiagram
     SV-->>ST: Hiển thị kế hoạch trả góp & QR thu tiền
 ```
 
-#### B. Check-in & Tiếp nhận bệnh nhân
+#### D. Check-in & Tiếp nhận bệnh nhân
 ```mermaid
 sequenceDiagram
     ST as Nhân viên
@@ -293,7 +328,7 @@ sequenceDiagram
     Q-->>ST: Bệnh nhân hiện lên hàng chờ bác sĩ
 ```
 
-#### C. Tạo hóa đơn cho khách vãng lai (Walk-in)
+#### E. Tạo hóa đơn cho khách vãng lai (Walk-in)
 ```mermaid
 sequenceDiagram
     ST as Nhân viên
@@ -307,7 +342,7 @@ sequenceDiagram
     SV-->>ST: Hiển thị hóa đơn mới trong danh sách
 ```
 
-#### D. Thanh toán QR tại quầy (PayOS QR)
+#### F. Thanh toán QR tại quầy (PayOS QR)
 ```mermaid
 sequenceDiagram
     ST as Nhân viên
@@ -411,6 +446,8 @@ sequenceDiagram
 | **Doctor** | Đổi mật khẩu | `doctor_changepassword.jsp`| `DoctorChangePasswordServlet` | `UserDAO` |
 | **Doctor** | Chỉnh sửa profile | `doctor_caidat.jsp` | `EditDoctorServlet` | `DoctorDAO` |
 | **Doctor** | Tư vấn/Chat | `doctor_chat.jsp` | `ChatPageServlet` | `ChatMessages` (Table) |
+| **Staff** | Đặt lịch hộ | `staff_datlich.jsp` | `StaffBookingServlet` | `AppointmentDAO` |
+| **Staff** | Đổi lịch hẹn | `staff_doilich.jsp` | `RescheduleAppointmentServlet` | `AppointmentDAO` |
 | **Staff** | Thanh toán | `staff_thanhtoan.jsp` | `StaffPaymentServlet` | `BillDAO` |
 | **Staff** | Check-in | `staff_dashboard.jsp` | `StaffHandleQueueServlet` | `AppointmentDAO` |
 | **Manager** | Duyệt lịch | `manager_phancong.jsp` | `ManagerApprovalDoctorServlet` | `ScheduleDAO` |
