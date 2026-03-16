@@ -345,7 +345,7 @@ public class StaffPaymentServlet extends HttpServlet {
                     }
 
                     // Nếu bill là bill trả góp, enrich số nợ còn lại từ summary
-                    if ("INSTALLMENT".equalsIgnoreCase(bill.getPaymentStatus())) {
+                    if (bill.getPaymentStatus() != null && "INSTALLMENT".equalsIgnoreCase(bill.getPaymentStatus())) {
                         PaymentInstallment summary = installmentDAO.getInstallmentSummary(bill.getBillId());
                         if (summary != null) {
                             bill.setTotalRemaining(summary.getTotalRemaining());
@@ -393,13 +393,12 @@ public class StaffPaymentServlet extends HttpServlet {
                 double billAmount = bill.getAmount() != null ? bill.getAmount().doubleValue() : 0.0;
                 totalRevenue += billAmount;
 
-                String status = bill.getPaymentStatus();
-                if ("PAID".equals(status) || "success".equals(status) || "Đã thanh toán".equals(status)) {
+                String status = bill.getPaymentStatus() != null ? bill.getPaymentStatus().toUpperCase() : "";
+                if ("PAID".equals(status) || "SUCCESS".equals(status) || "ĐÃ THANH TOÁN".equals(status)) {
                     paidAmount += billAmount;
-                } else if ("PENDING".equals(status) || "pending".equals(status) || "WAITING_PAYMENT".equals(status)) {
+                } else if ("PENDING".equals(status) || "WAITING_PAYMENT".equals(status)) {
                     pendingAmount += billAmount;
-                } else if ("PARTIAL".equals(status) || "partial".equals(status)
-                        || "Thanh toán một phần".equals(status)) {
+                } else if ("PARTIAL".equals(status) || "THANH TOÁN MỘT PHẦN".equals(status)) {
                     paidAmount += billAmount * 0.5; // Giả sử trả 50%
                     partialAmount += billAmount * 0.5;
                 }
@@ -460,14 +459,14 @@ public class StaffPaymentServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            int billId = Integer.parseInt(request.getParameter("billId"));
+            String billId = request.getParameter("billId");
             String paymentMethod = request.getParameter("paymentMethod");
             double paidAmount = Double.parseDouble(request.getParameter("paidAmount"));
             String notes = request.getParameter("notes");
 
             // Cập nhật thanh toán vào database
             BillDAO billDAO = new BillDAO();
-            boolean success = billDAO.updatePayment(billId, paidAmount, paymentMethod, notes);
+            boolean success = BillDAO.updatePayment(billId, paidAmount, paymentMethod, notes);
 
             if (success) {
                 request.setAttribute("successMessage", "Cập nhật thanh toán thành công!");
@@ -535,7 +534,7 @@ public class StaffPaymentServlet extends HttpServlet {
 
             Bill newBill = createBillObject(billId, customerName, customerPhone,
                     totalAmount, "PENDING", paymentMethod != null ? paymentMethod : "CASH",
-                    notes, serviceIdArray.length > 0 ? serviceIdArray[0] : "1", doctorId);
+                    notes, serviceIdArray.length > 0 ? serviceIdArray[0] : "1", doctorId, null);
 
             Bill createdBill = billDAO.createBill(newBill);
             boolean success = (createdBill != null);
@@ -797,24 +796,34 @@ public class StaffPaymentServlet extends HttpServlet {
 
             // 1. Get all bills that are installment plans (by status or method)
             List<Bill> installmentBills = BillDAO.getBillsByStatus("INSTALLMENT", 1000);
+            System.out.println("📊 Found " + installmentBills.size() + " bills with INSTALLMENT status");
 
             // Also fetch by payment method if status might have changed
             List<Bill> allBills = BillDAO.getAllBills();
             for (Bill b : allBills) {
-                if ("installment".equalsIgnoreCase(b.getPaymentMethod()) && !installmentBills.contains(b)) {
+                final String bId = b.getBillId();
+                boolean alreadyIn = installmentBills.stream().anyMatch(eb -> eb.getBillId().equals(bId));
+                if ("installment".equalsIgnoreCase(b.getPaymentMethod()) && !alreadyIn) {
                     installmentBills.add(b);
+                    System.out.println("➕ Added bill " + bId + " via installment payment method");
                 }
             }
 
+            System.out.println("📈 Total installment bills to process: " + installmentBills.size());
+
             // 2. For each bill, enrich it with details and summary
             for (Bill bill : installmentBills) {
+                System.out.println("🔍 Enriching bill: " + bill.getBillId());
+                
                 // Get and set detailed installment list for the accordion body
                 List<PaymentInstallment> details = installmentDAO.getInstallmentsByBillId(bill.getBillId());
                 bill.setInstallmentDetails(details);
+                System.out.println("  - Details count: " + details.size());
 
                 // Get and set summary info
                 PaymentInstallment summary = installmentDAO.getInstallmentSummary(bill.getBillId());
                 bill.setInstallmentSummary(summary);
+                System.out.println("  - Summary found: " + (summary != null));
 
                 // Calculate and set total remaining amount
                 if (summary != null) {
@@ -827,9 +836,11 @@ public class StaffPaymentServlet extends HttpServlet {
                             .sum();
                     bill.setTotalRemaining(totalRemaining);
                 }
+                System.out.println("  - Total remaining: " + bill.getTotalRemaining());
             }
 
             request.setAttribute("installmentBills", installmentBills);
+            System.out.println("✅ Forwarding to staff_tragop.jsp with " + installmentBills.size() + " bills");
             request.getRequestDispatcher("/view/jsp/admin/staff_tragop.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -1176,6 +1187,22 @@ public class StaffPaymentServlet extends HttpServlet {
                 }
             }
 
+            int appointmentId = 0;
+            Appointment appointment = null;
+            if (appointmentIdStr != null && !appointmentIdStr.trim().isEmpty()) {
+                try {
+                    appointmentId = Integer.parseInt(appointmentIdStr.trim());
+                    appointment = AppointmentDAO.getAppointmentById(appointmentId);
+                    if (appointment != null) {
+                        System.out.println("✅ Found appointment details for ID: " + appointmentId);
+                        // Overwrite doctorId with the one from appointment
+                        doctorId = (int) appointment.getDoctorId();
+                    }
+                } catch (Exception e) {
+                    System.err.println("⚠️ Error fetching appointment details: " + e.getMessage());
+                }
+            }
+
             System.out.println("📋 DEBUG - All Parameters:");
             request.getParameterMap().forEach((key, values) -> {
                 System.out.println("  - " + key + " = " + java.util.Arrays.toString(values));
@@ -1260,7 +1287,7 @@ public class StaffPaymentServlet extends HttpServlet {
                 System.out.println("💎 Creating INSTALLMENT bill with status: " + paymentStatus);
 
                 Bill newBill = createBillObject(billId, customerName, customerPhone, totalAmount, paymentStatus,
-                        paymentMethod, notes, selectedServices[0], doctorId);
+                        paymentMethod, notes, selectedServices[0], doctorId, appointment);
                 String orderId = "ORDER_" + System.currentTimeMillis();
                 newBill.setOrderId(orderId);
 
@@ -1288,11 +1315,11 @@ public class StaffPaymentServlet extends HttpServlet {
                 }
 
             } else if ("bank_transfer".equals(paymentMethod)) {
-                // Chuyển khoản: luôn tạo bill với trạng thái PENDING
-                String paymentStatus = "PENDING";
+                // Chuyển khoản: nếu trả đủ thì đánh dấu paid luôn (giống tiền mặt/thẻ tín dụng)
+                String paymentStatus = (paymentAmount >= totalAmount) ? "paid" : "pending";
                 System.out.println("🏦 Creating BANK TRANSFER bill with status: " + paymentStatus);
                 Bill newBill = createBillObject(billId, customerName, customerPhone, totalAmount, paymentStatus,
-                        paymentMethod, notes, selectedServices[0], doctorId);
+                        paymentMethod, notes, selectedServices[0], doctorId, appointment);
                 String orderId = "ORDER_" + System.currentTimeMillis();
                 newBill.setOrderId(orderId);
                 BillDAO billDAO = new BillDAO();
@@ -1357,30 +1384,27 @@ public class StaffPaymentServlet extends HttpServlet {
                     java.util.Map<String, Object> data = new java.util.HashMap<>();
                     data.put("bill", createdBill);
                     data.put("qrUrl", qrUrl);
+                    if ("paid".equalsIgnoreCase(createdBill.getPaymentStatus())) {
+                        data.put("redirectToBills", true);
+                    }
                     sendJsonResponse(response, true, "Tạo hóa đơn chuyển khoản thành công!", data);
                     return;
                 } else {
                     sendJsonResponse(response, false, "Không thể tạo hóa đơn chuyển khoản trong CSDL.", null);
                 }
             } else {
-                // Standard Payment
-                String paymentStatus;
-                if (paymentAmount >= totalAmount) {
-                    paymentStatus = "PAID";
-                } else {
-                    paymentStatus = "PENDING"; // Default status for standard payment
-                }
+                // Standard Payment (Cash, Credit Card, etc.)
+                String paymentStatus = (paymentAmount >= totalAmount) ? "paid" : "pending";
                 System.out.println("💵 Creating STANDARD bill with status: " + paymentStatus);
                 Bill newBill = createBillObject(billId, customerName, customerPhone, totalAmount, paymentStatus,
-                        paymentMethod, notes, selectedServices[0], doctorId);
+                        paymentMethod, notes, selectedServices[0], doctorId, appointment);
                 String orderId = "ORDER_" + System.currentTimeMillis();
                 newBill.setOrderId(orderId);
                 BillDAO billDAO = new BillDAO();
                 Bill createdBill = BillDAO.createBill(newBill);
                 if (createdBill != null) {
-                    // Nếu là thanh toán tiền mặt (cash) và đã thanh toán đủ, trả về JSON có
-                    // redirectToBills
-                    if ("cash".equals(paymentMethod) && paymentAmount >= totalAmount) {
+                    // Nếu đã thanh toán đủ, trả về JSON có redirectToBills để frontend reload trang list
+                    if (paymentAmount >= totalAmount) {
                         java.util.Map<String, Object> data = new java.util.HashMap<>();
                         data.put("bill", createdBill);
                         data.put("redirectToBills", true);
@@ -1431,7 +1455,7 @@ public class StaffPaymentServlet extends HttpServlet {
      */
     private Bill createBillObject(String billId, String customerName, String customerPhone,
             double totalAmount, String paymentStatus, String paymentMethod,
-            String notes, String primaryServiceId, int doctorId) {
+            String notes, String primaryServiceId, int doctorId, Appointment appointment) {
         Bill bill = new Bill();
 
         bill.setBillId(billId);
@@ -1447,9 +1471,25 @@ public class StaffPaymentServlet extends HttpServlet {
         bill.setNotes(notes);
 
         // Set default values
-        bill.setPatientId(1); // Default patient ID - có thể lookup theo customerPhone sau
+        bill.setPatientId(1); // Default patient ID
         bill.setUserId(1); // Default user ID
         bill.setDoctorId(doctorId);
+
+        // If appointment info is provided, link the bill to it
+        if (appointment != null) {
+            bill.setAppointmentId(appointment.getAppointmentId());
+            bill.setPatientId(appointment.getPatientId());
+            bill.setDoctorId((int) appointment.getDoctorId());
+            if (appointment.getWorkDate() != null) {
+                bill.setAppointmentDate(java.sql.Date.valueOf(appointment.getWorkDate()));
+            }
+            if (appointment.getStartTime() != null) {
+                bill.setAppointmentTime(java.sql.Time.valueOf(appointment.getStartTime()));
+            }
+            System.out.println("🔗 Bill linked to Appointment: ID=" + appointment.getAppointmentId() 
+                    + ", Patient=" + appointment.getPatientId() 
+                    + ", Date=" + bill.getAppointmentDate());
+        }
 
         // Set service ID
         try {

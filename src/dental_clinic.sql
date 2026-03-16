@@ -53,7 +53,7 @@ CREATE TABLE [dbo].[Patients] (
     CONSTRAINT FK_Patients_User FOREIGN KEY (user_id) REFERENCES dbo.users(user_id),
     CONSTRAINT UQ_Patients_User UNIQUE (user_id),
     PRIMARY KEY CLUSTERED ([patient_id] ASC),
-    CHECK ([gender]='other' OR [gender]='female' OR [gender]='male'),
+    CHECK ([gender]='other' OR [gender]='female' OR [gender]='male')
 );
 
 insert into patients ( [user_id] , [full_name] , [phone] , [date_of_birth] , [gender] , [created_at] , [avatar] ) 
@@ -357,7 +357,7 @@ CREATE TABLE [dbo].[Bills] (
     CHECK ([discount_amount]>=(0)),
     CHECK ([original_price]>(0)),
     CHECK ([tax_amount]>=(0)),
-    CHECK ([payment_status] IN ('pending','paid','failed','cancelled','refunded')),
+    CHECK ([payment_status] IN ('pending','paid','failed','cancelled','refunded','INSTALLMENT','PARTIAL')),
 	CHECK (amount = original_price - ISNULL(discount_amount,0) + ISNULL(tax_amount,0)),
 	CONSTRAINT [FK_Bills_Patient] FOREIGN KEY (patient_id) REFERENCES dbo.Patients(patient_id),
     CONSTRAINT [FK_Bills_User] FOREIGN KEY (user_id) REFERENCES dbo.users(user_id),            
@@ -451,7 +451,7 @@ CREATE TABLE [dbo].[PaymentInstallments] (
     ),
     CHECK (down_payment <= total_amount),
     CHECK ([installment_number]<=[installment_count]),
-    CONSTRAINT CHK_PaymentInstallments_Status CHECK ([status] IN ('PENDING','PAID','OVERDUE','CANCELLED')),
+    CONSTRAINT CHK_PaymentInstallments_Status CHECK ([status] IN ('PENDING','PAID','OVERDUE','CANCELLED','PARTIAL')),
     CONSTRAINT [FK_PaymentInstallments_Bills] FOREIGN KEY ([bill_id]) REFERENCES [dbo].[Bills] ([bill_id])
 );
 

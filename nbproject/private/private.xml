@@ -3,13 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/controller/schedule/DoctorRegisterScheduleServlet.java</file>
-            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/web/index.html</file>
-            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/web/STRUCTURE.md</file>
-            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/web/jsp/auth/login.jsp</file>
-            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/controller/auth/LoginServlet.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/controller/auth/RegisterServlet.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/web/jsp/auth/register.jsp</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/controller/auth/SignUpServlet.java</file>
             <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/dao/UserDAO.java</file>
-            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/dao/PatientDAO.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/web/jsp/auth/information.jsp</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/web/jsp/auth/login.jsp</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/controller/admin/UserRegisterWhenTheyNotRegisterInformation.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/controller/auth/ResetPasswordServlet.java</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/web/jsp/auth/forgot-password.jsp</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/web/view/jsp/auth/verify-otp.jsp</file>
+            <file>file:/D:/Documents/NetBeansProjects/NewProject/Dental-Clinic-Refactor-Source/src/java/util/OTPService.java</file>
         </group>
     </open-files>
 </project-private>

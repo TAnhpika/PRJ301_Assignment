@@ -2587,8 +2587,7 @@ public class AppointmentDAO {
                             LEFT JOIN Users u ON d.user_id = u.user_id
                             LEFT JOIN TimeSlot ts ON a.slot_id = ts.slot_id
                             LEFT JOIN Services s ON a.service_id = s.service_id
-                            LEFT JOIN Bills b ON b.patient_id = a.patient_id
-                                             AND b.appointment_date = a.work_date
+                            LEFT JOIN Bills b ON b.appointment_id = a.appointment_id
                                              AND b.is_deleted = 0
                             WHERE a.status = 'COMPLETED'
                               AND b.bill_id IS NULL

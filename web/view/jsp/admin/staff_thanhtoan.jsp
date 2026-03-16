@@ -686,18 +686,19 @@
 
                                                             <!-- Patient Info -->
                                                             <div class="col-md-4">
-                                                                <h6 class="mb-2 d-flex align-items-center gap-2">
+                                                                 <h6 class="mb-2 d-flex align-items-center gap-2">
                                                                     ${bill.patientName}
+                                                                    <c:set var="upperStatus" value="${fn:toUpperCase(bill.paymentStatus)}" />
                                                                     <c:choose>
                                                                         <c:when
-                                                                            test="${bill.paymentStatus == 'PAID' || bill.paymentStatus == 'success' || bill.paymentStatus == 'Đã thanh toán'}">
+                                                                            test="${upperStatus == 'PAID' || upperStatus == 'SUCCESS' || upperStatus == 'ĐÃ THANH TOÁN'}">
                                                                             <span class="status-badge paid">
                                                                                 <i class="fas fa-check-circle"></i>
                                                                                 Đã thanh toán
                                                                             </span>
                                                                         </c:when>
                                                                         <c:when
-                                                                            test="${bill.paymentStatus == 'PARTIAL' || bill.paymentStatus == 'partial'}">
+                                                                            test="${upperStatus == 'PARTIAL' || upperStatus == 'THANH TOÁN MỘT PHẦN'}">
                                                                             <span class="status-badge partial">
                                                                                 <i class="fas fa-clock"></i>
                                                                                 Thanh toán một phần
@@ -738,17 +739,17 @@
                                                                         </div>
                                                                     </div>
                                                                     <div>
-                                                                        <small class="text-muted">Đã thu:</small>
-                                                                        <div class="fw-bold text-success">
+                                                                                             <div class="fw-bold text-success">
+                                                                            <c:set var="upperStatus" value="${fn:toUpperCase(bill.paymentStatus)}" />
                                                                             <c:choose>
                                                                                 <c:when
-                                                                                    test="${bill.paymentStatus == 'PAID' || bill.paymentStatus == 'Đã thanh toán' || bill.paymentStatus == 'success'}">
+                                                                                    test="${upperStatus == 'PAID' || upperStatus == 'ĐÃ THANH TOÁN' || upperStatus == 'SUCCESS'}">
                                                                                     <fmt:formatNumber
                                                                                         value="${bill.totalAmount}"
                                                                                         type="number" />
                                                                                 </c:when>
                                                                                 <c:when
-                                                                                    test="${bill.paymentStatus == 'PARTIAL' || bill.paymentStatus == 'partial'}">
+                                                                                    test="${upperStatus == 'PARTIAL' || upperStatus == 'THANH TOÁN MỘT PHẦN'}">
                                                                                     <fmt:formatNumber
                                                                                         value="${bill.totalAmount * 0.5}"
                                                                                         type="number" />
@@ -781,10 +782,11 @@
                                                                 </div>
 
                                                                 <div class="action-buttons">
+                                                                    <c:set var="upperStatus" value="${fn:toUpperCase(bill.paymentStatus)}" />
                                                                     <c:if
-                                                                        test="${bill.paymentStatus == 'PENDING' || bill.paymentStatus == 'Chờ thanh toán' || bill.paymentStatus == 'pending'}">
+                                                                        test="${upperStatus == 'PENDING' || upperStatus == 'CHỜ THANH TOÁN'}">
                                                                         <button class="btn-action success"
-                                                                            onclick="processPayment('${bill.billId}', 'full')">
+                                                                            onclick="processPayment('${bill.billId}', 'full', '${bill.totalAmount}')">
                                                                             <i class="fas fa-credit-card"></i>
                                                                             Thu tiền
                                                                         </button>
@@ -796,7 +798,7 @@
                                                                     </c:if>
 
                                                                     <c:if
-                                                                        test="${bill.paymentStatus == 'PARTIAL' || bill.paymentStatus == 'partial'}">
+                                                                        test="${upperStatus == 'PARTIAL' || upperStatus == 'THANH TOÁN MỘT PHẦN'}">
                                                                         <button class="btn-action warning"
                                                                             onclick="processPayment('${bill.billId}', 'remaining')">
                                                                             <i class="fas fa-credit-card"></i>
@@ -805,7 +807,7 @@
                                                                     </c:if>
 
                                                                     <c:if
-                                                                        test="${bill.paymentStatus == 'INSTALLMENT' || bill.paymentStatus == 'installment'}">
+                                                                        test="${upperStatus == 'INSTALLMENT'}">
                                                                         <button class="btn-action"
                                                                             onclick="viewInstallmentDetail('${bill.billId}')">
                                                                             <i class="fas fa-list-alt"></i>
@@ -1268,10 +1270,30 @@
                                 function printInvoice(billId) { alert('In hóa đơn ID: ' + billId); }
                                 function downloadInvoice(billId) { alert('Tải xuống hóa đơn ID: ' + billId); }
 
-                                function processPayment(billId, type) {
-                                    const message = type === 'full' ? 'Thu tiền đầy đủ cho hóa đơn ID: ' + billId :
-                                        'Thu tiền còn nợ cho hóa đơn ID: ' + billId;
-                                    alert(message);
+                                function processPayment(billId, type, amount) {
+                                    if (!confirm('Xác nhận thu ' + parseFloat(amount).toLocaleString() + ' VNĐ cho hóa đơn ' + billId + '?')) {
+                                        return;
+                                    }
+
+                                    const formData = new FormData();
+                                    formData.append('action', 'process_payment');
+                                    formData.append('billId', billId);
+                                    formData.append('paymentMethod', 'cash');
+                                    formData.append('paidAmount', amount);
+                                    formData.append('notes', 'Thanh toán tại quầy');
+
+                                    fetch('StaffPaymentServlet', {
+                                        method: 'POST',
+                                        body: formData
+                                    })
+                                        .then(response => {
+                                            alert('Cập nhật thanh toán thành công!');
+                                            window.location.reload();
+                                        })
+                                        .catch(error => {
+                                            console.error('Error processing payment:', error);
+                                            alert('Có lỗi xảy ra khi xử lý thanh toán!');
+                                        });
                                 }
 
                                 function createInstallment(billId, totalAmount) {

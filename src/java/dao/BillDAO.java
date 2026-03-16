@@ -24,8 +24,8 @@ public class BillDAO {
                     (bill_id, order_id, service_id, patient_id, user_id, amount, original_price,
                      discount_amount, tax_amount, payment_method, payment_status,
                      customer_name, customer_phone, customer_email, doctor_id,
-                     appointment_date, appointment_time, appointment_notes, notes)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     appointment_id, appointment_date, appointment_time, appointment_notes, notes)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (Connection conn = DBContext.getConnection();
@@ -47,10 +47,11 @@ public class BillDAO {
             System.out.println("  13. customer_phone: " + bill.getCustomerPhone());
             System.out.println("  14. customer_email: " + bill.getCustomerEmail());
             System.out.println("  15. doctor_id: " + bill.getDoctorId());
-            System.out.println("  16. appointment_date: " + bill.getAppointmentDate());
-            System.out.println("  17. appointment_time: " + bill.getAppointmentTime());
-            System.out.println("  18. appointment_notes: " + bill.getAppointmentNotes());
-            System.out.println("  19. notes: " + bill.getNotes());
+            System.out.println("  16. appointment_id: " + bill.getAppointmentId());
+            System.out.println("  17. appointment_date: " + bill.getAppointmentDate());
+            System.out.println("  18. appointment_time: " + bill.getAppointmentTime());
+            System.out.println("  19. appointment_notes: " + bill.getAppointmentNotes());
+            System.out.println("  20. notes: " + bill.getNotes());
 
             stmt.setString(1, bill.getBillId());
             stmt.setString(2, bill.getOrderId());
@@ -67,10 +68,11 @@ public class BillDAO {
             stmt.setString(13, bill.getCustomerPhone());
             stmt.setString(14, bill.getCustomerEmail());
             stmt.setObject(15, bill.getDoctorId());
-            stmt.setObject(16, bill.getAppointmentDate());
-            stmt.setObject(17, bill.getAppointmentTime());
-            stmt.setString(18, bill.getAppointmentNotes());
-            stmt.setString(19, bill.getNotes());
+            stmt.setObject(16, bill.getAppointmentId());
+            stmt.setObject(17, bill.getAppointmentDate());
+            stmt.setObject(18, bill.getAppointmentTime());
+            stmt.setString(19, bill.getAppointmentNotes());
+            stmt.setString(20, bill.getNotes());
 
             int result = stmt.executeUpdate();
             System.out.println("📊 SQL execution result: " + result + " rows affected");
@@ -379,14 +381,14 @@ public class BillDAO {
     /**
      * Cập nhật thanh toán
      */
-    public static boolean updatePayment(int billId, double paidAmount, String paymentMethod, String notes)
+    public static boolean updatePayment(String billId, double paidAmount, String paymentMethod, String notes)
             throws SQLException {
         String sql = """
                     UPDATE dbo.Bills
                     SET payment_status = CASE
-                            WHEN ? >= amount THEN 'PAID'
+                            WHEN ? >= amount THEN 'paid'
                             WHEN ? > 0 THEN 'PARTIAL'
-                            ELSE 'PENDING'
+                            ELSE 'pending'
                         END,
                         payment_method = ?,
                         notes = ?,
@@ -394,6 +396,9 @@ public class BillDAO {
                         updated_at = GETDATE()
                     WHERE bill_id = ?
                 """;
+
+        System.out.println("[DEBUG] Updating payment for Bill ID: " + billId);
+        System.out.println("[DEBUG] Paid Amount: " + paidAmount);
 
         try (Connection conn = DBContext.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -403,9 +408,11 @@ public class BillDAO {
             stmt.setString(3, paymentMethod);
             stmt.setString(4, notes);
             stmt.setDouble(5, paidAmount);
-            stmt.setString(6, String.valueOf(billId));
+            stmt.setString(6, billId);
 
-            return stmt.executeUpdate() > 0;
+            int rows = stmt.executeUpdate();
+            System.out.println("[DEBUG] Rows updated: " + rows);
+            return rows > 0;
         }
     }
 
@@ -556,6 +563,9 @@ public class BillDAO {
         // Null-safe way to get doctor_id
         Object doctorIdObj = rs.getObject("doctor_id");
         bill.setDoctorId(doctorIdObj != null ? (Integer) doctorIdObj : null);
+
+        Object appIdObj = rs.getObject("appointment_id");
+        bill.setAppointmentId(appIdObj != null ? (Integer) appIdObj : null);
 
         bill.setAppointmentDate(rs.getDate("appointment_date"));
         bill.setAppointmentTime(rs.getTime("appointment_time"));

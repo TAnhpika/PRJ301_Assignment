@@ -35,6 +35,7 @@ public class Bill {
     
     // Appointment Information
     private Integer doctorId;
+    private Integer appointmentId;
     private Date appointmentDate;
     private Time appointmentTime;
     private String appointmentNotes;
@@ -216,6 +217,14 @@ public class Bill {
     
     public void setDoctorId(Integer doctorId) {
         this.doctorId = doctorId;
+    }
+
+    public Integer getAppointmentId() {
+        return appointmentId;
+    }
+
+    public void setAppointmentId(Integer appointmentId) {
+        this.appointmentId = appointmentId;
     }
     
     public Date getAppointmentDate() {
