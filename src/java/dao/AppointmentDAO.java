@@ -86,15 +86,15 @@ public class AppointmentDAO {
             conn = DBContext.getConnection();
             if (conn != null) {
                 String sql = """
-                            SELECT a.*,
+                            SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date, a.slot_id, a.status, a.reason,
                                    p.full_name as patient_name,
                                    p.phone as patient_phone,
                                    d.full_name as doctor_name,
                                    d.specialty as doctor_specialty,
                                    ts.start_time,
                                    ts.end_time,
-                                   s.service_name,
-                                   s.price as service_price
+                                   COALESCE(s2.service_name, s.service_name) as service_name,
+                                   COALESCE(s2.price, s.price) as service_price
                             FROM Appointment a
                             LEFT JOIN Patients p ON a.patient_id = p.patient_id
                             LEFT JOIN Doctors d ON a.doctor_id = d.doctor_id
@@ -103,6 +103,7 @@ public class AppointmentDAO {
                                 AND b.appointment_date = a.work_date
                                 AND b.doctor_id = a.doctor_id
                             LEFT JOIN Services s ON b.service_id = s.service_id
+                            LEFT JOIN Services s2 ON a.service_id = s2.service_id
                             WHERE a.appointment_id = ?
                         """;
 
@@ -118,7 +119,7 @@ public class AppointmentDAO {
 
                     // Set service info
                     String serviceName = rs.getString("service_name");
-                    if (serviceName != null) {
+                    if (serviceName != null && !serviceName.isEmpty()) {
                         appointment.setServiceName(serviceName);
                     } else {
                         appointment.setServiceName("Chưa có dịch vụ");
