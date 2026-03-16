@@ -108,6 +108,8 @@ public class SlotReservationServlet extends HttpServlet {
             int slotId = Integer.parseInt(request.getParameter("slotId"));
             int patientId = getPatientIdFromSession(request);
             String reason = request.getParameter("reason");
+            String serviceIdStr = request.getParameter("serviceId");
+            int serviceId = (serviceIdStr != null && !serviceIdStr.isEmpty()) ? Integer.parseInt(serviceIdStr) : 1;
 
             LocalDate workDate = LocalDate.parse(workDateStr);
 
@@ -120,7 +122,7 @@ public class SlotReservationServlet extends HttpServlet {
             }
 
             SlotReservation reservation = AppointmentDAO.createReservation(
-                    doctorId, workDate, slotId, patientId, reason);
+                    doctorId, workDate, slotId, patientId, reason, serviceId);
 
             if (reservation != null) {
                 Map<String, Object> result = new HashMap<>();

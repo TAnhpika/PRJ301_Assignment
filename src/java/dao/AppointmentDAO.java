@@ -373,6 +373,36 @@ public class AppointmentDAO {
     }
 
     /**
+     * Cập nhật dịch vụ cho appointment
+     */
+    public static boolean updateAppointmentService(int appointmentId, int serviceId) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        boolean result = false;
+        try {
+            conn = DBContext.getConnection();
+            if (conn != null) {
+                String sql = "UPDATE Appointment SET service_id = ? WHERE appointment_id = ?";
+                ps = conn.prepareStatement(sql);
+                if (serviceId > 0) {
+                    ps.setInt(1, serviceId);
+                } else {
+                    ps.setNull(1, java.sql.Types.INTEGER);
+                }
+                ps.setInt(2, appointmentId);
+
+                int rowsAffected = ps.executeUpdate();
+                result = rowsAffected > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            util.DBContext.close(null, ps, conn);
+        }
+        return result;
+    }
+
+    /**
      * Xóa appointment
      */
     public static boolean deleteAppointment(int appointmentId) throws SQLException {
@@ -511,8 +541,16 @@ public class AppointmentDAO {
 
     public static boolean updateAppointmentStatusStatic(int appointmentId, String status) {
         try {
-            AppointmentDAO dao = new AppointmentDAO();
-            return dao.updateAppointmentStatus(appointmentId, status);
+            return updateAppointmentStatus(appointmentId, status);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean updateAppointmentServiceStatic(int appointmentId, int serviceId) {
+        try {
+            return updateAppointmentService(appointmentId, serviceId);
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -776,6 +814,11 @@ public class AppointmentDAO {
 
     public static SlotReservation createReservation(int doctorId, LocalDate workDate, int slotId, int patientId,
             String reason) {
+        return createReservation(doctorId, workDate, slotId, patientId, reason, 1); // Default service_id = 1
+    }
+
+    public static SlotReservation createReservation(int doctorId, LocalDate workDate, int slotId, int patientId,
+            String reason, int serviceId) {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -786,8 +829,8 @@ public class AppointmentDAO {
 
             conn = DBContext.getConnection();
             String sql = """
-                        INSERT INTO SlotReservation (patient_id, doctor_id, work_date, slot_id, status, reason, expires_at)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO SlotReservation (patient_id, doctor_id, work_date, slot_id, status, reason, expires_at, service_id)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """;
 
             Timestamp expiresAt = Timestamp.valueOf(LocalDateTime.now().plusMinutes(5));
@@ -800,6 +843,7 @@ public class AppointmentDAO {
             ps.setString(5, "PENDING");
             ps.setString(6, reason);
             ps.setTimestamp(7, expiresAt);
+            ps.setInt(8, serviceId);
 
             int result = ps.executeUpdate();
             SlotReservation reservation = null;
@@ -828,6 +872,12 @@ public class AppointmentDAO {
      */
     public static SlotReservation createReservationForRelative(int doctorId, LocalDate workDate, int slotId,
             int patientId, String reason, int relativeId, int bookedByUserId) {
+        return createReservationForRelative(doctorId, workDate, slotId, patientId, reason, relativeId, bookedByUserId,
+                1); // Default service_id = 1
+    }
+
+    public static SlotReservation createReservationForRelative(int doctorId, LocalDate workDate, int slotId,
+            int patientId, String reason, int relativeId, int bookedByUserId, int serviceId) {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -838,8 +888,8 @@ public class AppointmentDAO {
 
             conn = DBContext.getConnection();
             String sql = """
-                        INSERT INTO SlotReservation (patient_id, doctor_id, work_date, slot_id, status, reason, relative_id, booked_by_user_id, expires_at)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO SlotReservation (patient_id, doctor_id, work_date, slot_id, status, reason, relative_id, booked_by_user_id, expires_at, service_id)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """;
 
             Timestamp expiresAt = Timestamp.valueOf(LocalDateTime.now().plusMinutes(5));
@@ -854,6 +904,7 @@ public class AppointmentDAO {
             ps.setInt(7, relativeId);
             ps.setInt(8, bookedByUserId);
             ps.setTimestamp(9, expiresAt);
+            ps.setInt(10, serviceId);
 
             int result = ps.executeUpdate();
             SlotReservation reservation = null;
@@ -1124,8 +1175,8 @@ public class AppointmentDAO {
             // 1. Insert vào Appointment (Chỉ lưu khi thanh toán thành công theo yêu cầu
             // user)
             String sql = """
-                        INSERT INTO Appointment (patient_id, doctor_id, work_date, slot_id, status, reason, relative_id, booked_by_user_id)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO Appointment (patient_id, doctor_id, work_date, slot_id, status, reason, relative_id, booked_by_user_id, service_id)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """;
             ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, res.getPatientId());
@@ -1136,7 +1187,7 @@ public class AppointmentDAO {
             ps.setString(6, res.getReason());
 
             // Xử lý relative info từ DB SlotReservation
-            String fetchSql = "SELECT relative_id, booked_by_user_id FROM SlotReservation WHERE reservation_id = ?";
+            String fetchSql = "SELECT relative_id, booked_by_user_id, service_id FROM SlotReservation WHERE reservation_id = ?";
             try (PreparedStatement psFetch = conn.prepareStatement(fetchSql)) {
                 psFetch.setInt(1, res.getReservationId());
                 try (ResultSet rsFetch = psFetch.executeQuery()) {
@@ -1152,9 +1203,25 @@ public class AppointmentDAO {
                             ps.setInt(8, bookerId);
                         else
                             ps.setNull(8, java.sql.Types.INTEGER);
+
+                        int sId = rsFetch.getInt("service_id");
+                        if (!rsFetch.wasNull())
+                            ps.setInt(9, sId);
+                        else {
+                            // Fallback to serviceId from object if not in DB
+                            if (res.getServiceId() > 0)
+                                ps.setInt(9, res.getServiceId());
+                            else
+                                ps.setInt(9, 1); // Default
+                        }
                     } else {
+                        // Fallback values if reservation not found
                         ps.setNull(7, java.sql.Types.INTEGER);
                         ps.setNull(8, java.sql.Types.INTEGER);
+                        if (res.getServiceId() > 0)
+                            ps.setInt(9, res.getServiceId());
+                        else
+                            ps.setInt(9, 1);
                     }
                 }
             }
@@ -2152,7 +2219,7 @@ public class AppointmentDAO {
     public static Appointment getAppointmentWithPatientInfo(int appointmentId) throws SQLException {
         String sql = """
                     SELECT a.appointment_id, a.patient_id, a.doctor_id, a.work_date,
-                           a.slot_id, a.status, a.reason, a.previous_appointment_id,
+                           a.slot_id, a.status, a.reason, a.previous_appointment_id, a.service_id,
                            p.full_name as patient_name, p.phone, p.date_of_birth, p.gender,
                            t.start_time, t.end_time
                     FROM Appointment a
@@ -2177,6 +2244,7 @@ public class AppointmentDAO {
                 appointment.setSlotId(rs.getInt("slot_id"));
                 appointment.setStatus(rs.getString("status"));
                 appointment.setReason(rs.getString("reason"));
+                appointment.setServiceId(rs.getInt("service_id"));
 
                 // Handle null previous_appointment_id
                 int prevAppId = rs.getInt("previous_appointment_id");

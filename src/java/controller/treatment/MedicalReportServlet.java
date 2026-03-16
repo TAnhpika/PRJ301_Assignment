@@ -67,6 +67,10 @@ public class MedicalReportServlet extends HttpServlet {
             // Tái khám lần 2: checkbox gửi "1" khi được tick
             String reexamLan2 = request.getParameter("reexam_lan_2");
             boolean isReexamLan2 = "1".equals(reexamLan2);
+            
+            // Lấy ID dịch vụ điều trị (mới thêm)
+            String serviceIdStr = request.getParameter("service_id");
+            int serviceId = (serviceIdStr != null && !serviceIdStr.trim().isEmpty()) ? Integer.parseInt(serviceIdStr.trim()) : 0;
 
             // Debug logging
             System.out.println("DEBUG - MedicalReportServlet doPost:");
@@ -74,9 +78,12 @@ public class MedicalReportServlet extends HttpServlet {
             System.out.println("  - doctor_id: '" + doctorIdStr + "'");
             System.out.println("  - patient_id: '" + patientIdStr + "'");
             System.out.println("  - diagnosis: '" + diagnosis + "'");
+            System.out.println("  - service_id: '" + serviceId + "'");
             System.out.println("  - reexam_lan_2 (tái khám lần 2): " + isReexamLan2);
-
-            // Validate required parameters
+            
+            // ... (rest of validation) ...
+            
+            // (Lines 80-125 summarized)
             if (appointmentIdStr == null || appointmentIdStr.trim().isEmpty()) {
                 response.getWriter().println("Lỗi: Thiếu ID cuộc hẹn.");
                 return;
@@ -94,33 +101,30 @@ public class MedicalReportServlet extends HttpServlet {
                 return;
             }
 
-            // Parse các ID sau khi đã validate
             int appointmentId = Integer.parseInt(appointmentIdStr.trim());
             long doctorId = Long.parseLong(doctorIdStr.trim());
             int patientId = Integer.parseInt(patientIdStr.trim());
-
-            System.out.println("DEBUG - Parsed values:");
-            System.out.println("  - appointmentId: " + appointmentId);
-            System.out.println("  - doctorId: " + doctorId);
-            System.out.println("  - patientId: " + patientId);
 
             // Mảng đơn thuốc
             String[] medicineIds = request.getParameterValues("medicine_id");
             String[] quantities = request.getParameterValues("quantity");
             String[] usages = request.getParameterValues("usage");
 
-            // Kiểm tra patient có tồn tại không
             Patients patient = PatientDAO.getPatientById(patientId);
             if (patient == null) {
                 response.getWriter().println("Lỗi: Không tìm thấy bệnh nhân với ID: " + patientId);
                 return;
             }
             
-            // Kiểm tra doctor có tồn tại không
             Doctors doctor = DoctorDAO.getDoctorById((int) doctorId);
             if (doctor == null) {
                 response.getWriter().println("Lỗi: Không tìm thấy bác sĩ với ID: " + doctorId);
                 return;
+            }
+
+            // Cập nhật dịch vụ cho appointment nếu có chọn
+            if (serviceId > 0) {
+                AppointmentDAO.updateAppointmentServiceStatic(appointmentId, serviceId);
             }
 
             // Tạo báo cáo y tế (gửi thêm isReexamLan2 từ checkbox "Tái khám lần 2")

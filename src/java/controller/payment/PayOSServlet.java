@@ -261,13 +261,16 @@ public class PayOSServlet extends HttpServlet {
                                 } else {
                                     System.out.println(
                                             "⚠️ THIẾU THÔNG TIN FORM - Sử dụng relative_id có sẵn: " + relativeId);
+                                    reservation = AppointmentDAO.createReservationForRelative(
+                                            doctorId, appointmentDate, slotId, patient.getPatientId(), reason,
+                                            relativeId, user.getId(), serviceId); // Pass serviceId
                                 }
 
                                 // Tạo reservation cho người thân (CHỈ reservation, chưa tạo appointment)
                                 System.out.println("🔒 ĐANG TẠO RESERVATION CHO NGƯỜI THÂN...");
                                 reservation = AppointmentDAO.createReservationForRelative(
                                         doctorId, appointmentDate, slotId, patient.getPatientId(), reason, relativeId,
-                                        user.getId());
+                                        user.getId(), serviceId);
 
                                 if (reservation != null) {
                                     System.out.println("✅ TẠO RESERVATION THÀNH CÔNG!");
@@ -291,7 +294,7 @@ public class PayOSServlet extends HttpServlet {
                         } else {
                             // Tạo reservation bình thường
                             reservation = AppointmentDAO.createReservation(
-                                    doctorId, appointmentDate, slotId, patient.getPatientId(), reason);
+                                    doctorId, appointmentDate, slotId, patient.getPatientId(), reason, serviceId); // Pass serviceId
                         }
                     } catch (Exception e) {
                         System.err.println("ERROR creating slot reservation: " + e.getMessage());
@@ -534,69 +537,7 @@ public class PayOSServlet extends HttpServlet {
                         System.out.println("👤 Bệnh nhân: " + activeReservation.getPatientId());
                         System.out.println("📝 Trạng thái: COMPLETED");
 
-                        // =================================================================================================================================================
-                        // N8N API -gửi thông báo cho người thân
-                        // 📧 GỬI THÔNG BÁO THANH TOÁN THÀNH CÔNG QUA N8N
-                        try {
-                            // Lấy thông tin bác sĩ
-                            String doctorEmail = DoctorDAO
-                                    .getDoctorEmailByDoctorId(activeReservation.getDoctorId());
-                            String doctorName = DoctorDAO.getDoctorNameById(activeReservation.getDoctorId());
-
-                            // Lấy thông tin slot
-                            TimeSlot timeSlot = TimeSlotDAO.getTimeSlotById(activeReservation.getSlotId());
-                            String appointmentTime = timeSlot.getStartTime() + " - " + timeSlot.getEndTime();
-
-                            // Lấy thông tin user đầy đủ
-                            User user = (User) session.getAttribute("user");
-                            String userEmail = user.getEmail();
-
-                            // Lấy thông tin patient để có tên và phone
-                            PatientDAO patientDAO = new PatientDAO();
-                            Patients patient = patientDAO.getPatientByUserId(user.getId());
-                            String userName = patient != null ? patient.getFullName() : user.getUsername();
-                            String userPhone = patient != null ? patient.getPhone() : "Chưa cập nhật";
-
-                            // Lấy tên dịch vụ
-                            Service service = (Service) session.getAttribute("serviceInfo");
-                            String serviceName = service != null ? service.getServiceName() : "Khám tổng quát";
-
-                            // Lấy thông tin bill (sử dụng bill đã có sẵn)
-                            double billAmount = currentBill != null ? currentBill.getAmount().doubleValue() : 0.0;
-                            String billId = currentBill != null ? currentBill.getBillId() : "N/A";
-                            String orderId = currentBill != null ? currentBill.getOrderId() : "N/A";
-
-                            // 🚀 GỬI EMAIL + CALENDAR CÙNG LÚC THÔNG QUA N8N WORKFLOW
-                            N8nWebhookService.sendPaymentSuccessWithCalendar(
-                                    userEmail,
-                                    userName,
-                                    userPhone,
-                                    doctorEmail,
-                                    doctorName,
-                                    activeReservation.getWorkDate().toString(),
-                                    appointmentTime,
-                                    serviceName,
-                                    billId,
-                                    orderId,
-                                    billAmount,
-                                    "Phòng khám Nha khoa DentalClinic",
-                                    "FPT University Đà Nẵng",
-                                    "0936929382",
-                                    activeReservation.getReason() != null ? activeReservation.getReason()
-                                            : "Khám tổng quát");
-
-                            System.out.println("🚀 ĐÃ GỬI YÊU CẦU EMAIL + GOOGLE CALENDAR QUA N8N WORKFLOW!");
-                            System.out.println("📧 Email xác nhận sẽ được gửi đến: " + userEmail);
-                            System.out.println("📅 Calendar event sẽ được tạo cho cả bệnh nhân và bác sĩ!");
-                            System.out.println("👤 Khách hàng: " + userName + " (" + userEmail + ")");
-                            System.out.println("👨‍⚕️ Bác sĩ: " + doctorName + " (" + doctorEmail + ")");
-                            System.out.println("💰 Số tiền: " + String.format("%,.0f", billAmount) + " VNĐ");
-                            System.out.println("📄 Hóa đơn: " + billId);
-
-                        } catch (Exception e) {
-                            System.err.println("❌ LỖI GỬI THÔNG BÁO N8N: " + e.getMessage());
-                            e.printStackTrace();
-                        }
+                        // ✅ N8N sẽ được gọi tập trung bên dưới sau khi appointmentCreated = true
                     } else {
                         System.err.println(
                                 "❌ THẤT BẠI: Không thể hoàn thành đặt chỗ " + activeReservation.getAppointmentId());
@@ -748,12 +689,64 @@ public class PayOSServlet extends HttpServlet {
                 }
             }
 
-            // 3. Log kết quả
+            // 3. Log kết quả + GỬI N8N TẬP TRUNG (áp dụng cho cả 2 nhánh: activeReservation và fallback)
             if (appointmentCreated) {
                 System.out.println("🎉 === THANH TOÁN & LỊCH HẸN HOÀN TẤT ===");
                 System.out.println("💰 Hóa đơn: " + currentBill.getBillId() + " → ĐÃ THANH TOÁN");
                 System.out.println("📅 Lịch hẹn: ĐÃ TẠO VÀ XÁC NHẬN");
                 System.out.println("=============================================");
+
+                // 📧 GỬI EMAIL + CALENDAR QUA N8N (chạy sau khi appointment đã tạo thành công)
+                try {
+                    User userN8n = (User) session.getAttribute("user");
+                    PatientDAO patientDAOn8n = new PatientDAO();
+                    Patients patientN8n = patientDAOn8n.getPatientByUserId(userN8n.getId());
+
+                    String doctorEmailN8n = DoctorDAO.getDoctorEmailByDoctorId(currentBill.getDoctorId());
+                    String doctorNameN8n = DoctorDAO.getDoctorNameById(currentBill.getDoctorId());
+
+                    int slotIdN8n = (activeReservation != null)
+                            ? activeReservation.getSlotId()
+                            : extractSlotIdFromNotes(currentBill.getAppointmentNotes());
+                    TimeSlot timeSlotN8n = TimeSlotDAO.getTimeSlotById(slotIdN8n);
+                    String appointmentTimeN8n = (timeSlotN8n != null)
+                            ? timeSlotN8n.getStartTime() + " - " + timeSlotN8n.getEndTime()
+                            : "09:00 - 09:30";
+
+                    String appointmentDateN8n = (activeReservation != null)
+                            ? activeReservation.getWorkDate().toString()
+                            : (currentBill.getAppointmentDate() != null ? currentBill.getAppointmentDate().toString() : "");
+
+                    Service serviceN8n = (Service) session.getAttribute("serviceInfo");
+                    String serviceNameN8n = serviceN8n != null ? serviceN8n.getServiceName() : "Khám tổng quát";
+
+                    String reasonN8n = (activeReservation != null && activeReservation.getReason() != null)
+                            ? activeReservation.getReason()
+                            : (currentBill.getAppointmentNotes() != null ? currentBill.getAppointmentNotes() : "Khám tổng quát");
+
+                    N8nWebhookService.sendPaymentSuccessWithCalendar(
+                            userN8n.getEmail(),
+                            patientN8n != null ? patientN8n.getFullName() : userN8n.getUsername(),
+                            patientN8n != null ? patientN8n.getPhone() : "Chưa cập nhật",
+                            doctorEmailN8n,
+                            doctorNameN8n,
+                            appointmentDateN8n,
+                            appointmentTimeN8n,
+                            serviceNameN8n,
+                            currentBill.getBillId(),
+                            currentBill.getOrderId(),
+                            currentBill.getAmount().doubleValue(),
+                            "Phòng khám Nha khoa DentalClinic",
+                            "FPT University Đà Nẵng",
+                            "0936929382",
+                            reasonN8n);
+
+                    System.out.println("🚀 ĐÃ GỬI EMAIL + CALENDAR QUA N8N!");
+                    System.out.println("📧 Email gửi đến: " + userN8n.getEmail());
+                } catch (Exception eN8n) {
+                    System.err.println("❌ LỖI GỬI N8N: " + eN8n.getMessage());
+                    eN8n.printStackTrace();
+                }
             }
 
             // Chuyển tới trang thành công

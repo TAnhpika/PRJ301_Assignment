@@ -16,6 +16,7 @@ public class SlotReservation {
     private LocalDate workDate;
     private int slotId;
     private int patientId;
+    private int serviceId;
     private Integer relativeId;
     private Integer bookedByUserId;
 
@@ -60,6 +61,11 @@ public class SlotReservation {
         this.expiresAt = Timestamp.valueOf(LocalDateTime.now().plusMinutes(5)); // 5 phút
     }
 
+    public SlotReservation(int doctorId, LocalDate workDate, int slotId, int patientId, int serviceId) {
+        this(doctorId, workDate, slotId, patientId);
+        this.serviceId = serviceId;
+    }
+
     /**
      * Constructor với reason
      */
@@ -68,7 +74,14 @@ public class SlotReservation {
         this.reason = reason;
     }
 
+    public SlotReservation(int doctorId, LocalDate workDate, int slotId, int patientId, String reason, int serviceId) {
+        this(doctorId, workDate, slotId, patientId, reason);
+        this.serviceId = serviceId;
+    }
+
     // Getters and Setters
+    public int getServiceId() { return serviceId; }
+    public void setServiceId(int serviceId) { this.serviceId = serviceId; }
     public int getReservationId() {
         return reservationId;
     }

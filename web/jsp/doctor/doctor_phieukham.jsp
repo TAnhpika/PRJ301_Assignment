@@ -6,6 +6,9 @@
 <%@page import="model.Doctors"%>
 <%@page import="model.Patients"%>
 <%@page import="model.Appointment"%>
+<%@page import="model.Service"%>
+<%@page import="dao.ServiceDAO"%>
+<%@page import="java.util.List"%>
 
 <%
             String appointmentIdParam = request.getParameter("appointmentId");
@@ -36,6 +39,8 @@
             
             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
             Date currentTime = new Date();
+            List<Service> services = ServiceDAO.getAllServices();
+            int currentServiceId = (appointment != null) ? appointment.getServiceId() : 0;
 %>
 
 <!DOCTYPE html>
@@ -146,6 +151,23 @@
                             </div>
                             <div class="col-md-6">
                                 <p class="mb-1"><strong>Thời gian khám:</strong> <%= timeFormat.format(currentTime) %></p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label"><strong>Dịch vụ điều trị:</strong></label>
+                                <select name="service_id" class="form-select" required>
+                                    <option value="">-- Chọn dịch vụ --</option>
+                                    <% if (services != null) { %>
+                                        <% for (Service s : services) { %>
+                                            <option value="<%= s.getServiceId() %>" <%= (s.getServiceId() == currentServiceId) ? "selected" : "" %>>
+                                                <%= s.getServiceName() %> (<%= s.getPrice() %> VNĐ)
+                                            </option>
+                                        <% } %>
+                                    <% } %>
+                                </select>
+                                <small class="text-muted">Vui lòng chọn chính xác dịch vụ mà bác sĩ đã thực hiện cho bệnh nhân.</small>
                             </div>
                         </div>
 
