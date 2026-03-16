@@ -111,6 +111,24 @@ sequenceDiagram
     S-->>U: Thông báo thành công, quay về Login
 ```
 
+#### E. Chỉnh sửa thông tin cá nhân (Profile Settings)
+```mermaid
+sequenceDiagram
+    U as Bệnh nhân
+    S as UpdateUserServlet
+    DB as Database
+
+    U->>S: Truy cập trang cá nhân (user_taikhoan.jsp)
+    S->>S: Load thông tin từ Session (user/patient)
+    U->>S: Gửi yêu cầu cập nhật (Họ tên, SĐT, Giới tính, Ảnh đại diện)
+    S->>DB: PatientDAO.updatePatientInfo()
+    alt Cập nhật Email/Mật khẩu
+        S->>DB: UserDAO.updateEmail() / UserDAO.updatePasswordHash()
+    end
+    DB-->>S: Thành công
+    S-->>U: Cập nhật lại Session & Hiển thị thông báo (user_taikhoan.jsp)
+```
+
 #### F. Tư vấn & Chat với Bác sĩ (Real-time Chat)
 ```mermaid
 sequenceDiagram
@@ -129,6 +147,21 @@ sequenceDiagram
     WS-->>U: Relay tin nhắn (Xác nhận gửi)
     WS->>U: Nhận phản hồi từ Bác sĩ (Real-time)
 ```
+
+#### G. Tư vấn với Trợ lý AI (Gemini)
+```mermaid
+sequenceDiagram
+    U as Bệnh nhân
+    S as ChatAiServlet
+    AI as Gemini AI Service
+    
+    U->>S: Gửi câu hỏi (AJAX POST)
+    S->>AI: GeminiAiService.getAIResponse()
+    AI-->>S: Trả về nội dung phản hồi (Text)
+    S->>S: Định dạng lại văn bản (Markdown/HTML)
+    S-->>U: Hiển thị phản hồi lên khung chat
+```
+
 
 
 ---
@@ -370,7 +403,9 @@ sequenceDiagram
 | **Patient** | Book Appointment | `booking.jsp` | `BookingServlet` | `AppointmentDAO` |
 | **Patient** | Online Payment | `payos.com` | `PayOSServlet` | `BillDAO` |
 | **Patient** | Reset Password | `forgot-password.jsp` | `ResetPasswordServlet` | `UserDAO` |
+| **Patient** | Chỉnh sửa profile | `user_taikhoan.jsp` | `UpdateUserServlet` | `PatientDAO/UserDAO` |
 | **Patient** | Tư vấn/Chat | `patient_chat.jsp` | `ChatPageServlet` | `ChatMessages` (Table) |
+| **Patient** | Chat với AI | `Sidebar/AI` | `ChatAiServlet` | `Gemini API` |
 | **Doctor** | Thăm khám | `doctor_phieukham.jsp` | `SubmitMedicalReportServlet` | `MedicalReportDAO` |
 | **Doctor** | Đăng ký lịch | `doctor_dangkilich.jsp`| `DoctorRegisterScheduleServlet`| `DoctorScheduleDAO` |
 | **Doctor** | Đổi mật khẩu | `doctor_changepassword.jsp`| `DoctorChangePasswordServlet` | `UserDAO` |

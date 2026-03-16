@@ -42,6 +42,8 @@ public class StaffBookingServlet extends HttpServlet {
                 handleSearchPatient(request, response);
             } else if ("get_timeslots".equals(action)) {
                 handleGetTimeSlots(request, response);
+            } else if ("get_doctors_by_service".equals(action)) {
+                handleGetDoctorsByService(request, response);
             } else if ("get_detail".equals(action)) {
                 handleGetAppointmentDetail(request, response);
             } else if ("confirm".equals(action)) {
@@ -557,6 +559,35 @@ public class StaffBookingServlet extends HttpServlet {
             e.printStackTrace();
             response.getWriter()
                     .write("{\"success\": false, \"message\": \"Internal server error: " + e.getMessage() + "\"}");
+        }
+    }
+
+    /**
+     * Lấy danh sách bác sĩ theo dịch vụ
+     */
+    private void handleGetDoctorsByService(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        try {
+            int serviceId = Integer.parseInt(request.getParameter("serviceId"));
+            List<Doctors> doctors = DoctorDAO.getDoctorsByServiceId(serviceId);
+            
+            StringBuilder json = new StringBuilder();
+            json.append("[");
+            for (int i = 0; i < doctors.size(); i++) {
+                Doctors d = doctors.get(i);
+                if (i > 0) json.append(",");
+                json.append("{");
+                json.append("\"doctorId\":").append(d.getDoctor_id()).append(",");
+                json.append("\"fullName\":\"").append(d.getFull_name().replace("\"", "\\\"")).append("\",");
+                json.append("\"specialty\":\"").append(d.getSpecialty() != null ? d.getSpecialty().replace("\"", "\\\"") : "").append("\"");
+                json.append("}");
+            }
+            json.append("]");
+            response.getWriter().write(json.toString());
+        } catch (Exception e) {
+            response.getWriter().write("[]");
         }
     }
 }

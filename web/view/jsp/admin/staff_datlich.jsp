@@ -501,6 +501,40 @@
             document.getElementById('selectedServiceId').value = selectedService.id;
             document.querySelectorAll('.service-item').forEach(i => i.classList.remove('selected'));
             el.classList.add('selected');
+
+            // Tự động tải danh sách bác sĩ hỗ trợ dịch vụ này
+            const serviceId = selectedService.id;
+            const doctorSelect = document.getElementById('doctorSelect');
+            
+            // Hiển thị trạng thái đang tải
+            doctorSelect.innerHTML = '<option value="">-- Đang tải bác sĩ... --</option>';
+            
+            fetch('${pageContext.request.contextPath}/StaffBookingServlet?action=get_doctors_by_service&serviceId=' + serviceId)
+                .then(r => r.json())
+                .then(doctors => {
+                    doctorSelect.innerHTML = '<option value="">-- Chọn bác sĩ --</option>';
+                    if (doctors && doctors.length > 0) {
+                        doctors.forEach(d => {
+                            const option = document.createElement('option');
+                            option.value = d.doctorId;
+                            option.textContent = d.fullName + ' - ' + d.specialty;
+                            doctorSelect.appendChild(option);
+                        });
+
+                        // Tự động chọn nếu chỉ có 1 bác sĩ
+                        if (doctors.length === 1) {
+                            doctorSelect.value = doctors[0].doctorId;
+                            selectedDoctor = doctors[0].doctorId;
+                            loadTimeSlots(); // Tải khung giờ nếu đã chọn ngày
+                        }
+                    } else {
+                        doctorSelect.innerHTML = '<option value="">-- Không có bác sĩ hỗ trợ dịch vụ này --</option>';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching doctors:', err);
+                    doctorSelect.innerHTML = '<option value="">-- Lỗi tải danh sách bác sĩ --</option>';
+                });
         }
 
         function loadTimeSlots() {

@@ -273,6 +273,38 @@ public class DoctorDAO {
         return doctor;
     }
 
+    /**
+     * Lấy danh sách bác sĩ hỗ trợ dịch vụ cụ thể (theo specialty_id)
+     */
+    public static List<Doctors> getDoctorsByServiceId(int serviceId) {
+        List<Doctors> list = new ArrayList<>();
+        String sql = "SELECT d.* FROM Doctors d " +
+                     "JOIN Services s ON d.specialty_id = s.specialty_id " +
+                     "WHERE s.service_id = ? AND d.status = 'active'";
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, serviceId);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Doctors doctor = new Doctors();
+                doctor.setDoctor_id(rs.getInt("doctor_id"));
+                doctor.setFull_name(rs.getString("full_name"));
+                doctor.setSpecialty(rs.getString("specialty"));
+                doctor.setPhone(rs.getString("phone"));
+                doctor.setStatus(rs.getString("status"));
+                doctor.setAvatar(rs.getString("avatar"));
+                list.add(doctor);
+            }
+        } catch (Exception e) {
+            System.err.println("Error in getDoctorsByServiceId: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public static Doctors getDoctorByUserId(int userId) {
         String sql = "SELECT * FROM Doctors WHERE user_id = ?";
         try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
