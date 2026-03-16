@@ -282,9 +282,6 @@
                                             <a href="${pageContext.request.contextPath}/ViewReportServlet?appointmentId=<%=app.getAppointmentId()%>" class="btn btn-outline-success btn-action flex-grow-1">
                                                 <i class="fas fa-eye me-1"></i> Xem kết quả khám
                                             </a>
-                                            <button class="btn btn-outline-secondary btn-action" onclick="location.href='${pageContext.request.contextPath}/AppointmentDetail?id=<%= app.getAppointmentId() %>'">
-                                                <i class="fas fa-history"></i> Lịch sử
-                                            </button>
                                         </div>
                                     </div>
                                 </div>

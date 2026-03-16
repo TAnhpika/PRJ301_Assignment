@@ -330,49 +330,41 @@ sequenceDiagram
     SV-->>ST: Hiển thị kế hoạch trả góp & QR thu tiền
 ```
 
-#### E. Check-in & Tiếp nhận bệnh nhân
+#### E. Quản lý & Thu tiền trả góp (Installment Management)
 ```mermaid
 sequenceDiagram
-    ST as Nhân viên
-    Q as StaffHandleQueueServlet
-    DB as Database
+    participant ST as Nhân viên
+    participant SV as StaffPaymentServlet
+    participant DB as Database
 
-    ST->>Q: Xác nhận BN có mặt (Dashboard Staff)
-    Q->>DB: Update Appointment status (WAITING)
-    DB-->>Q: Thành công
-    Q-->>ST: Bệnh nhân hiện lên hàng chờ bác sĩ
-```
-
-#### F. Tạo hóa đơn cho khách vãng lai (Walk-in)
-```mermaid
-sequenceDiagram
-    ST as Nhân viên
-    SV as StaffPaymentServlet
-    DB as Database
-
-    ST->>SV: Nhập tên BN, SĐT & Chọn dịch vụ (staff_thanhtoan.jsp)
-    SV->>DB: Lấy giá dịch vụ (ServiceDAO)
-    SV->>DB: Tạo Bill mới (BillDAO.createBill)
+    ST->>SV: Truy cập Quản lý trả góp (action=installments)
+    SV->>DB: Lấy danh sách HĐ đang trả góp
+    DB-->>SV: Danh sách & Số dư nợ
+    ST->>SV: Thực hiện thu tiền kỳ tiếp theo (Modal)
+    SV->>DB: Lưu Bill con & Cập nhật trạng thái kỳ trả (InstallmentDAO)
     DB-->>SV: Thành công
-    SV-->>ST: Hiển thị hóa đơn mới trong danh sách
+    SV-->>ST: In biên lai & Cập nhật dư nợ thực tế
 ```
 
-#### G. Thanh toán QR tại quầy (PayOS QR)
+#### F. Đăng ký Nghỉ phép (Leave Request)
 ```mermaid
 sequenceDiagram
-    ST as Nhân viên
-    SV as StaffPaymentServlet
-    PY as PayOS API
-    DB as Database
+    participant ST as Nhân viên
+    participant SV as StaffRegisterSecheduleServlet
+    participant M as Quản lý (Manager)
+    participant DB as Database
 
-    ST->>SV: Chọn HĐ & Nhấn "Lấy mã QR" (Modal)
-    SV->>PY: PayOSUtil.createPayOSPaymentRequestForStaff
-    PY-->>SV: Trả về URL/Mã QR Code
-    SV-->>ST: Hiển thị QR Code lên màn hình cho khách quét
-    ST->>SV: Nhấn "Xác nhận đã nhận tiền" (nếu khách ck xong)
-    SV->>DB: Update Bill status (PAID)
-    SV-->>ST: Thông báo thanh toán thành công
+    ST->>SV: Gửi yêu cầu nghỉ phép (staff_xinnghi.jsp)
+    SV->>DB: StaffScheduleDAO.addScheduleRequest(status: pending)
+    DB-->>SV: Lưu thành công
+    M->>SV: Xem danh sách chờ duyệt (manager_phancong.jsp)
+    M->>SV: Phê duyệt/Từ chối yêu cầu
+    SV->>DB: StaffScheduleDAO.updateRequestStatus()
+    DB-->>SV: Cập nhật thành công
+    SV-->>ST: Hiển thị trạng thái đã duyệt (approved)
 ```
+
+
 
 
 ---
@@ -464,6 +456,8 @@ sequenceDiagram
 | **Staff** | Đặt lịch hộ | `staff_datlich.jsp` | `StaffBookingServlet` | `AppointmentDAO` |
 | **Staff** | Đổi lịch hẹn | `staff_doilich.jsp` | `RescheduleAppointmentServlet` | `AppointmentDAO` |
 | **Staff** | Tạo hóa đơn | `staff_thanhtoan.jsp` | `StaffPaymentServlet` | `BillDAO` |
+| **Staff** | Quản lý trả góp| `staff_thanhtoan.jsp` | `StaffPaymentServlet` | `PaymentInstallmentDAO` |
+| **Staff** | Đăng ký nghỉ | `staff_xinnghi.jsp` | `StaffRegisterSecheduleServlet` | `StaffScheduleDAO` |
 | **Staff** | Thanh toán | `staff_thanhtoan.jsp` | `StaffPaymentServlet` | `BillDAO` |
 | **Staff** | Check-in | `staff_dashboard.jsp` | `StaffHandleQueueServlet` | `AppointmentDAO` |
 | **Manager** | Duyệt lịch | `manager_phancong.jsp` | `ManagerApprovalDoctorServlet` | `ScheduleDAO` |
