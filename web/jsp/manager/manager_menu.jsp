@@ -50,10 +50,6 @@
                             <span>Lịch làm việc</span>
                         </div>
                         <div class="sidebar-dropdown-menu">
-                            <a href="${pageContext.request.contextPath}/jsp/manager/manager_lichtrinh.jsp"
-                                class="sidebar-dropdown-item">
-                                Lịch trình
-                            </a>
                             <a href="${pageContext.request.contextPath}/ScheduleApprovalServlet"
                                 class="sidebar-dropdown-item">
                                 Phân công

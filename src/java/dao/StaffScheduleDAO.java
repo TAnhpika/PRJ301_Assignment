@@ -48,6 +48,7 @@ public class StaffScheduleDAO {
                 schedule.setApprovedAt(rs.getTimestamp("approved_at"));
                 schedule.setCreatedAt(rs.getTimestamp("created_at"));
                 schedule.setStaffName(rs.getString("staff_name"));
+                schedule.setReason(rs.getString("reason"));
                 Integer slotId = schedule.getSlotId();
                 if (slotId != null) {
                     dao.TimeSlotDAO timeSlotDAO = new dao.TimeSlotDAO();
@@ -74,9 +75,10 @@ public class StaffScheduleDAO {
         ResultSet rs = null;
         List<StaffSchedule> list = new ArrayList<>();
         String sql = """
-                    SELECT ss.*, ts.start_time, ts.end_time
+                    SELECT ss.*, ts.start_time, ts.end_time, approver.full_name as approver_name
                     FROM StaffSchedule ss
                     LEFT JOIN TimeSlot ts ON ss.slot_id = ts.slot_id
+                    LEFT JOIN Staff approver ON ss.approved_by = approver.user_id
                     WHERE ss.staff_id = ?
                     AND MONTH(ss.work_date) = ?
                     AND YEAR(ss.work_date) = ?
@@ -101,7 +103,9 @@ public class StaffScheduleDAO {
                 schedule.setApprovedBy(rs.getInt("approved_by"));
                 schedule.setApprovedAt(rs.getTimestamp("approved_at"));
                 schedule.setCreatedAt(rs.getTimestamp("created_at"));
-                schedule.setStaffName(rs.getString("staff_name"));
+                schedule.setReason(rs.getString("reason"));
+                schedule.setApproverName(rs.getString("approver_name"));
+                
                 Integer slotId = schedule.getSlotId();
                 if (slotId != null) {
                     dao.TimeSlotDAO timeSlotDAO = new dao.TimeSlotDAO();
@@ -202,8 +206,8 @@ public class StaffScheduleDAO {
         Connection conn = null;
         PreparedStatement ps = null;
         String sql = """
-                    INSERT INTO StaffSchedule (staff_id, work_date, slot_id, status, created_at)
-                    VALUES (?, ?, ?, 'pending', GETDATE())
+                    INSERT INTO StaffSchedule (staff_id, work_date, slot_id, status, created_at, reason)
+                    VALUES (?, ?, ?, 'pending', GETDATE(), ?)
                 """;
         try {
             conn = DBContext.getConnection();
@@ -216,6 +220,7 @@ public class StaffScheduleDAO {
             } else {
                 ps.setNull(3, Types.INTEGER);
             }
+            ps.setString(4, schedule.getReason());
 
             System.out.println("🔍 Executing SQL: " + sql);
             System.out.println("📊 Parameters: staffId=" + schedule.getStaffId() +
@@ -288,6 +293,7 @@ public class StaffScheduleDAO {
                     schedule.setApprovedBy((Integer) rs.getObject("approved_by"));
                     schedule.setApprovedAt(rs.getTimestamp("approved_at"));
                     schedule.setCreatedAt(rs.getTimestamp("created_at"));
+                    schedule.setReason(rs.getString("reason"));
 
                     // Thông tin bổ sung
                     schedule.setStaffName(rs.getString("staff_name"));

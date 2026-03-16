@@ -78,6 +78,15 @@ public class StaffScheduleServlet extends HttpServlet {
         request.setAttribute("employmentType", staff.getEmploymentType());
         request.setAttribute("currentMonth", month);
         request.setAttribute("currentYear", year);
+        
+        // Count pending requests
+        int pendingCount = 0;
+        for (StaffSchedule s : leaveHistory) {
+            if ("pending".equals(s.getStatus())) {
+                pendingCount++;
+            }
+        }
+        request.setAttribute("pendingRequests", pendingCount);
         if ("fulltime".equals(staff.getEmploymentType())) {
             int usedLeaveDays = scheduleDAO.getApprovedLeaveDaysInMonth((int) staff.getStaffId(), month, year);
             request.setAttribute("usedDays", usedLeaveDays);

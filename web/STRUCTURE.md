@@ -268,8 +268,7 @@ web/view/
     │   │   ├── manager_users.jsp
     │   │   ├── manager_doctors.jsp
     │   │   ├── manager_staff.jsp
-    │   │   ├── manager_lichtrinh.jsp
-    │   │   ├── manager_phancong.jsp
+        │   │   ├── manager_phancong.jsp
     │   │   ├── manager_medicine.jsp
     │   │   ├── manager_khothuoc.jsp
     │   │   ├── manager_blogs.jsp

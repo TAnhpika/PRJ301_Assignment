@@ -364,7 +364,22 @@ sequenceDiagram
     SV-->>ST: Hiển thị trạng thái đã duyệt (approved)
 ```
 
+#### G. Tin tức Nha khoa (Dental News)
+```mermaid
+sequenceDiagram
+    participant ST as Nhân viên
+    participant B as BlogServlet (blog)
+    participant DB as Database
 
+    ST->>B: Truy cập trang quản lý Blog (blog.jsp)
+    B->>DB: BlogDAO.getAllPosts()
+    DB-->>B: Trả về danh sách bài viết
+    ST->>B: Thêm bài mới (title, content, image)
+    B->>B: Xử lý upload ảnh vào /uploads
+    B->>DB: BlogDAO.insertPost()
+    DB-->>B: Thành công
+    B-->>ST: Hiển thị bài viết mới trong danh sách tin tức
+```
 
 
 ---
@@ -458,6 +473,7 @@ sequenceDiagram
 | **Staff** | Tạo hóa đơn | `staff_thanhtoan.jsp` | `StaffPaymentServlet` | `BillDAO` |
 | **Staff** | Quản lý trả góp| `staff_thanhtoan.jsp` | `StaffPaymentServlet` | `PaymentInstallmentDAO` |
 | **Staff** | Đăng ký nghỉ | `staff_xinnghi.jsp` | `StaffRegisterSecheduleServlet` | `StaffScheduleDAO` |
+| **Staff** | Tin tức Nha khoa | `blog.jsp` | `BlogServlet` | `BlogDAO` |
 | **Staff** | Thanh toán | `staff_thanhtoan.jsp` | `StaffPaymentServlet` | `BillDAO` |
 | **Staff** | Check-in | `staff_dashboard.jsp` | `StaffHandleQueueServlet` | `AppointmentDAO` |
 | **Manager** | Duyệt lịch | `manager_phancong.jsp` | `ManagerApprovalDoctorServlet` | `ScheduleDAO` |
