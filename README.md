@@ -1,4 +1,4 @@
-# Dental Clinic Management System - PRJ301 (Full System Flows)
+# Dental Clinic Management System - PRJ301 (Full Technical Documentation)
 
 Hệ thống quản lý phòng khám nha khoa toàn diện, tích hợp các công nghệ hiện đại phục vụ quản trị và trải nghiệm khách hàng.
 
@@ -9,101 +9,379 @@ Hệ thống quản lý phòng khám nha khoa toàn diện, tích hợp các cô
 - **Backend:** Java Servlet, Jakarta EE, JDBC.
 - **Frontend:** JSP, Bootstrap 5, Vanilla JS, AJAX (Gson).
 - **Database:** SQL Server (Normalized DB).
-- **Tích hợp:** 
-    - **PayOS:** Cổng thanh toán QR Code tự động.
-    - **Google OAuth 2.0:** Đăng nhập một chạm.
-    - **n8n Automation:** Tự động gửi Email & đồng bộ Google Calendar.
+- **Tích hợp:** PayOS (Thanh toán QR), Google OAuth 2.0 (Đăng nhập), n8n Automation (Email & Google Calendar).
 
 ---
 
-## 🔄 Chi tiết Luồng Nghiệp vụ theo Vai trò (User Roles & Flows)
+## 🔄 Chi tiết Luồng Nghiệp vụ (Sequence Diagrams)
 
-### 1. BỆNH NHÂN (PATIENT) - Người sử dụng dịch vụ
+### 1. Luồng BỆNH NHÂN (PATIENT)
 
-#### A. Đăng ký & Đăng nhập (Google OAuth 2.0)
-*   **Front-end:** Tại `login.jsp`, người dùng chọn "Login with Google". Link chuyển hướng đến Google Auth Server.
-*   **Back-end:** 
-    *   `GoogleCallbackServlet` tiếp nhận thẻ `code`, trao đổi lấy `AccessToken` và gửi yêu cầu lấy Email/Họ tên từ Google Profiler.
-    *   `LoginServlet` kiểm tra Email trong DB. Nếu chưa có tài khoản, tự cập nhật bảng `Users` và `Patients`.
-    *   Tạo Session và redirect về `user_homepage.jsp`.
+#### A. Đăng nhập bằng Google
+```mermaid
+sequenceDiagram
+    U as Người dùng
+    GG as Google Auth Server
+    C as GoogleCallbackServlet
+    L as LoginServlet
+    DB as Database
 
-#### B. Đặt lịch & Thanh toán Tự động (Core Flow)
-*   **Front-end:** Tại `booking.jsp`, bệnh nhân chọn Bác sĩ/Dịch vụ. 
-    *   **AJAX:** Khi chọn ngày, gửi yêu cầu tới `BookingServlet?action=check-slots` để hiển thị các Slot giờ còn trống (màu xanh).
-*   **Back-end (Giữ chỗ):** Khi chọn Slot, `BookingServlet` gọi `AppointmentDAO.createReservation` để "tạm khóa" slot trong 5 phút.
-*   **Thanh toán:** 
-    *   `PayOSServlet` được gọi để tạo Payment Link. Người dùng quét mã QR để trả phí giữ chỗ (50k hoặc tùy cấu hình).
-    *   Khi thanh toán thành công, PayOS gọi về Webhook `/payment?action=success`.
-    *   Hệ thống chuyển trạng thái Bill thành `PAID` và Appointment thành `BOOKED`.
-*   **Automation:** `N8nWebhookService` đẩy dữ liệu sang n8n để gửi Email xác nhận và tự động chèn lịch vào Google Calendar cho cả Bác sĩ & Bệnh nhân.
+    U->>GG: Nhấn "Login with Google" (login.jsp)
+    GG-->>C: Trả về Authorization Code
+    C->>GG: Exchange Code lấy Access Token
+    C->>GG: Lấy thông tin User (Email/Name)
+    C->>L: Chuyển tiếp thông tin User
+    L->>DB: Kiểm tra Email (UserDAO)
+    alt Chưa có tài khoản
+        L->>DB: Tạo mới User & Patient
+    end
+    DB-->>L: Thành công
+    L->>L: Lưu User vào Session
+    L-->>U: Chuyển đến Dashboard theo Role
+```
+
+#### B. Đăng ký tài khoản & Hoàn tất thông tin
+```mermaid
+sequenceDiagram
+    participant U as Người dùng
+    participant S as SignUpServlet
+    participant I as RegisterInformation
+    participant DB as Database
+
+    Note over U, DB: Bước 1: Đăng ký tài khoản (register.jsp)
+    U->>S: Nhập Email, Password
+    S->>S: Kiểm tra mật khẩu & Email tồn tại
+    S->>DB: registerPatient (Thêm User mới)
+    DB-->>S: Trả về ID người dùng
+    S-->>U: Redirect sang information.jsp
+
+    Note over U, DB: Bước 2: Cập nhật thông tin cá nhân
+    U->>I: Nhập Họ tên, SĐT, Ngày sinh, Giới tính
+    I->>DB: savePatientInfo (Lưu vào table Patients)
+    DB-->>I: Thành công
+    I-->>U: Chuyển đến trang Login (success=info_completed)
+```
+
+
+
+#### C. Đặt lịch & Thanh toán PayOS
+```mermaid
+sequenceDiagram
+    U as Bệnh nhân
+    B as BookingServlet
+    P as PayOSServlet
+    PY as Cổng PayOS
+    N8N as n8n Webhook
+    DB as Database
+
+    U->>B: Chọn Bác sĩ/Ngày (booking.jsp)
+    B->>DB: Lấy slots trống (check-slots)
+    U->>B: Chọn Slot & Nhấn Đặt lịch
+    B->>DB: createReservation (Giữ chỗ 5p)
+    B-->>P: Chuyển sang PayOSServlet
+    P->>PY: Tạo Payment Link & QR Code
+    P-->>U: Redirect sang trang Thanh toán PayOS
+    U->>PY: Quét mã QR & Trả tiền
+    PY-->>P: Callback thành công (?action=success)
+    P->>DB: Update Bill (PAID) & Appointment (BOOKED)
+    P->>N8N: Đẩy dữ liệu sang n8n
+    N8N->>N8N: Gửi Email & Add Google Calendar
+    P-->>U: Hiển thị payment-success.jsp
+```
+
+#### D. Quên mật khẩu (Reset Password)
+```mermaid
+sequenceDiagram
+    U as Người dùng
+    S as ResetPasswordServlet
+    E as Email Service
+    DB as Database
+    
+    U->>S: Nhập Email (forgot-password.jsp)
+    S->>DB: Kiểm tra Email tồn tại?
+    DB-->>S: Có tồn tại
+    S->>E: Gửi email mã OTP
+    S->>S: Lưu OTP vào Session
+    S-->>U: Chuyển đến trang verify-otp.jsp
+    U->>S: Nhập mã OTP
+    S->>S: So sánh OTP trong Session
+    S-->>U: Chuyển đến trang reset-password.jsp
+    U->>S: Nhập mật khẩu mới
+    S->>DB: Cập nhật mật khẩu mới (updatePasswordByEmail)
+    S-->>U: Thông báo thành công, quay về Login
+```
+
+#### F. Tư vấn & Chat với Bác sĩ (Real-time Chat)
+```mermaid
+sequenceDiagram
+    U as Bệnh nhân
+    P as ChatPageServlet
+    WS as ChatEndPoint (WebSocket)
+    DB as Database
+
+    U->>P: Truy cập trang tư vấn (ChatPageServlet)
+    P-->>U: Hiển thị patient_chat.jsp
+    U->>WS: Kết nối WebSocket endpoint (/chat)
+    WS->>DB: Kiểm tra Role & Session
+    WS-->>U: Gửi danh sách bác sĩ đang online (doctorlist)
+    U->>WS: Gửi tin nhắn [DoctorID]|[Nội dung]
+    WS->>DB: Lưu tin nhắn vào bảng ChatMessages
+    WS-->>U: Relay tin nhắn (Xác nhận gửi)
+    WS->>U: Nhận phản hồi từ Bác sĩ (Real-time)
+```
+
 
 ---
 
-### 2. BÁC SĨ (DOCTOR) - Người chuyên môn
+### 2. Luồng BÁC SĨ (DOCTOR)
 
-#### A. Quản lý Lịch làm việc
-*   **Front-end:** Bác sĩ đăng ký các ca trực (Morning/Afternoon) trong tuần tại giao diện đăng ký lịch.
-*   **Back-end:** `DoctorRegisterScheduleServlet` lưu yêu cầu vào bảng `DoctorSchedules` với trạng thái `PENDING` chờ Manager duyệt.
+#### A. Quy trình Khám bệnh (Medical Report)
+```mermaid
+sequenceDiagram
+    D as Bác sĩ
+    C as CreateMedicalReportServlet
+    S as SubmitMedicalReportServlet
+    DB as Database
 
-#### B. Quy trình Khám bệnh & Hồ sơ bệnh án
-*   **Front-end:** Bác sĩ xem danh sách bệnh nhân đã Check-in trong hàng đợi. Nhấn "Khám bệnh".
-*   **Back-end (Load):** `CreateMedicalReportServlet` lấy thông tin chi tiết bệnh nhân, tiền sử bệnh và forward sang `doctor_phieukham.jsp`.
-*   **Front-end (Submit):** Bác sĩ nhập Chẩn đoán, Triệu chứng, Kê đơn thuốc và chỉ định Dịch vụ điều trị.
-*   **Back-end (Save):** `SubmitMedicalReportServlet` thực hiện luồng:
-    1.  Lưu thông tin chẩn đoán vào `MedicalReports`.
-    2.  Lưu danh mục thuốc/dịch vụ vào `TreatmentDetails`.
-    3.  Cập nhật trạng thái Appointment sang `COMPLETED`.
+    D->>C: Chọn bệnh nhân khám (doctor_homepage.jsp)
+    C->>DB: Lấy thông tin Bệnh nhân/Lịch hẹn
+    C-->>D: Hiển thị form khám (doctor_phieukham.jsp)
+    D->>S: Nhập chẩn đoán, kê đơn, chọn dịch vụ
+    S->>DB: Lưu MedicalReports
+    S->>DB: Lưu TreatmentDetails (Dịch vụ/Thuốc)
+    S->>DB: Update Appointment (COMPLETED)
+    S-->>D: Quay về Dashboard, báo thành công
+```
+
+#### B. Đăng ký & Quản lý lịch nghỉ
+```mermaid
+sequenceDiagram
+    D as Bác sĩ
+    S as DoctorRegisterScheduleServlet
+    M as Quản lý
+    DB as Database
+
+    D->>S: Đăng ký ngày nghỉ (doctor_dangkilich.jsp)
+    S->>S: Xác định loại request là 'leave'
+    S->>DB: Lưu yêu cầu nghỉ với trạng thái 'pending'
+    S-->>D: Hiển thị tại mục "Chờ duyệt"
+
+    Note over M, DB: Manager phê duyệt tại manager_phancong.jsp
+    M->>DB: Cập nhật trạng thái 'Đã duyệt' hoặc 'Từ chối'
+    DB-->>M: Thành công
+    
+    Note over D, DB: Bác sĩ xem kết quả tại mục "Đã duyệt/Từ chối"
+```
+
+#### C. Đổi mật khẩu (Security)
+```mermaid
+sequenceDiagram
+    D as Bác sĩ
+    S as DoctorChangePasswordServlet
+    DB as Database
+
+    D->>S: Nhập MK cũ, MK mới (doctor_changepassword.jsp)
+    S->>S: Validate mật khẩu mới (khớp, độ dài >=6)
+    S->>DB: UserDAO.loginUserInstance (Kiểm tra MK cũ)
+    alt Mật khẩu cũ đúng
+        S->>DB: UserDAO.updatePasswordInstance (Update MK mới)
+        DB-->>S: Thành công
+        S-->>D: Thông báo thành công (Success alert)
+    else Mật khẩu cũ sai
+        S-->>D: Báo lỗi: Mật khẩu hiện tại không đúng
+    end
+```
+
+#### D. Tư vấn & Chat trực tuyến (Real-time Chat)
+```mermaid
+sequenceDiagram
+    D as Bác sĩ
+    P as ChatPageServlet
+    WS as ChatEndPoint (WebSocket)
+    DB as Database
+
+    D->>P: Truy cập trang tư vấn (ChatPageServlet)
+    P-->>D: Hiển thị doctor_chat.jsp
+    D->>WS: Kết nối WebSocket endpoint (/chat)
+    WS->>DB: Kiểm tra Role & Session
+    WS-->>D: Gửi danh sách bệnh nhân đang online (patientlist)
+    D->>WS: Gửi tin nhắn [PatientID]|[Nội dung]
+    WS->>DB: Lưu tin nhắn vào bảng ChatMessages
+    WS-->>D: Relay tin nhắn (Xác nhận gửi)
+    WS->>D: Nhận tin từ Bệnh nhân (Real-time)
+```
+
+#### E. Chỉnh sửa thông tin cá nhân (Profile Settings)
+```mermaid
+sequenceDiagram
+    D as Bác sĩ
+    S as EditDoctorServlet
+    DB as Database
+
+    D->>S: Truy cập trang cài đặt (doctor_caidat.jsp)
+    S->>DB: DoctorDAO.getDoctorByUserId()
+    DB-->>S: Trả về thông tin hiện tại
+    S-->>D: Hiển thị form chỉnh sửa
+    D->>S: Gửi thông tin mới (Họ tên, SĐT, Chuyên khoa,...)
+    S->>DB: DoctorDAO.updateDoctor()
+    DB-->>S: Thành công
+    S-->>D: Chuyển hướng về trang cài đặt & Báo thành công
+```
+
 
 ---
 
-### 3. NHÂN VIÊN (STAFF) - Người vận hành
+### 3. Luồng NHÂN VIÊN (STAFF)
 
-#### A. Tiếp đón & Điều phối Hàng đợi
-*   **Front-end:** Nhân viên xem danh sách bệnh nhân đã đặt lịch trong ngày tại Dashboard Staff.
-*   **Back-end:** `StaffHandleQueueServlet` xử lý việc "Check-in" khi bệnh nhân có mặt tại phòng khám, chuyển trạng thái từ `BOOKED` sang `WAITING`.
+#### A. Thanh toán Trả góp (Installment)
+```mermaid
+sequenceDiagram
+    ST as Nhân viên
+    SV as StaffPaymentServlet
+    DB as Database
 
-#### B. Quản lý Hóa đơn & Trả góp (Installment)
-*   **Front-end:** Tại `staff_thanhtoan.jsp`, nhân viên tạo hóa đơn cho bệnh nhân khám trực tiếp hoặc dịch vụ phát sinh.
-*   **Xử lý Trả góp:**
-    *   Nếu bệnh nhân muốn trả góp cho dịch vụ lớn, nhân viên chọn "Installment".
-    *   **Back-end:** `StaffPaymentServlet` gọi `PaymentInstallmentDAO` để chia nhỏ số tiền thành các kỳ hạn thanh toán.
-    *   Tự động theo dõi dư nợ và ngày thanh toán định kỳ.
+    ST->>SV: Chọn HĐ & Chọn Trả góp (staff_thanhtoan.jsp)
+    SV->>DB: createInstallmentPlan (PaymentInstallmentDAO)
+    DB-->>SV: Tạo các kỳ hạn thanh toán
+    SV->>DB: Lưu bill con đầu tiên (Down Payment)
+    SV-->>ST: Hiển thị kế hoạch trả góp & QR thu tiền
+```
+
+#### B. Check-in & Tiếp nhận bệnh nhân
+```mermaid
+sequenceDiagram
+    ST as Nhân viên
+    Q as StaffHandleQueueServlet
+    DB as Database
+
+    ST->>Q: Xác nhận BN có mặt (Dashboard Staff)
+    Q->>DB: Update Appointment status (WAITING)
+    DB-->>Q: Thành công
+    Q-->>ST: Bệnh nhân hiện lên hàng chờ bác sĩ
+```
+
+#### C. Tạo hóa đơn cho khách vãng lai (Walk-in)
+```mermaid
+sequenceDiagram
+    ST as Nhân viên
+    SV as StaffPaymentServlet
+    DB as Database
+
+    ST->>SV: Nhập tên BN, SĐT & Chọn dịch vụ (staff_thanhtoan.jsp)
+    SV->>DB: Lấy giá dịch vụ (ServiceDAO)
+    SV->>DB: Tạo Bill mới (BillDAO.createBill)
+    DB-->>SV: Thành công
+    SV-->>ST: Hiển thị hóa đơn mới trong danh sách
+```
+
+#### D. Thanh toán QR tại quầy (PayOS QR)
+```mermaid
+sequenceDiagram
+    ST as Nhân viên
+    SV as StaffPaymentServlet
+    PY as PayOS API
+    DB as Database
+
+    ST->>SV: Chọn HĐ & Nhấn "Lấy mã QR" (Modal)
+    SV->>PY: PayOSUtil.createPayOSPaymentRequestForStaff
+    PY-->>SV: Trả về URL/Mã QR Code
+    SV-->>ST: Hiển thị QR Code lên màn hình cho khách quét
+    ST->>SV: Nhấn "Xác nhận đã nhận tiền" (nếu khách ck xong)
+    SV->>DB: Update Bill status (PAID)
+    SV-->>ST: Thông báo thanh toán thành công
+```
+
 
 ---
 
-### 4. QUẢN LÝ (MANAGER) - Người giám sát
+### 4. Luồng QUẢN LÝ (MANAGER)
 
 #### A. Phê duyệt Lịch trực
-*   **Front-end:** Manager xem danh sách đăng ký trực tuần của Bác sĩ/Nhân viên tại `manager_phancong.jsp`.
-*   **Back-end:** `ManagerApprovalDoctorSchedulerServlet` xử lý Duyệt/Từ chối. Chỉ lịch đã duyệt mới hiện lên trang Đặt lịch của bệnh nhân.
+```mermaid
+sequenceDiagram
+    M as Quản lý
+    A as ManagerApprovalDoctorServlet
+    DB as Database
 
-#### B. Quản lý Nhân sự & Kho thuốc
-*   **Cửa sổ:** Quản lý tài khoản (Add/Delete Staff/Doctor) qua `AddStaffServlet` và `DeleteStaffServlet`.
-*   **Kho thuốc:** Cập nhật danh mục thuốc, giá dịch vụ điều trị qua các Servlet chuyên biệt như `AddMedicineServlet`.
+    M->>A: Xem danh sách đăng ký lịch (manager_phancong.jsp)
+    M->>A: Nhấn Duyệt/Từ chối
+    A->>DB: Update Schedule Status (Approved/Rejected)
+    DB-->>A: Thành công
+    A-->>M: Cập nhật danh sách trang phân công
+```
+
+#### B. Quản lý Nhân sự (Thêm Bác sĩ/Nhân viên)
+```mermaid
+sequenceDiagram
+    M as Quản lý
+    S as AddStaffServlet
+    DB as Database
+
+    M->>S: Nhập thông tin nhân viên (manager_danhsach.jsp)
+    S->>S: Kiểm tra quyền MANAGER
+    S->>S: Validate Email/SĐT
+    S->>DB: Insert vào bảng Users (Mật khẩu mặc định 12345)
+    alt Role là DOCTOR
+        S->>DB: Insert vào bảng Doctors
+    else Role là STAFF
+        S->>DB: Insert vào bảng Staffs
+    end
+    DB-->>S: Thành công
+    S-->>M: Thông báo thành công & Reload danh sách
+```
+
+#### C. Quản lý Kho thuốc (Add Medicine)
+```mermaid
+sequenceDiagram
+    M as Quản lý
+    S as AddMedicineServlet
+    DB as Database
+
+    M->>S: Nhập tên thuốc, số lượng, đơn vị (manager_khothuoc.jsp)
+    S->>DB: MedicineDAO.addMedicine()
+    DB-->>S: Thành công
+    S-->>M: Cập nhật kho thuốc & Thông báo thành công
+```
+
+#### D. Quản lý Khách hàng (View Customer List)
+```mermaid
+sequenceDiagram
+    M as Quản lý
+    S as ManagerCustomerListServlet
+    DB as Database
+    
+    M->>S: Truy cập trang Khách hàng (manager_customers.jsp)
+    S->>DB: Lấy danh sách bệnh nhân (Pagination)
+    S->>DB: Thống kê khách hàng mới trong tháng
+    DB-->>S: Trả về dữ liệu
+    S-->>M: Hiển thị danh sách & Thống kê Dashboard
+```
+
 
 ---
 
-## 📊 Bảng ánh xạ Kỹ thuật (Technical Mapping)
+## 📂 Mapping Kỹ thuật (Servlet/JSP/DAO)
 
-| Vai trò | Chức năng chính | Servlet Xử lý | DAO Liên quan |
-| :--- | :--- | :--- | :--- |
-| **Patient** | Đăng nhập Google | `GoogleCallbackServlet` | `UserDAO` |
-| **Patient** | Đặt lịch & Thanh toán | `BookingServlet`, `PayOSServlet` | `AppointmentDAO`, `BillDAO` |
-| **Doctor** | Khám bệnh & Kê đơn | `CreateMedicalReportServlet` | `MedicalReportDAO` |
-| **Staff** | Quản lý Hàng đợi | `StaffHandleQueueServlet` | `AppointmentDAO` |
-| **Staff** | Thanh toán Trả góp | `StaffPaymentServlet` | `PaymentInstallmentDAO` |
-| **Manager** | Phê duyệt Lịch | `ManagerApprovalDoctorSchedulerServlet` | `ScheduleDAO` |
-| **System** | Tự động hóa n8n | `N8nWebhookService` | (Utility Class) |
+| Vai trò | Chức năng | JSP (Front-end) | Servlet (Back-end) | DAO |
+| :--- | :--- | :--- | :--- | :--- |
+| **Patient** | Google Login | `login.jsp` | `GoogleCallbackServlet` | `UserDAO` |
+| **Patient** | Đăng ký | `register.jsp` | `SignUpServlet` | `UserDAO` |
+| **Patient** | Hoàn tất thông tin | `information.jsp` | `RegisterInformation` | `UserDAO` |
+| **Patient** | Book Appointment | `booking.jsp` | `BookingServlet` | `AppointmentDAO` |
+| **Patient** | Online Payment | `payos.com` | `PayOSServlet` | `BillDAO` |
+| **Patient** | Reset Password | `forgot-password.jsp` | `ResetPasswordServlet` | `UserDAO` |
+| **Patient** | Tư vấn/Chat | `patient_chat.jsp` | `ChatPageServlet` | `ChatMessages` (Table) |
+| **Doctor** | Thăm khám | `doctor_phieukham.jsp` | `SubmitMedicalReportServlet` | `MedicalReportDAO` |
+| **Doctor** | Đăng ký lịch | `doctor_dangkilich.jsp`| `DoctorRegisterScheduleServlet`| `DoctorScheduleDAO` |
+| **Doctor** | Đổi mật khẩu | `doctor_changepassword.jsp`| `DoctorChangePasswordServlet` | `UserDAO` |
+| **Doctor** | Chỉnh sửa profile | `doctor_caidat.jsp` | `EditDoctorServlet` | `DoctorDAO` |
+| **Doctor** | Tư vấn/Chat | `doctor_chat.jsp` | `ChatPageServlet` | `ChatMessages` (Table) |
+| **Staff** | Thanh toán | `staff_thanhtoan.jsp` | `StaffPaymentServlet` | `BillDAO` |
+| **Staff** | Check-in | `staff_dashboard.jsp` | `StaffHandleQueueServlet` | `AppointmentDAO` |
+| **Manager** | Duyệt lịch | `manager_phancong.jsp` | `ManagerApprovalDoctorServlet` | `ScheduleDAO` |
+| **Manager** | Thêm nhân sự | `manager_danhsach.jsp` | `AddStaffServlet` | `StaffDAO/DoctorDAO` |
+| **Manager** | Quản lý kho thuốc| `manager_khothuoc.jsp`| `AddMedicineServlet` | `MedicineDAO` |
+| **Manager** | Xem khách hàng | `manager_customers.jsp`| `ManagerCustomerListServlet` | `PatientDAO` |
 
 ---
-
-## 📂 Toàn cảnh Cấu trúc mã nguồn
-- `controller/auth`: Bảo mật, OTP, Google OAuth.
-- `controller/appointment`: Quy trình đặt lịch, giữ chỗ.
-- `controller/payment`: Hóa đơn, PayOS, Trả góp.
-- `controller/treatment`: Phiếu khám, Bệnh án điện tử.
-- `controller/admin`: Quản lý nhân sự của Manager.
-- `controller/schedule`: Đăng ký và duyệt lịch trực.
-
----
-*Tài liệu hướng dẫn hệ thống được cập nhật tự động bởi Antigravity.*
+*Tài liệu hướng dẫn hệ thống được cập nhật trực tiếp bởi Antigravity.*

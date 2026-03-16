@@ -147,22 +147,22 @@ public class UpdateUserServlet extends HttpServlet {
             String dobStr = request.getParameter("dateOfBirth");
             String gender = request.getParameter("gender");
 
-            if (fullName == null || phone == null || dobStr == null || gender == null ||
-                fullName.trim().isEmpty() || phone.trim().isEmpty() || dobStr.trim().isEmpty() || gender.trim().isEmpty()) {
-                request.setAttribute("error", "Vui lòng nhập đầy đủ thông tin cá nhân.");
+            // Chỉ bắt buộc Họ tên
+            if (fullName == null || fullName.trim().isEmpty()) {
+                request.setAttribute("error", "Họ tên không được để trống.");
                 request.getRequestDispatcher(RETURN_URL).forward(request, response);
                 return;
             }
 
-            // Kiểm tra định dạng số điện thoại
-            if (!phone.matches("^[0-9]{10,11}$")) {
-                request.setAttribute("error", "Số điện thoại phải có 10-11 số.");
+            // Kiểm tra định dạng số điện thoại (nếu có nhập)
+            if (phone != null && !phone.trim().isEmpty() && !phone.matches("^[0-9]{10,15}$")) {
+                request.setAttribute("error", "Số điện thoại không hợp lệ (10-15 ký tự số).");
                 request.getRequestDispatcher(RETURN_URL).forward(request, response);
                 return;
             }
 
-            // Kiểm tra giới tính
-            if (!gender.matches("^(male|female|other)$")) {
+            // Kiểm tra giới tính (nếu có nhập)
+            if (gender != null && !gender.trim().isEmpty() && !gender.matches("^(male|female|other)$")) {
                 request.setAttribute("error", "Giới tính không hợp lệ. Vui lòng chọn Nam, Nữ hoặc Khác.");
                 request.getRequestDispatcher(RETURN_URL).forward(request, response);
                 return;
@@ -195,8 +195,11 @@ public class UpdateUserServlet extends HttpServlet {
             }
 
             try {
-                java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd").parse(dobStr);
-                java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+                java.sql.Date sqlDate = null;
+                if (dobStr != null && !dobStr.trim().isEmpty()) {
+                    java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd").parse(dobStr);
+                    sqlDate = new java.sql.Date(utilDate.getTime());
+                }
 
                 if (currentPatient == null) {
                     // Thêm bệnh nhân mới
@@ -205,7 +208,7 @@ public class UpdateUserServlet extends HttpServlet {
                     newPatient.setFullName(fullName);
                     newPatient.setPhone(phone);
                     newPatient.setDateOfBirth(sqlDate);
-                    newPatient.setGender(gender);
+                    newPatient.setGender(gender != null && !gender.trim().isEmpty() ? gender : null);
                     if (relativePath != null) {
                         newPatient.setAvatar(relativePath);
                     }
@@ -241,9 +244,9 @@ public class UpdateUserServlet extends HttpServlet {
                     }
 
                     currentPatient.setFullName(fullName);
-                    currentPatient.setPhone(phone);
+                    currentPatient.setPhone(phone != null && !phone.trim().isEmpty() ? phone : null);
                     currentPatient.setDateOfBirth(sqlDate);
-                    currentPatient.setGender(gender);
+                    currentPatient.setGender(gender != null && !gender.trim().isEmpty() ? gender : null);
                     if (relativePath != null) {
                         currentPatient.setAvatar(relativePath);
                     }
@@ -257,7 +260,7 @@ public class UpdateUserServlet extends HttpServlet {
                     }
                 }
             } catch (ParseException e) {
-                request.setAttribute("error", "Ngày sinh không hợp lệ.");
+                request.setAttribute("error", "Ngày sinh không hợp lệ. Vui lòng nhập đúng định dạng yyyy-MM-dd.");
             }
         } else {
             request.setAttribute("error", "Yêu cầu không hợp lệ");
