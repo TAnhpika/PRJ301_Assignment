@@ -352,6 +352,10 @@
         <url-pattern>/StaffProfileServlet</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>UpdateAppointmentStatusServlet</servlet-name>
+        <url-pattern>/updateAppointmentStatus</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>360</session-timeout>
         <cookie-config>
@@ -381,4 +385,8 @@
         <extension>woff2</extension>
         <mime-type>font/woff2</mime-type>
     </mime-mapping>
+    <servlet>
+        <servlet-name>UpdateAppointmentStatusServlet</servlet-name>
+        <servlet-class>controller.appointment.UpdateAppointmentStatusServlet</servlet-class>
+    </servlet>
 </web-app>

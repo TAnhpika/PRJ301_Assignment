@@ -301,7 +301,22 @@ sequenceDiagram
     SR-->>ST: Hiển thị thông báo thành công & Reload danh sách
 ```
 
-#### C. Thanh toán Trả góp (Installment)
+#### C. Tạo hóa đơn cho Bệnh nhân (Create Invoice)
+```mermaid
+sequenceDiagram
+    participant ST as Nhân viên
+    participant SV as StaffPaymentServlet
+    participant DB as Database
+
+    ST->>SV: Chọn lịch hẹn đã hoàn thành (staff_thanhtoan.jsp)
+    SV->>DB: Lấy thông tin dịch vụ & phí (ServiceDAO)
+    ST->>SV: Xác nhận tạo hóa đơn (Modal)
+    SV->>DB: BillDAO.createBill()
+    DB-->>SV: Thành công
+    SV-->>ST: Hiển thị hóa đơn mới & Sẵn sàng thu tiền
+```
+
+#### D. Thanh toán Trả góp (Installment)
 ```mermaid
 sequenceDiagram
     ST as Nhân viên
@@ -315,7 +330,7 @@ sequenceDiagram
     SV-->>ST: Hiển thị kế hoạch trả góp & QR thu tiền
 ```
 
-#### D. Check-in & Tiếp nhận bệnh nhân
+#### E. Check-in & Tiếp nhận bệnh nhân
 ```mermaid
 sequenceDiagram
     ST as Nhân viên
@@ -328,7 +343,7 @@ sequenceDiagram
     Q-->>ST: Bệnh nhân hiện lên hàng chờ bác sĩ
 ```
 
-#### E. Tạo hóa đơn cho khách vãng lai (Walk-in)
+#### F. Tạo hóa đơn cho khách vãng lai (Walk-in)
 ```mermaid
 sequenceDiagram
     ST as Nhân viên
@@ -342,7 +357,7 @@ sequenceDiagram
     SV-->>ST: Hiển thị hóa đơn mới trong danh sách
 ```
 
-#### F. Thanh toán QR tại quầy (PayOS QR)
+#### G. Thanh toán QR tại quầy (PayOS QR)
 ```mermaid
 sequenceDiagram
     ST as Nhân viên
@@ -448,6 +463,7 @@ sequenceDiagram
 | **Doctor** | Tư vấn/Chat | `doctor_chat.jsp` | `ChatPageServlet` | `ChatMessages` (Table) |
 | **Staff** | Đặt lịch hộ | `staff_datlich.jsp` | `StaffBookingServlet` | `AppointmentDAO` |
 | **Staff** | Đổi lịch hẹn | `staff_doilich.jsp` | `RescheduleAppointmentServlet` | `AppointmentDAO` |
+| **Staff** | Tạo hóa đơn | `staff_thanhtoan.jsp` | `StaffPaymentServlet` | `BillDAO` |
 | **Staff** | Thanh toán | `staff_thanhtoan.jsp` | `StaffPaymentServlet` | `BillDAO` |
 | **Staff** | Check-in | `staff_dashboard.jsp` | `StaffHandleQueueServlet` | `AppointmentDAO` |
 | **Manager** | Duyệt lịch | `manager_phancong.jsp` | `ManagerApprovalDoctorServlet` | `ScheduleDAO` |
